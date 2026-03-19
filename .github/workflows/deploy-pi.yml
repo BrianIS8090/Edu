@@ -1,0 +1,20 @@
+name: Deploy to Pi5
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, pi5]
+    steps:
+      - name: Обновить код
+        run: |
+          cd /home/brian/apps/edu
+          git pull origin main
+
+      - name: Деплой в Nginx
+        run: |
+          sudo rsync -a /home/brian/apps/edu/ /var/www/edu/ --exclude .git
+          echo "Деплой завершён: $(date)"
