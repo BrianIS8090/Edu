@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide иконки -->
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     /* === Сброс и базовые стили === */
     *, *::before, *::after {
@@ -148,11 +150,20 @@
       cursor: default;
     }
 
-    /* Иконка модуля */
+    /* Иконка модуля (Lucide) */
     .module-icon {
-      font-size: 32px;
-      line-height: 1;
       margin-bottom: 4px;
+      color: #3b82f6;
+    }
+
+    .module-icon i {
+      width: 28px;
+      height: 28px;
+      stroke-width: 1.5;
+    }
+
+    .coming-soon .module-icon {
+      color: #475569;
     }
 
     /* Заголовок карточки со статусом */
@@ -342,7 +353,7 @@
 
       <!-- Системы управления LED -->
       <article class="module-card available">
-        <div class="module-icon">&#128161;</div>
+        <div class="module-icon"><i data-lucide="circuit-board"></i></div>
         <div class="module-header">
           <h3 class="module-title">Системы управления LED</h3>
           <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
@@ -353,7 +364,7 @@
 
       <!-- Цветовая наука -->
       <article class="module-card available">
-        <div class="module-icon">&#127752;</div>
+        <div class="module-icon"><i data-lucide="palette"></i></div>
         <div class="module-header">
           <h3 class="module-title">Цветовая наука</h3>
           <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
@@ -364,7 +375,7 @@
 
       <!-- Оптика светильников -->
       <article class="module-card available">
-        <div class="module-icon">&#128270;</div>
+        <div class="module-icon"><i data-lucide="focus"></i></div>
         <div class="module-header">
           <h3 class="module-title">Оптика светильников</h3>
           <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
@@ -375,7 +386,7 @@
 
       <!-- Диммирование и цвет -->
       <article class="module-card available">
-        <div class="module-icon">&#127769;</div>
+        <div class="module-icon"><i data-lucide="sun-dim"></i></div>
         <div class="module-header">
           <h3 class="module-title">Диммирование и цвет</h3>
           <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
@@ -386,7 +397,7 @@
 
       <!-- ШИМ-диммирование -->
       <article class="module-card available">
-        <div class="module-icon">&#9889;</div>
+        <div class="module-icon"><i data-lucide="activity"></i></div>
         <div class="module-header">
           <h3 class="module-title">ШИМ-диммирование</h3>
           <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
@@ -400,7 +411,7 @@
 
       <!-- Калькулятор радиатора -->
       <article class="module-card available">
-        <div class="module-icon">&#128208;</div>
+        <div class="module-icon"><i data-lucide="calculator"></i></div>
         <div class="module-header">
           <h3 class="module-title">Калькулятор радиатора</h3>
           <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
@@ -411,7 +422,7 @@
 
       <!-- Схемы систем -->
       <article class="module-card available">
-        <div class="module-icon">&#128202;</div>
+        <div class="module-icon"><i data-lucide="network"></i></div>
         <div class="module-header">
           <h3 class="module-title">Схемы систем освещения</h3>
           <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
@@ -425,7 +436,7 @@
 
       <!-- Подключение LED -->
       <article class="module-card available">
-        <div class="module-icon">&#128295;</div>
+        <div class="module-icon"><i data-lucide="cable"></i></div>
         <div class="module-header">
           <h3 class="module-title">Подключение LED плат</h3>
           <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
@@ -439,7 +450,7 @@
 
       <!-- IP/IK классификатор -->
       <article class="module-card available">
-        <div class="module-icon">&#128737;</div>
+        <div class="module-icon"><i data-lucide="shield-check"></i></div>
         <div class="module-header">
           <h3 class="module-title">IP / IK Классификатор</h3>
           <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
@@ -456,5 +467,7 @@
     7lamp Education Portal&ensp;|&ensp;<a href="https://7lamp.ru" target="_blank" rel="noopener">7lamp.ru</a>
   </footer>
 
+  <!-- Инициализация Lucide иконок -->
+  <script>lucide.createIcons();</script>
 </body>
 </html>
