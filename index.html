@@ -335,106 +335,117 @@
 
   <!-- Сетка учебных модулей -->
   <main class="modules-container">
-    <h2 class="modules-heading">Учебные модули</h2>
     <div class="modules-grid">
 
-      <!-- Модуль 1: Системы управления LED (доступен) -->
+      <!-- === ОСНОВЫ СВЕТОТЕХНИКИ === -->
+      <h2 class="modules-heading" style="grid-column:1/-1;margin-top:8px">Основы светотехники</h2>
+
+      <!-- Системы управления LED -->
       <article class="module-card available">
         <div class="module-icon">&#128161;</div>
         <div class="module-header">
           <h3 class="module-title">Системы управления LED</h3>
-          <span class="status-badge active">
-            <span class="status-dot"></span>
-            Доступен
-          </span>
+          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
         </div>
-        <p class="module-desc">
-          Интерактивные схемы подключения RGBW, RGB, Монохром, DALI, 0-10В.
-          Изучайте компоненты, характеристики и получайте практические советы.
-        </p>
-        <a href="led-systems.html" class="module-action">
-          Начать обучение <span class="arrow">&rarr;</span>
-        </a>
+        <p class="module-desc">Интерактивные схемы подключения RGBW, RGB, Монохром, DALI, 0-10В. Компоненты, характеристики, советы.</p>
+        <a href="led-systems.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
       </article>
 
-      <!-- Модуль 2: Основы светотехники (скоро) -->
-      <article class="module-card coming-soon">
-        <div class="module-icon">&#9728;&#65039;</div>
+      <!-- Цветовая наука -->
+      <article class="module-card available">
+        <div class="module-icon">&#127752;</div>
         <div class="module-header">
-          <h3 class="module-title">Основы светотехники</h3>
-          <span class="status-badge soon">
-            <span class="status-dot"></span>
-            Скоро
-          </span>
+          <h3 class="module-title">Цветовая наука</h3>
+          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
         </div>
-        <p class="module-desc">
-          Базовые понятия: световой поток, цветовая температура, CRI.
-          Всё, что нужно знать для грамотной работы со светом.
-        </p>
+        <p class="module-desc">CIE 1931, цветовые температуры CCT, эллипсы MacAdam, SDCM, спектры светодиодов.</p>
+        <a href="color_science.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
       </article>
 
-      <!-- Модуль 3: Проектирование освещения (скоро) -->
-      <article class="module-card coming-soon">
-        <div class="module-icon">&#128208;</div>
+      <!-- Оптика светильников -->
+      <article class="module-card available">
+        <div class="module-icon">&#128270;</div>
         <div class="module-header">
-          <h3 class="module-title">Проектирование освещения</h3>
-          <span class="status-badge soon">
-            <span class="status-dot"></span>
-            Скоро
-          </span>
+          <h3 class="module-title">Оптика светильников</h3>
+          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
         </div>
-        <p class="module-desc">
-          Расчёт освещённости, выбор оборудования, нормативы.
-          Проектирование от идеи до реализации.
-        </p>
+        <p class="module-desc">Углы распределения света, типы оптических элементов, линзы, рефлекторы и их применение.</p>
+        <a href="optics_guide.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
       </article>
 
-      <!-- Модуль 4: Монтаж и подключение (скоро) -->
-      <article class="module-card coming-soon">
-        <div class="module-icon">&#128295;</div>
+      <!-- Диммирование и цвет -->
+      <article class="module-card available">
+        <div class="module-icon">&#127769;</div>
         <div class="module-header">
-          <h3 class="module-title">Монтаж и подключение</h3>
-          <span class="status-badge soon">
-            <span class="status-dot"></span>
-            Скоро
-          </span>
+          <h3 class="module-title">Диммирование и цвет</h3>
+          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
         </div>
-        <p class="module-desc">
-          Практические руководства по установке светового оборудования.
-          Пошаговые инструкции и лучшие практики.
-        </p>
+        <p class="module-desc">Интерактивные визуализации процессов диммирования и цветовых пространств.</p>
+        <a href="dimming-visualization.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
       </article>
 
-      <!-- Модуль 5: Протоколы управления (скоро) -->
-      <article class="module-card coming-soon">
-        <div class="module-icon">&#128268;</div>
-        <div class="module-header">
-          <h3 class="module-title">Протоколы управления</h3>
-          <span class="status-badge soon">
-            <span class="status-dot"></span>
-            Скоро
-          </span>
-        </div>
-        <p class="module-desc">
-          DMX512, DALI-2, KNX, Zigbee, Matter.
-          Глубокое погружение в протоколы управления освещением.
-        </p>
-      </article>
-
-      <!-- Модуль 6: Энергоэффективность (скоро) -->
-      <article class="module-card coming-soon">
+      <!-- ШИМ-диммирование -->
+      <article class="module-card available">
         <div class="module-icon">&#9889;</div>
         <div class="module-header">
-          <h3 class="module-title">Энергоэффективность</h3>
-          <span class="status-badge soon">
-            <span class="status-dot"></span>
-            Скоро
-          </span>
+          <h3 class="module-title">ШИМ-диммирование</h3>
+          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
         </div>
-        <p class="module-desc">
-          Оптимизация энергопотребления, датчики, автоматизация.
-          Как снизить затраты без потери качества освещения.
-        </p>
+        <p class="module-desc">Осциллограф ШИМ-сигнала, кривые регулирования, влияние частоты на мерцание.</p>
+        <a href="pwm_dimming.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
+      </article>
+
+      <!-- === ПРОЕКТИРОВАНИЕ === -->
+      <h2 class="modules-heading" style="grid-column:1/-1;margin-top:24px">Проектирование</h2>
+
+      <!-- Калькулятор радиатора -->
+      <article class="module-card available">
+        <div class="module-icon">&#128208;</div>
+        <div class="module-header">
+          <h3 class="module-title">Калькулятор радиатора</h3>
+          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
+        </div>
+        <p class="module-desc">Расчёт площади радиатора для LED-светильников. Выбор материала, ориентации монтажа, теплоотвод.</p>
+        <a href="heatsink_calc.html" class="module-action">Открыть калькулятор <span class="arrow">&rarr;</span></a>
+      </article>
+
+      <!-- Схемы систем -->
+      <article class="module-card available">
+        <div class="module-icon">&#128202;</div>
+        <div class="module-header">
+          <h3 class="module-title">Схемы систем освещения</h3>
+          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
+        </div>
+        <p class="module-desc">DALI, DMX, 0-10В, аварийное освещение, Tunable White, HCL, умный дом.</p>
+        <a href="lighting_systems_diagrams.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
+      </article>
+
+      <!-- === МОНТАЖ === -->
+      <h2 class="modules-heading" style="grid-column:1/-1;margin-top:24px">Монтаж и подключение</h2>
+
+      <!-- Подключение LED -->
+      <article class="module-card available">
+        <div class="module-icon">&#128295;</div>
+        <div class="module-header">
+          <h3 class="module-title">Подключение LED плат</h3>
+          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
+        </div>
+        <p class="module-desc">Подключение LED-плат к драйверу: последовательное и параллельное соединение, расчёт токов и напряжений.</p>
+        <a href="led_conn2.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
+      </article>
+
+      <!-- === СТАНДАРТЫ === -->
+      <h2 class="modules-heading" style="grid-column:1/-1;margin-top:24px">Стандарты и классификация</h2>
+
+      <!-- IP/IK классификатор -->
+      <article class="module-card available">
+        <div class="module-icon">&#128737;</div>
+        <div class="module-header">
+          <h3 class="module-title">IP / IK Классификатор</h3>
+          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
+        </div>
+        <p class="module-desc">Степени защиты корпусов IEC 60529 (IP) и IEC 62262 (IK). Подбор класса защиты для условий эксплуатации.</p>
+        <a href="ip_ik_classifier.html" class="module-action">Открыть классификатор <span class="arrow">&rarr;</span></a>
       </article>
 
     </div>

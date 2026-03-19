@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IP / IK Классификатор — Светотехника</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f5f6f8;font-family:'JetBrains Mono',monospace;color:#1a2030}
+.w{max-width:900px;margin:0 auto;background:#f5f6f8;padding-bottom:2rem}
+.header{background:#fff;border-bottom:1.5px solid #e0e4ec;padding:14px 20px;display:flex;align-items:center;gap:12px}
+.header h1{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#1a2030;letter-spacing:-.01em}
+.header span{font-size:10px;color:#8090a8;letter-spacing:.07em;text-transform:uppercase;margin-top:2px;display:block}
+.badge-ip{background:#e8f4ff;color:#1878c0;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid #b0d4f0;font-family:'JetBrains Mono'}
+.badge-ik{background:#f0fff8;color:#0e9e6e;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid #a0dcc0;font-family:'JetBrains Mono'}
+.main-tabs{display:flex;background:#fff;border-bottom:1.5px solid #e0e4ec}
+.mt{flex:1;padding:10px;text-align:center;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;color:#9aa0b0}
+.mt.a{color:#1a2030;border-bottom-color:#1a2030}
+.tc{display:none}.tc.a{display:block}
+.ip-builder{padding:16px 18px}
+.ip-display{background:#fff;border:1.5px solid #e0e4ec;border-radius:12px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.ip-code{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;letter-spacing:.04em;color:#1a2030}
+.ip-code .dim{color:#c0c8d8}
+.ip-meaning{flex:1;min-width:160px}
+.ip-meaning .line{font-size:11px;color:#5a6880;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.ip-meaning .line .lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;padding:2px 7px;border-radius:4px;font-weight:600;flex-shrink:0}
+.lbl-s{background:#fff3e0;color:#c06010;border:1px solid #f0c090}
+.lbl-l{background:#e8f4ff;color:#1878c0;border:1px solid #b0d4f0}
+.rows{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.rows{grid-template-columns:1fr}}
+.selector-box{background:#fff;border:1.5px solid #e0e4ec;border-radius:10px;padding:14px}
+.selector-box h3{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#9aa0b0;margin-bottom:10px;font-weight:600}
+.digit-row{display:flex;gap:5px;flex-wrap:wrap}
+.dg{width:36px;height:36px;border-radius:7px;border:1.5px solid #e0e4ec;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;color:#5a6880;font-family:'Syne',sans-serif}
+.dg:hover{border-color:#aab8c8;background:#f5f8fc;color:#1a2030}
+.dg.sel-s{background:#fff3e0;border-color:#e09030;color:#b06010}
+.dg.sel-l{background:#e8f4ff;border-color:#4090d0;color:#1060a0}
+.desc-card{background:#f8f9fc;border:1px solid #e8eaf0;border-radius:8px;padding:10px 12px;margin-top:10px;min-height:54px}
+.desc-card .dc-title{font-size:12px;font-weight:600;color:#1a2030;margin-bottom:4px}
+.desc-card .dc-sub{font-size:11px;color:#5a6880;line-height:1.6}
+.illustration{margin-top:8px;width:100%;height:54px}
+.ip-table-wrap{padding:16px 18px}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#1a2030;margin-bottom:10px;padding-left:2px}
+.ip-tbl{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1.5px solid #e0e4ec;margin-bottom:18px;font-size:11px}
+.ip-tbl th{background:#f5f6f8;padding:8px 12px;text-align:left;color:#8090a8;font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;border-bottom:1.5px solid #e0e4ec;font-weight:600}
+.ip-tbl td{padding:9px 12px;border-bottom:1px solid #f0f2f6;vertical-align:top;line-height:1.5}
+.ip-tbl tr:last-child td{border-bottom:none}
+.ip-tbl tr:hover td{background:#f8f9fc}
+.lvl-badge{display:inline-block;width:28px;height:28px;border-radius:6px;font-weight:700;font-size:13px;text-align:center;line-height:28px;font-family:'Syne',sans-serif;flex-shrink:0}
+.app-pill{display:inline-block;font-size:9px;padding:2px 7px;border-radius:4px;background:#f0f2f8;color:#5a6880;margin:1px 2px 1px 0;border:1px solid #e0e4ec}
+.ik-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:16px 18px}
+.ik-card{background:#fff;border:1.5px solid #e0e4ec;border-radius:10px;padding:12px;cursor:pointer;transition:all .15s}
+.ik-card:hover{border-color:#aab8c8;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.ik-card.sel{border-color:#0e9e6e;background:#f0fff8}
+.ik-card .ik-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#1a2030;margin-bottom:2px}
+.ik-card .ik-j{font-size:10px;font-weight:600;margin-bottom:4px}
+.ik-card .ik-desc{font-size:10px;color:#7080a0;line-height:1.5}
+.ik-detail{background:#fff;border:1.5px solid #e0e4ec;border-radius:10px;margin:0 18px 16px;padding:16px}
+.ik-detail h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;color:#1a2030}
+.ik-detail p{font-size:11.5px;color:#5a6880;line-height:1.7;margin-bottom:8px}
+.ik-detail .apps{display:flex;flex-wrap:wrap;gap:5px}
+.ik-detail .app-tag{font-size:10px;padding:3px 9px;border-radius:5px;background:#f0fff8;color:#0e7050;border:1px solid #b0e8d0;font-weight:600}
+.warn-box{background:#fff8f0;border:1.5px solid #f0d8b0;border-radius:10px;padding:12px 16px;font-size:11px;color:#806040;line-height:1.7;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div class="w">
+<div class="header">
+  <div>
+    <h1>IP / IK Классификатор</h1>
+    <span>IEC 60529 · IEC 62262 · для конструктора светильников</span>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <div class="badge-ip">IP ××</div>
+    <div class="badge-ik">IK ××</div>
+  </div>
+</div>
+
+<div class="main-tabs">
+  <div class="mt a" onclick="switchTab('builder')" id="tab-builder">IP Конструктор</div>
+  <div class="mt" onclick="switchTab('iptable')" id="tab-iptable">Таблица IP</div>
+  <div class="mt" onclick="switchTab('ik')" id="tab-ik">Таблица IK</div>
+</div>
+
+<!-- BUILDER -->
+<div class="tc a" id="tc-builder">
+  <div class="ip-builder">
+    <div class="ip-display">
+      <div>
+        <div style="font-size:10px;color:#9aa0b0;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Код защиты</div>
+        <div class="ip-code">IP<span id="d1-show" class="dim">X</span><span id="d2-show" class="dim">X</span></div>
+      </div>
+      <div class="ip-meaning" id="ip-meaning">
+        <div class="line"><span class="lbl lbl-s">Твёрдые тела</span><span id="m-solid" style="color:#9aa0b0">не выбрано</span></div>
+        <div class="line"><span class="lbl lbl-l">Жидкость</span><span id="m-liquid" style="color:#9aa0b0">не выбрано</span></div>
+      </div>
+      <div id="ip-scope" style="font-size:10px;color:#9aa0b0;text-align:right;max-width:180px;line-height:1.6"></div>
+    </div>
+
+    <div class="rows">
+      <div class="selector-box">
+        <h3>1-я цифра — твёрдые тела и пыль</h3>
+        <div class="digit-row" id="d1-btns">
+          <div class="dg" onclick="sel(1,0)">0</div>
+          <div class="dg" onclick="sel(1,1)">1</div>
+          <div class="dg" onclick="sel(1,2)">2</div>
+          <div class="dg" onclick="sel(1,3)">3</div>
+          <div class="dg" onclick="sel(1,4)">4</div>
+          <div class="dg" onclick="sel(1,5)">5</div>
+          <div class="dg" onclick="sel(1,6)">6</div>
+        </div>
+        <div class="desc-card" id="d1-desc">
+          <div class="dc-title" style="color:#9aa0b0">Выберите степень</div>
+          <div class="dc-sub">Нажмите на цифру выше</div>
+        </div>
+        <svg class="illustration" id="illus-solid" viewBox="0 0 220 54"></svg>
+      </div>
+      <div class="selector-box">
+        <h3>2-я цифра — защита от воды</h3>
+        <div class="digit-row" id="d2-btns">
+          <div class="dg" onclick="sel(2,0)">0</div>
+          <div class="dg" onclick="sel(2,1)">1</div>
+          <div class="dg" onclick="sel(2,2)">2</div>
+          <div class="dg" onclick="sel(2,3)">3</div>
+          <div class="dg" onclick="sel(2,4)">4</div>
+          <div class="dg" onclick="sel(2,5)">5</div>
+          <div class="dg" onclick="sel(2,6)">6</div>
+          <div class="dg" onclick="sel(2,7)">7</div>
+          <div class="dg" onclick="sel(2,8)">8</div>
+          <div class="dg" onclick="sel(2,9)" style="font-size:10px">9K</div>
+        </div>
+        <div class="desc-card" id="d2-desc">
+          <div class="dc-title" style="color:#9aa0b0">Выберите степень</div>
+          <div class="dc-sub">Нажмите на цифру выше</div>
+        </div>
+        <svg class="illustration" id="illus-liquid" viewBox="0 0 220 54"></svg>
+      </div>
+    </div>
+
+    <div id="app-hint" style="background:#fff;border:1.5px solid #e0e4ec;border-radius:10px;padding:14px 16px;margin-top:12px;display:none">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#9aa0b0;margin-bottom:6px;font-weight:600">Типичное применение</div>
+      <div id="app-hint-text" style="font-size:12px;color:#2a3a50;line-height:1.7"></div>
+    </div>
+  </div>
+</div>
+
+<!-- IP TABLE -->
+<div class="tc" id="tc-iptable">
+  <div class="ip-table-wrap">
+    <div class="section-title">Первая цифра — защита от твёрдых тел и пыли</div>
+    <table class="ip-tbl">
+      <thead><tr><th style="width:46px">Цифра</th><th style="width:130px">Размер частиц</th><th>Описание защиты</th><th>Применение в светильниках</th></tr></thead>
+      <tbody>
+        <tr><td><div class="lvl-badge" style="background:#f5f5f5;color:#909090">0</div></td><td style="color:#9aa0b0">Нет защиты</td><td style="color:#5a6880">Корпус открыт, защита отсутствует</td><td><span class="app-pill">монтаж в стойку</span><span class="app-pill">внутренние блоки</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#fff3e0;color:#c06010">1</div></td><td>≥ 50 мм</td><td style="color:#5a6880">Защита от случайного касания рукой</td><td><span class="app-pill">пром. светильники</span><span class="app-pill">без крышки</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#fff3e0;color:#c06010">2</div></td><td>≥ 12,5 мм</td><td style="color:#5a6880">Защита от пальцев и подобных предметов</td><td><span class="app-pill">офисные</span><span class="app-pill">жилые помещения</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#ffe8c0;color:#a05010">3</div></td><td>≥ 2,5 мм</td><td style="color:#5a6880">Защита от инструментов, толстых проводов</td><td><span class="app-pill">накладные</span><span class="app-pill">встраиваемые</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#ffe8c0;color:#a05010">4</div></td><td>≥ 1 мм</td><td style="color:#5a6880">Защита от тонких проводов и мелких предметов</td><td><span class="app-pill">торговое</span><span class="app-pill">выставочное</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#ffd090;color:#804010">5</div></td><td>Пылезащита</td><td style="color:#5a6880">Пыль не проникает в вредном количестве</td><td><span class="app-pill">производство</span><span class="app-pill">склады</span><span class="app-pill">IP5X</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#ffb860;color:#603010">6</div></td><td>Пыленепрониц.</td><td style="color:#5a6880">Полная защита от пыли, вакуумный тест 20 мбар / 8 ч</td><td><span class="app-pill">уличные</span><span class="app-pill">IP65/66/67/68</span><span class="app-pill">взрывоопасные зоны</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-title">Вторая цифра — защита от воды (IEC 60529)</div>
+    <table class="ip-tbl">
+      <thead><tr><th style="width:46px">Цифра</th><th style="width:140px">Условие</th><th>Параметры испытания</th><th>Применение</th></tr></thead>
+      <tbody>
+        <tr><td><div class="lvl-badge" style="background:#f5f5f5;color:#909090">0</div></td><td style="color:#9aa0b0">Нет защиты</td><td style="color:#5a6880">—</td><td><span class="app-pill">сухие помещения</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#e8f4ff;color:#1878c0">1</div></td><td>Вертикальные капли</td><td style="color:#5a6880">10 мин, 1 мм/мин, вертикально</td><td><span class="app-pill">кухни</span><span class="app-pill">под конденсат</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#e8f4ff;color:#1878c0">2</div></td><td>Капли 15°</td><td style="color:#5a6880">10 мин, наклон ±15° от вертикали</td><td><span class="app-pill">навесы</span><span class="app-pill">козырьки</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#d8eeff;color:#1060b0">3</div></td><td>Дождь 60°</td><td style="color:#5a6880">10 мин, дождь до 60° от вертикали</td><td><span class="app-pill">балконы</span><span class="app-pill">террасы</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#d8eeff;color:#1060b0">4</div></td><td>Брызги 360°</td><td style="color:#5a6880">10 мин, брызги с любого направления</td><td><span class="app-pill">фасадные</span><span class="app-pill">архитектурные</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#c8e4ff;color:#0050a0">5</div></td><td>Струя воды</td><td style="color:#5a6880">15 л/мин, 30 кПа, 3 мин, любой угол</td><td><span class="app-pill">IP65</span><span class="app-pill">уличные</span><span class="app-pill">парковки</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#c8e4ff;color:#0050a0">6</div></td><td>Сильная струя</td><td style="color:#5a6880">100 л/мин, 100 кПа, 3 мин</td><td><span class="app-pill">IP66</span><span class="app-pill">пром. мойка</span><span class="app-pill">суда</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#b0d8ff;color:#004090">7</div></td><td>Погружение 1 м</td><td style="color:#5a6880">30 мин на глубине 1 м</td><td><span class="app-pill">IP67</span><span class="app-pill">дорожные</span><span class="app-pill">подземные</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#90c8ff;color:#003080">8</div></td><td>Длит. погружение</td><td style="color:#5a6880">Глубина и время по договорённости (&gt;1 м)</td><td><span class="app-pill">IP68</span><span class="app-pill">бассейны</span><span class="app-pill">фонтаны</span></td></tr>
+        <tr><td><div class="lvl-badge" style="background:#70b8ff;color:#002070;font-size:10px">9K</div></td><td>Горячая струя</td><td style="color:#5a6880">80°C, 80–100 бар, 14–16 л/мин, 0.1–0.15 м</td><td><span class="app-pill">IP69K</span><span class="app-pill">пищевая пром.</span><span class="app-pill">автомойки</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="warn-box">
+      <strong style="color:#904010">⚠ Важно:</strong> IP67 и IP68 не включают автоматически IP65/IP66. Высокое давление струи (IP66) — отдельное испытание. Для полной защиты указывайте оба кода, например: <strong>IP66/IP68</strong>. Аналогично IP69K не заменяет IP67/68.
+    </div>
+  </div>
+</div>
+
+<!-- IK TABLE -->
+<div class="tc" id="tc-ik">
+  <div style="padding:14px 18px 0">
+    <div style="background:#fff;border:1.5px solid #e0e4ec;border-radius:10px;padding:12px 16px;margin-bottom:12px;font-size:11px;color:#5a6880;line-height:1.7">
+      <strong style="color:#1a2030">IK-код (IEC 62262)</strong> — степень защиты оболочки от механических ударов. Определяет минимальную энергию удара (в джоулях), которую корпус светильника выдерживает без разрушения.
+    </div>
+  </div>
+  <div class="ik-grid" id="ik-grid"></div>
+  <div class="ik-detail" id="ik-detail" style="display:none"></div>
+  <div style="margin:0 18px 16px">
+    <table class="ip-tbl">
+      <thead><tr><th>IK</th><th>Энергия</th><th>Эквивалент удара</th><th>Масса / высота</th><th>Типичное применение</th></tr></thead>
+      <tbody id="ik-table-body"></tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<script>
+const solidData = [
+  {title:'Нет защиты',sub:'Корпус открытый, без защиты от проникновения',color:'#909090'},
+  {title:'≥ 50 мм — крупные части тела',sub:'Рука, кулак. Случайное касание',color:'#c06010'},
+  {title:'≥ 12,5 мм — пальцы',sub:'Палец или аналогичный предмет не проникает',color:'#c06010'},
+  {title:'≥ 2,5 мм — инструменты',sub:'Провода, отвёртки, щупы диаметром ≥2,5 мм',color:'#a05010'},
+  {title:'≥ 1 мм — проволока',sub:'Тонкие провода, гвозди, мелкие детали',color:'#a05010'},
+  {title:'Пылезащищённый',sub:'Пыль не попадает в количестве, нарушающем работу',color:'#804010'},
+  {title:'Пыленепроницаемый',sub:'Полная защита. Вакуумный тест 20 мбар, 8 часов',color:'#603010'},
+];
+const liquidData = [
+  {title:'Нет защиты',sub:'Вода не задерживается',color:'#909090'},
+  {title:'Вертикальные капли',sub:'10 мин, 1 мм/мин, падение вертикально',color:'#1878c0'},
+  {title:'Капли под углом до 15°',sub:'Корпус поворачивают ±15° при испытании',color:'#1878c0'},
+  {title:'Дождь до 60° от вертикали',sub:'10 мин, угол распыления до 60°',color:'#1060b0'},
+  {title:'Брызги с любого направления',sub:'10 мин, 360° распыление вокруг корпуса',color:'#1060b0'},
+  {title:'Струя воды',sub:'15 л/мин, 30 кПа, расстояние 3 м, 3 мин',color:'#0050a0'},
+  {title:'Мощная струя воды',sub:'100 л/мин, 100 кПа, расстояние 3 м, 3 мин',color:'#0050a0'},
+  {title:'Погружение на 1 м, 30 мин',sub:'Глубина 1 м, минимум 30 минут',color:'#004090'},
+  {title:'Длительное погружение',sub:'Глубина и время по согласованию с производителем',color:'#003080'},
+  {title:'Горячая струя высокого давления',sub:'80°C, 80–100 бар, 14–16 л/мин, 0.1–0.15 м',color:'#002070'},
+];
+const appData = {
+  '00':'Внутренние монтажные блоки, стойки в закрытых помещениях',
+  '20':'Офисные и потолочные светильники в жилых и коммерческих помещениях',
+  '44':'Офисы с повышенными требованиями, медицина, чистые помещения',
+  '54':'Производственные цеха, склады без сильного загрязнения',
+  '55':'Стандартные уличные светильники, парковки, фасадное освещение (IP55)',
+  '65':'Улица, парковки, промышленные цеха — IP65 (пыль + струя)',
+  '66':'Промышленная мойка, судостроение, тяжёлая промышленность',
+  '67':'Подземные тоннели, дорожные знаки, временное погружение',
+  '68':'Подводные светильники, бассейны, фонтаны, морские применения',
+  '69':'Пищевая промышленность, автомойки, мясные производства — IP69K',
+};
+const solidMeaning = ['Нет защиты','≥50 мм','≥12.5 мм','≥2.5 мм','≥1 мм','Пылезащищён','Пыленепрониц.'];
+const liquidMeaning = ['Нет защиты','Верт. капли','Капли 15°','Дождь 60°','Брызги','Струя','Мощная струя','1 м / 30 мин','Погружение','80°C / 100 бар'];
+
+const ikData = [
+  {ik:'IK00',j:0,eq:'Нет защиты',mh:'—',apps:['встроенные блоки','трансформаторные ящики'],tips:'Корпус не рассчитан на механические удары. Применяется только во внутренних блоках, недоступных без инструмента.'},
+  {ik:'IK01',j:0.14,eq:'Эквивалент лёгкого касания',mh:'0.14 кг / 10 см',apps:['офисные светильники','жилые помещения'],tips:'Минимальная защита. Случайное лёгкое касание. Для скрытого монтажа.'},
+  {ik:'IK02',j:0.2,eq:'Падение мелкого предмета',mh:'0.2 кг / 10 см',apps:['жилые','офисные'],tips:'Защита от случайного падения небольших предметов.'},
+  {ik:'IK03',j:0.35,eq:'Падение небольшого предмета',mh:'0.35 кг / 10 см',apps:['офисные','административные'],tips:'Стандарт для офисных и административных помещений с умеренной активностью.'},
+  {ik:'IK04',j:0.5,eq:'Молоток 50 г с высоты 1 м',mh:'0.5 кг / 10 см',apps:['торговые залы','выставки'],tips:'Достаточно для большинства коммерческих интерьеров.'},
+  {ik:'IK05',j:0.7,eq:'Стальной шарик 200 г / 40 см',mh:'0.2 кг / 40 см',apps:['коридоры','холлы'],tips:'Для мест с умеренным потоком людей.'},
+  {ik:'IK06',j:1.0,eq:'Стальной шарик 500 г / 20 см',mh:'0.5 кг / 20 см',apps:['школы','больницы','ТЦ'],tips:'Рекомендованный минимум для общественных зданий по многим нормам.'},
+  {ik:'IK07',j:2.0,eq:'Стальной шарик 500 г / 40 см',mh:'0.5 кг / 40 см',apps:['спортзалы','производство','гаражи'],tips:'Для помещений с механической активностью, спортивных объектов.'},
+  {ik:'IK08',j:5.0,eq:'Молоток 1.7 кг / 30 см',mh:'1.7 кг / 30 см',apps:['улица','тоннели','парковки'],tips:'Стандарт для уличных светильников в общественных местах. Устойчив к вандализму.'},
+  {ik:'IK09',j:10.0,eq:'Молоток 5 кг / 20 см',mh:'5 кг / 20 см',apps:['промышленность','стадионы','порты'],tips:'Высокая механическая защита. Промышленные зоны, открытые стадионы.'},
+  {ik:'IK10',j:20.0,eq:'Молоток 5 кг / 40 см',mh:'5 кг / 40 см',apps:['тюрьмы','метро','антивандальные'],tips:'Максимальная защита. Зоны с высоким риском вандализма или тяжёлых механических воздействий.'},
+];
+
+let d1=-1, d2=-1;
+
+function sel(digit, val){
+  if(digit===1){
+    d1=val;
+    document.querySelectorAll('#d1-btns .dg').forEach((b,i)=>{b.classList.toggle('sel-s',i===val)});
+    const dd=solidData[val];
+    document.getElementById('d1-desc').innerHTML=`<div class="dc-title" style="color:${dd.color}">${dd.title}</div><div class="dc-sub">${dd.sub}</div>`;
+    drawSolidIllus(val);
+    document.getElementById('d1-show').textContent=val;
+    document.getElementById('d1-show').style.color='#c06010';
+    document.getElementById('m-solid').textContent=solidMeaning[val];
+    document.getElementById('m-solid').style.color='#1a2030';
+  } else {
+    d2=val;
+    document.querySelectorAll('#d2-btns .dg').forEach((b,i)=>{b.classList.toggle('sel-l',i===val)});
+    const dd=liquidData[val];
+    document.getElementById('d2-desc').innerHTML=`<div class="dc-title" style="color:${dd.color}">${dd.title}</div><div class="dc-sub">${dd.sub}</div>`;
+    drawLiquidIllus(val);
+    document.getElementById('d2-show').textContent=val===9?'9K':val;
+    document.getElementById('d2-show').style.color='#1060a0';
+    document.getElementById('m-liquid').textContent=liquidMeaning[val];
+    document.getElementById('m-liquid').style.color='#1a2030';
+  }
+  if(d1>=0 && d2>=0){
+    const key=`${d1}${d2}`;
+    const hint=appData[key]||appData[`${d1}5`]||appData[`6${d2}`]||'Уточните применение по таблице ниже';
+    document.getElementById('app-hint').style.display='block';
+    document.getElementById('app-hint-text').textContent=hint;
+    const scope=d2>=8?`IP${d1}${d2===9?'9K':d2} ✓ подходит для уличного и влажного монтажа`:d2>=5?`IP${d1}${d2} — стандарт для наружного освещения`:d1>=5?`IP${d1}${d2} — пылезащищённый светильник`:`IP${d1}${d2} — для сухих или защищённых помещений`;
+    document.getElementById('ip-scope').textContent=scope;
+  }
+}
+
+function drawSolidIllus(v){
+  const s=document.getElementById('illus-solid');
+  const colors=['#c0c0c0','#e09040','#e08030','#d07020','#c06010','#b05010','#903010'];
+  const c=colors[v];
+  let svg=`<rect x="2" y="10" width="50" height="34" rx="4" fill="#f5f5f5" stroke="#d0d4dc" stroke-width="1.5"/>`;
+  if(v===0){svg+=`<circle cx="20" cy="27" r="8" fill="${c}" opacity=".4"/><circle cx="38" cy="22" r="4" fill="${c}" opacity=".4"/>`;svg+=`<text x="62" y="30" font-size="9" fill="${c}" font-family="JetBrains Mono">нет защиты</text>`}
+  else if(v===1){svg+=`<ellipse cx="27" cy="27" rx="12" ry="9" fill="${c}" opacity=".25" stroke="${c}" stroke-width="1"/>`;svg+=`<text x="62" y="30" font-size="9" fill="${c}" font-family="JetBrains Mono">≥50 мм</text>`}
+  else if(v===2){svg+=`<ellipse cx="27" cy="27" rx="7" ry="10" fill="${c}" opacity=".3" stroke="${c}" stroke-width="1"/>`;svg+=`<text x="62" y="30" font-size="9" fill="${c}" font-family="JetBrains Mono">≥12.5 мм</text>`}
+  else if(v===3){svg+=`<rect x="19" y="20" width="16" height="5" rx="2" fill="${c}" opacity=".5"/>`;svg+=`<text x="62" y="30" font-size="9" fill="${c}" font-family="JetBrains Mono">≥2.5 мм</text>`}
+  else if(v===4){svg+=`<rect x="22" y="22" width="10" height="2.5" rx="1" fill="${c}" opacity=".7"/>`;svg+=`<text x="62" y="30" font-size="9" fill="${c}" font-family="JetBrains Mono">≥1 мм</text>`}
+  else if(v===5){svg+=`<circle cx="20" cy="24" r="1.5" fill="${c}"/><circle cx="26" cy="28" r="1" fill="${c}"/><circle cx="22" cy="33" r="1.5" fill="${c}"/><circle cx="30" cy="20" r="1" fill="${c}"/><circle cx="35" cy="30" r="1.5" fill="${c}"/><line x1="52" y1="15" x2="58" y2="15" stroke="#d03030" stroke-width="2"/><line x1="58" y1="12" x2="58" y2="18" stroke="#d03030" stroke-width="2"/>`;svg+=`<text x="62" y="30" font-size="9" fill="${c}" font-family="JetBrains Mono">пылезащита</text>`}
+  else if(v===6){svg+=`<circle cx="18" cy="23" r="1.2" fill="${c}"/><circle cx="24" cy="29" r="0.9" fill="${c}"/><circle cx="30" cy="22" r="1.2" fill="${c}"/><circle cx="36" cy="28" r="0.9" fill="${c}"/><line x1="52" y1="15" x2="58" y2="15" stroke="#d03030" stroke-width="2"/><line x1="58" y1="12" x2="58" y2="18" stroke="#d03030" stroke-width="2"/>`;svg+=`<text x="62" y="30" font-size="8" fill="${c}" font-family="JetBrains Mono">пыленепрониц.</text>`}
+  s.innerHTML=svg;
+}
+
+function drawLiquidIllus(v){
+  const s=document.getElementById('illus-liquid');
+  const c=liquidData[v].color;
+  let svg=`<rect x="70" y="8" width="50" height="38" rx="4" fill="#f0f6ff" stroke="#b0c8e8" stroke-width="1.5"/>`;
+  if(v===0){svg+=`<text x="78" y="32" font-size="8" fill="#b0b0b0" font-family="JetBrains Mono">нет</text>`}
+  else if(v===1){for(let i=0;i<5;i++)svg+=`<line x1="${80+i*9}" y1="2" x2="${80+i*9}" y2="8" stroke="${c}" stroke-width="1.5"/>`}
+  else if(v===2){for(let i=0;i<5;i++)svg+=`<line x1="${80+i*9}" y1="2" x2="${77+i*9}" y2="8" stroke="${c}" stroke-width="1.5"/>`}
+  else if(v===3){for(let i=0;i<5;i++)svg+=`<line x1="${80+i*9}" y1="2" x2="${70+i*9}" y2="8" stroke="${c}" stroke-width="1.5"/>`}
+  else if(v===4){for(let a=0;a<6;a++){const ang=(a/6)*Math.PI*2;svg+=`<line x1="${95+24*Math.cos(ang)}" y1="${27+14*Math.sin(ang)}" x2="${95+12*Math.cos(ang)}" y2="${27+8*Math.sin(ang)}" stroke="${c}" stroke-width="1.5"/>`}}
+  else if(v===5){svg+=`<rect x="4" y="20" width="58" height="8" rx="2" fill="${c}" opacity=".2"/><line x1="4" y1="24" x2="68" y2="24" stroke="${c}" stroke-width="2.5"/><text x="6" y="16" font-size="8" fill="${c}" font-family="JetBrains Mono">30 кПа</text>`}
+  else if(v===6){svg+=`<rect x="2" y="18" width="60" height="10" rx="2" fill="${c}" opacity=".25"/><line x1="2" y1="23" x2="68" y2="23" stroke="${c}" stroke-width="4"/><text x="4" y="15" font-size="8" fill="${c}" font-family="JetBrains Mono">100 кПа</text>`}
+  else if(v===7){svg+=`<rect x="70" y="8" width="50" height="38" rx="4" fill="#b0d8ff" stroke="#4090c0" stroke-width="1.5" opacity=".6"/><text x="78" y="30" font-size="8" fill="${c}" font-family="JetBrains Mono">1м/30мин</text>`}
+  else if(v===8){svg+=`<rect x="70" y="8" width="50" height="38" rx="4" fill="#80b8ff" stroke="#2060a0" stroke-width="1.5" opacity=".6"/><text x="76" y="30" font-size="8" fill="${c}" font-family="JetBrains Mono">погружение</text>`}
+  else if(v===9){svg+=`<line x1="4" y1="23" x2="68" y2="23" stroke="${c}" stroke-width="5"/><text x="4" y="15" font-size="8" fill="${c}" font-family="JetBrains Mono">80°C 100 бар</text>`}
+  s.innerHTML=svg;
+}
+
+function buildIK(){
+  const grid=document.getElementById('ik-grid');
+  const jColors=['#c0c0c0','#90b8e0','#70a0d8','#5090d0','#3880c8','#1868c0','#0050b0','#c0a030','#c07820','#b05010','#c03010'];
+  const jColorText=['#1878c0','#1878c0','#1878c0','#1878c0','#1878c0','#1878c0','#0050b0','#c08010','#b06010','#a04010','#c03010'];
+  grid.innerHTML=ikData.map((d,i)=>`<div class="ik-card" onclick="showIK(${i})" id="ikc-${i}">
+    <div class="ik-num" style="color:${jColors[i]}">${d.ik}</div>
+    <div class="ik-j" style="color:${jColorText[i]}">${d.j} Дж</div>
+    <div class="ik-desc">${d.eq.substring(0,38)}${d.eq.length>38?'…':''}</div>
+  </div>`).join('');
+
+  const tbody=document.getElementById('ik-table-body');
+  tbody.innerHTML=ikData.map((d,i)=>`<tr>
+    <td><span style="font-weight:700;font-family:'Syne',sans-serif;color:${jColorText[i]}">${d.ik}</span></td>
+    <td style="font-weight:600;color:${jColorText[i]}">${d.j} Дж</td>
+    <td style="color:#5a6880;font-size:10.5px">${d.eq}</td>
+    <td style="color:#7080a0;font-size:10px">${d.mh}</td>
+    <td>${d.apps.map(a=>`<span class="app-pill">${a}</span>`).join('')}</td>
+  </tr>`).join('');
+}
+
+let selIK=-1;
+function showIK(i){
+  if(selIK===i){selIK=-1;document.querySelectorAll('.ik-card').forEach(c=>c.classList.remove('sel'));document.getElementById('ik-detail').style.display='none';return}
+  selIK=i;
+  document.querySelectorAll('.ik-card').forEach((c,j)=>c.classList.toggle('sel',j===i));
+  const d=ikData[i];
+  const jc=i<6?'#1878c0':i<9?'#c08010':'#c03010';
+  document.getElementById('ik-detail').style.display='block';
+  document.getElementById('ik-detail').innerHTML=`
+    <h3>${d.ik} — <span style="color:${jc}">${d.j} Дж</span></h3>
+    <p><strong>Эквивалент удара:</strong> ${d.eq}</p>
+    <p><strong>Масса / высота:</strong> ${d.mh}</p>
+    <p>${d.tips}</p>
+    <div class="apps">${d.apps.map(a=>`<span class="app-tag">${a}</span>`).join('')}</div>`;
+}
+
+function switchTab(tab){
+  ['builder','iptable','ik'].forEach(t=>{
+    document.getElementById('tc-'+t).classList.toggle('a',t===tab);
+    document.getElementById('tab-'+t).classList.toggle('a',t===tab);
+  });
+}
+
+buildIK();
+</script>
+</body>
+</html>

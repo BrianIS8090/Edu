@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Подключение LED плат к драйверу</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&display=swap');
+:root{
+  --bg:#f2f4ef;--bg2:#fff;--bg3:#e8ebe2;--bg4:#f6f7f2;
+  --border:#cdd1c4;--border2:#adb8a0;
+  --text:#181c12;--t2:#4e5646;--t3:#8a9278;
+  --green:#1a7a42;--green2:#d4f0df;--green3:#0d5430;
+  --amber:#b07010;--amber2:#fdf2d8;
+  --red:#a82010;--red2:#fde8e4;
+  --blue:#1a4e80;--blue2:#ddeaf8;
+  --ser:#c05010;--ser2:#fef0e8;
+  --par:#1060a0;--par2:#e8f2fc;
+  --mix:#1a7a42;--mix2:#e0f8eb;
+  --r:8px;--r2:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'DM Mono',monospace;color:var(--text)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(80,100,60,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(80,100,60,.05) 1px,transparent 1px);
+  background-size:28px 28px}
+.wrap{max-width:1060px;margin:0 auto;position:relative;z-index:1;padding-bottom:40px}
+
+.hdr{background:var(--bg2);border-bottom:1.5px solid var(--border);
+  padding:14px 20px 12px;position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hdr h1{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.hdr p{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.htabs{display:flex;gap:3px;margin-left:auto}
+.htab{padding:6px 13px;font-size:10px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;
+  border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s;
+  color:var(--t3);background:transparent;font-family:'DM Mono',monospace}
+.htab:hover{color:var(--text);border-color:var(--border2)}
+.htab.on{background:var(--text);color:#fff;border-color:var(--text)}
+.tsec{display:none}.tsec.on{display:block}
+
+/* ---- CONN PICKER ---- */
+.cpick{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:16px 18px 0}
+.cpcard{border:2px solid var(--border);border-radius:var(--r2);padding:12px;
+  cursor:pointer;transition:all .15s;background:var(--bg4);text-align:center}
+.cpcard:hover{background:var(--bg2)}
+.cpcard.on{background:var(--bg2)}
+.cpcard .cpn{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;margin-top:6px}
+.cpcard .cps{font-size:9px;text-transform:uppercase;letter-spacing:.05em;margin-top:2px;color:var(--t3)}
+
+/* ---- LAYOUT ---- */
+.body{display:grid;grid-template-columns:300px 1fr;gap:0;padding:14px 18px;gap:14px}
+@media(max-width:720px){.body{grid-template-columns:1fr}}
+
+/* ---- INPUTS ---- */
+.inp{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r2);padding:14px}
+.isec{margin-bottom:16px}
+.isec:last-child{margin-bottom:0}
+.isec h3{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--t3);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+
+/* value preset row */
+.preset-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.pchip{font-size:10px;padding:4px 9px;border-radius:5px;border:1.5px solid var(--border);
+  background:var(--bg4);color:var(--t2);cursor:pointer;transition:all .12s;font-family:'DM Mono',monospace}
+.pchip:hover{border-color:var(--border2);background:var(--bg2);color:var(--text)}
+.pchip.on{background:var(--green2);border-color:var(--green);color:var(--green3);font-weight:600}
+
+/* custom number input */
+.num-row{display:flex;align-items:center;gap:8px}
+.num-row label{font-size:10px;color:var(--t3);white-space:nowrap}
+.num-input{width:90px;padding:6px 9px;border:1.5px solid var(--border);border-radius:var(--r);
+  font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:var(--text);
+  background:var(--bg4);text-align:right;outline:none}
+.num-input:focus{border-color:var(--border2);background:var(--bg2)}
+.num-unit{font-size:11px;color:var(--t3);min-width:28px}
+
+/* current value display */
+.val-display{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.val-display .vd-label{font-size:11px;color:var(--t2)}
+.val-display .vd-val{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text)}
+
+/* special row for nb/np */
+.cnt-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.cnt-btn{width:30px;height:30px;border-radius:6px;border:1.5px solid var(--border);
+  background:var(--bg4);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .12s;line-height:1;color:var(--text)}
+.cnt-btn:hover{background:var(--bg2);border-color:var(--border2)}
+.cnt-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;min-width:36px;text-align:center}
+
+/* select */
+select{width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:var(--r);
+  font-family:'DM Mono',monospace;font-size:11px;color:var(--text);background:var(--bg4);cursor:pointer}
+
+/* ---- RESULTS ---- */
+.res{display:flex;flex-direction:column;gap:10px}
+.status{border-radius:var(--r);padding:11px 14px;border:1.5px solid transparent;
+  display:flex;align-items:flex-start;gap:10px}
+.st-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.st-txt h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700}
+.st-txt p{font-size:11px;margin-top:2px;line-height:1.6}
+
+.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:7px}
+.mc{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.mc .mk{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:3px}
+.mc .mv{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;line-height:1}
+.mc .mu{font-size:9px;color:var(--t3);margin-top:1px}
+
+.circ-wrap{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r2);padding:13px}
+.circ-title{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:8px}
+svg.circ{width:100%;display:block;background:var(--bg4);border-radius:6px}
+
+.tbl-wrap{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.tbl-wrap table{width:100%;border-collapse:collapse;font-size:11px}
+.tbl-wrap th{background:var(--bg3);padding:7px 11px;text-align:left;font-size:9px;
+  text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1.5px solid var(--border);font-weight:500}
+.tbl-wrap td{padding:7px 11px;border-bottom:1px solid var(--bg3)}
+.tbl-wrap tr:last-child td{border-bottom:none}
+.tbl-wrap tr:hover td{background:var(--bg3)}
+
+.drv-wrap{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r2);padding:13px}
+.drv-title{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:10px}
+.drv-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.drv-lbl{font-size:10px;min-width:110px;color:var(--t2)}
+.drv-track{flex:1;height:20px;background:var(--bg3);border-radius:10px;position:relative;overflow:hidden}
+.drv-fill{height:100%;border-radius:10px;position:absolute;display:flex;align-items:center;
+  padding-left:8px;font-size:9px;font-weight:600;color:#fff;transition:width .35s,background .3s;
+  font-family:'Syne',monospace;white-space:nowrap;overflow:hidden}
+.drv-note{font-size:10px;padding:8px 11px;border-radius:var(--r);margin-top:4px;line-height:1.6}
+
+/* ---- THEORY ---- */
+.theory-body{padding:16px 18px}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:680px){.tgrid{grid-template-columns:1fr}}
+.tcard{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r2);padding:16px}
+.tcard h3{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.tcard p{font-size:11px;color:var(--t2);line-height:1.8;margin-bottom:8px}
+.fm{background:var(--bg3);border-radius:var(--r);padding:8px 11px;font-size:11.5px;
+  color:var(--text);margin:7px 0;border-left:3px solid var(--green);line-height:1.8}
+.tcard ul{list-style:none}
+.tcard li{font-size:11px;color:var(--t2);line-height:1.8;padding-left:14px;position:relative}
+.tcard li::before{content:'—';position:absolute;left:0;color:var(--green)}
+
+/* ---- TABLES ---- */
+.tables-body{padding:16px 18px}
+.sh{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;margin:16px 0 8px;padding-bottom:5px;border-bottom:1.5px solid var(--border)}
+.sh:first-child{margin-top:0}
+table.t{width:100%;border-collapse:collapse;background:var(--bg2);
+  border:1.5px solid var(--border);border-radius:var(--r2);overflow:hidden;font-size:11px;margin-bottom:16px}
+table.t th{background:var(--bg3);padding:8px 12px;text-align:left;font-size:9px;
+  text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1.5px solid var(--border);font-weight:500}
+table.t td{padding:8px 12px;border-bottom:1px solid var(--bg3);line-height:1.6;vertical-align:top}
+table.t tr:last-child td{border-bottom:none}
+table.t tr:hover td{background:var(--bg3)}
+.pill{display:inline-block;font-size:9px;padding:2px 6px;border-radius:4px;
+  border:1px solid var(--border);color:var(--t2);background:var(--bg);margin:1px}
+.pill.g{background:var(--green2);color:var(--green3);border-color:var(--green)}
+.pill.r{background:var(--red2);color:var(--red);border-color:#e0a090}
+.pill.a{background:var(--amber2);color:var(--amber);border-color:#e0c080}
+.warn{background:var(--amber2);border:1.5px solid #d0b06040;border-radius:var(--r);
+  padding:9px 13px;font-size:11px;color:var(--amber);line-height:1.7;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div>
+    <h1>Подключение LED плат к драйверу</h1>
+    <p>Последовательно · Параллельно · Смешанное · Ток · Напряжение · Мощность</p>
+  </div>
+  <div class="htabs">
+    <button class="htab on" onclick="sw('calc',this)">Калькулятор</button>
+    <button class="htab"    onclick="sw('theory',this)">Теория</button>
+    <button class="htab"    onclick="sw('driver',this)">Драйвер</button>
+    <button class="htab"    onclick="sw('tables',this)">Справочник</button>
+  </div>
+</div>
+
+<!-- ====== CALC ====== -->
+<div class="tsec on" id="tsec-calc">
+
+  <!-- connection type -->
+  <div class="cpick">
+    <div class="cpcard on" id="cp-ser" onclick="selConn('ser')">
+      <svg width="60" height="36" viewBox="0 0 60 36">
+        <line x1="2" y1="18" x2="10" y2="18" stroke="var(--ser)" stroke-width="2"/>
+        <rect x="10" y="10" width="12" height="16" rx="3" fill="var(--ser2)" stroke="var(--ser)" stroke-width="1.5"/>
+        <line x1="22" y1="18" x2="30" y2="18" stroke="var(--ser)" stroke-width="2"/>
+        <rect x="30" y="10" width="12" height="16" rx="3" fill="var(--ser2)" stroke="var(--ser)" stroke-width="1.5"/>
+        <line x1="42" y1="18" x2="50" y2="18" stroke="var(--ser)" stroke-width="2"/>
+        <text x="55" y="22" font-size="9" fill="var(--ser)" font-family="DM Mono">…</text>
+      </svg>
+      <div class="cpn" style="color:var(--ser)">Последовательное</div>
+      <div class="cps">Одинаковый ток · Сумма U</div>
+    </div>
+    <div class="cpcard" id="cp-par" onclick="selConn('par')">
+      <svg width="60" height="36" viewBox="0 0 60 36">
+        <line x1="6" y1="6" x2="54" y2="6" stroke="var(--par)" stroke-width="1.5"/>
+        <line x1="6" y1="30" x2="54" y2="30" stroke="var(--par)" stroke-width="1.5"/>
+        <line x1="6" y1="6" x2="6" y2="30" stroke="var(--par)" stroke-width="1.5"/>
+        <line x1="54" y1="6" x2="54" y2="30" stroke="var(--par)" stroke-width="1.5"/>
+        <rect x="18" y="2" width="10" height="10" rx="2" fill="var(--par2)" stroke="var(--par)" stroke-width="1.2"/>
+        <rect x="32" y="2" width="10" height="10" rx="2" fill="var(--par2)" stroke="var(--par)" stroke-width="1.2"/>
+        <rect x="18" y="24" width="10" height="10" rx="2" fill="var(--par2)" stroke="var(--par)" stroke-width="1.2"/>
+        <rect x="32" y="24" width="10" height="10" rx="2" fill="var(--par2)" stroke="var(--par)" stroke-width="1.2"/>
+      </svg>
+      <div class="cpn">Параллельное</div>
+      <div class="cps">Делится ток · Одинаковое U</div>
+    </div>
+    <div class="cpcard" id="cp-mix" onclick="selConn('mix')">
+      <svg width="60" height="36" viewBox="0 0 60 36">
+        <line x1="4" y1="10" x2="56" y2="10" stroke="var(--mix)" stroke-width="1.5"/>
+        <line x1="4" y1="26" x2="56" y2="26" stroke="var(--mix)" stroke-width="1.5"/>
+        <line x1="4" y1="10" x2="4" y2="26" stroke="var(--mix)" stroke-width="1.5"/>
+        <line x1="56" y1="10" x2="56" y2="26" stroke="var(--mix)" stroke-width="1.5"/>
+        <rect x="10" y="6" width="10" height="10" rx="2" fill="var(--mix2)" stroke="var(--mix)" stroke-width="1.2"/>
+        <line x1="20" y1="11" x2="24" y2="11" stroke="var(--mix)" stroke-width="1.2"/>
+        <rect x="24" y="6" width="10" height="10" rx="2" fill="var(--mix2)" stroke="var(--mix)" stroke-width="1.2"/>
+        <rect x="10" y="22" width="10" height="10" rx="2" fill="var(--mix2)" stroke="var(--mix)" stroke-width="1.2"/>
+        <line x1="20" y1="27" x2="24" y2="27" stroke="var(--mix)" stroke-width="1.2"/>
+        <rect x="24" y="22" width="10" height="10" rx="2" fill="var(--mix2)" stroke="var(--mix)" stroke-width="1.2"/>
+      </svg>
+      <div class="cpn">Смешанное</div>
+      <div class="cps">Группы посл. + парал.</div>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- INPUTS -->
+    <div class="inp">
+
+      <div class="isec">
+        <h3>Напряжение одной платы</h3>
+        <div class="preset-row" id="vb-presets">
+          <span class="pchip" onclick="setVboard(3)">3 В</span>
+          <span class="pchip" onclick="setVboard(6)">6 В</span>
+          <span class="pchip" onclick="setVboard(9)">9 В</span>
+          <span class="pchip" onclick="setVboard(18.5)">18.5 В</span>
+          <span class="pchip on" onclick="setVboard(22.5)">22.5 В</span>
+          <span class="pchip" onclick="setVboard(27)">27 В</span>
+        </div>
+        <div class="num-row">
+          <label>Своё значение:</label>
+          <input class="num-input" id="inp-vb" type="number" min="1" max="300" step="0.5" value="22.5" oninput="onVbInput()">
+          <span class="num-unit">В</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:var(--t3)">
+          Текущее: <b style="color:var(--text);font-family:'Syne',sans-serif;font-size:14px" id="vb-display">22.5</b> В / плата
+        </div>
+      </div>
+
+      <div class="isec">
+        <h3>Номинальный ток платы</h3>
+        <div class="preset-row">
+          <span class="pchip" onclick="setIboard(300)">300 мА</span>
+          <span class="pchip on" onclick="setIboard(350)">350 мА</span>
+          <span class="pchip" onclick="setIboard(400)">400 мА</span>
+          <span class="pchip" onclick="setIboard(450)">450 мА</span>
+          <span class="pchip" onclick="setIboard(700)">700 мА</span>
+        </div>
+        <div class="num-row">
+          <label>Своё значение:</label>
+          <input class="num-input" id="inp-ib" type="number" min="10" max="5000" step="10" value="350" oninput="onIbInput()">
+          <span class="num-unit">мА</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:var(--t3)">
+          Это ток для <b>одной последовательной ветви</b> / одной платы при параллельном подкл.
+        </div>
+      </div>
+
+      <div class="isec">
+        <h3 id="lbl-nb-h">Количество плат <span id="lbl-nb-sub" style="font-weight:400;text-transform:none;letter-spacing:0;font-size:9px;color:var(--t3)">(последовательно)</span></h3>
+        <div class="cnt-row">
+          <button class="cnt-btn" onclick="adj('nb',-1)">−</button>
+          <div class="cnt-val" id="disp-nb">3</div>
+          <button class="cnt-btn" onclick="adj('nb',+1)">+</button>
+          <span style="font-size:10px;color:var(--t3)">плат</span>
+        </div>
+      </div>
+
+      <div class="isec" id="sec-np" style="display:none">
+        <h3>Параллельных ветвей</h3>
+        <div class="cnt-row">
+          <button class="cnt-btn" onclick="adj('np',-1)">−</button>
+          <div class="cnt-val" id="disp-np">2</div>
+          <button class="cnt-btn" onclick="adj('np',+1)">+</button>
+          <span style="font-size:10px;color:var(--t3)">ветвей</span>
+        </div>
+      </div>
+
+      <div class="isec">
+        <h3>Диапазон напряжения драйвера</h3>
+        <select id="sel-drv" onchange="onDrvChange()">
+          <option value="12_36">12–36 В (Mean Well LPC-35)</option>
+          <option value="18_52">18–52 В (Mean Well LPC-60)</option>
+          <option value="12_24">12–24 В (12В системы)</option>
+          <option value="24_48">24–48 В (24В системы)</option>
+          <option value="10_100">10–100 В (широкий)</option>
+          <option value="custom">Пользовательский…</option>
+        </select>
+        <div id="drv-custom" style="display:none;margin-top:8px;display:none">
+          <div class="num-row" style="margin-bottom:6px">
+            <label>Vmin:</label>
+            <input class="num-input" id="inp-vmin" type="number" min="5" max="100" step="1" value="12" oninput="recalc()">
+            <span class="num-unit">В</span>
+          </div>
+          <div class="num-row">
+            <label>Vmax:</label>
+            <input class="num-input" id="inp-vmax" type="number" min="10" max="300" step="1" value="36" oninput="recalc()">
+            <span class="num-unit">В</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- inp -->
+
+    <!-- RESULTS -->
+    <div class="res">
+
+      <div class="status" id="status">
+        <div class="st-ico">🔵</div>
+        <div class="st-txt"><h4>Введите параметры</h4><p>Выберите тип подключения и задайте напряжение / ток платы</p></div>
+      </div>
+
+      <div class="metrics" id="metrics"></div>
+
+      <div class="circ-wrap">
+        <div class="circ-title" id="circ-title">Принципиальная схема</div>
+        <svg class="circ" id="circ-svg" viewBox="0 0 680 190" height="190"></svg>
+        <div style="margin-top:6px;font-size:9px;color:var(--t3)" id="circ-note"></div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Плата / ветвь</th>
+              <th>U на плате, В</th>
+              <th>I через плату, мА</th>
+              <th>P платы, Вт</th>
+              <th>U ветви, В</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-body"></tbody>
+        </table>
+      </div>
+
+      <div class="drv-wrap">
+        <div class="drv-title">Соответствие напряжения диапазону драйвера</div>
+        <div id="drv-viz"></div>
+      </div>
+
+    </div><!-- res -->
+  </div><!-- body -->
+</div><!-- calc -->
+
+<!-- ====== THEORY ====== -->
+<div class="tsec" id="tsec-theory">
+<div class="theory-body">
+<div class="tgrid">
+
+  <div class="tcard">
+    <h3><span style="font-size:18px">🔗</span> <span style="color:var(--ser)">Последовательное</span></h3>
+    <p>Платы включены цепочкой. Ток из драйвера проходит через все платы одинаковый.</p>
+    <div class="fm" style="border-color:var(--ser)">
+      U_цепи = U_пл × n<br>
+      I_через_каждую_плату = I_драйвера<br>
+      P_одной_платы = U_пл × I<br>
+      P_общ = U_цепи × I
+    </div>
+    <ul>
+      <li><b>Плюс:</b> Равный ток → одинаковая яркость всех плат</li>
+      <li><b>Плюс:</b> Один выход драйвера управляет цепью</li>
+      <li><b>Минус:</b> Обрыв одной платы гасит всю цепь</li>
+      <li><b>Минус:</b> При многих платах — высокое U</li>
+      <li><b>Применение:</b> Уличные, промышленные светильники</li>
+    </ul>
+  </div>
+
+  <div class="tcard">
+    <h3><span style="font-size:18px">⇶</span> <span style="color:var(--par)">Параллельное</span></h3>
+    <p>Все платы подключены к одним шинам «+» и «−» драйвера.</p>
+    <div class="fm" style="border-color:var(--par)">
+      U_на_каждой_плате = U_цепи = const<br>
+      I_одной_платы = I_драйвера / n<br>
+      P_одной_платы = U_пл × (I / n)<br>
+      P_общ = U_пл × I_драйвера
+    </div>
+    <ul>
+      <li><b>Плюс:</b> Обрыв одной платы не гасит остальные</li>
+      <li><b>Плюс:</b> Низкое напряжение цепи</li>
+      <li><b>Минус:</b> При неодинаковых платах — разный ток</li>
+      <li><b>Важно:</b> Нужен драйвер с нужным Vout = U_платы</li>
+    </ul>
+  </div>
+
+  <div class="tcard">
+    <h3><span style="font-size:18px">⊞</span> <span style="color:var(--mix)">Смешанное</span></h3>
+    <p>Платы объединяются в последовательные ветви, которые включаются параллельно.</p>
+    <div class="fm" style="border-color:var(--mix)">
+      U_ветви = U_пл × n_посл<br>
+      I_ветви = I_драйвера / n_парал<br>
+      P_платы = U_пл × I_ветви<br>
+      P_общ = U_ветви × I_драйвера
+    </div>
+    <ul>
+      <li>Баланс между напряжением и током</li>
+      <li>Ветви должны быть идентичны</li>
+      <li>Гибко подбирается под параметры драйвера</li>
+      <li>Снижает ток на плату без снижения мощности</li>
+    </ul>
+  </div>
+
+  <div class="tcard">
+    <h3><span style="font-size:18px">⚡</span> Принцип LED-драйвера</h3>
+    <p>LED-драйвер — <b>источник стабильного тока</b>. Он сам регулирует выходное напряжение, чтобы через нагрузку тёк заданный ток. Напряжение на выходе — плавающее.</p>
+    <div class="fm">
+      Iout = const (задан драйвером)<br>
+      Vout = автоматически (по нагрузке)<br>
+      Vout ∈ [Vout_min … Vout_max]<br>
+      P_нагр = Vout × Iout
+    </div>
+    <ul>
+      <li>Если U_цепи &lt; Vout_min — драйвер не выйдет на ток</li>
+      <li>Если U_цепи &gt; Vout_max — перегрев или отключение</li>
+      <li>Переключение тока (DIP) меняет и Vf, и мощность</li>
+    </ul>
+  </div>
+
+</div>
+</div>
+</div>
+
+<!-- ====== DRIVER ====== -->
+<div class="tsec" id="tsec-driver">
+<div class="theory-body">
+
+  <div class="tcard" style="margin-bottom:14px">
+    <h3><span style="font-size:18px">🔌</span> Переключение выходного тока драйвера</h3>
+    <p>Многие LED-драйверы (Mean Well LPC, HLG, ELG и др.) имеют несколько фиксированных значений выходного тока, выбираемых DIP-переключателем или перемычкой на корпусе. Это штатный способ регулировки яркости.</p>
+    <div class="fm">
+      При снижении тока Iout → ↓:<br>
+      — Vf каждого диода немного уменьшается (V-I характеристика)<br>
+      — U_цепи немного уменьшается<br>
+      — Мощность снижается: P = Vout × Iout<br><br>
+      Например: 700 мА → 500 мА (−28.6% тока)<br>
+      → U_цепи снижается ~на 3–5%<br>
+      → P снижается ~на 30–32% (квадратичный эффект)
+    </div>
+    <p><b>Зависимость напряжения платы от тока (типовая для 2835/3030):</b></p>
+    <table class="t" style="margin-top:8px;margin-bottom:0">
+      <thead><tr><th>Ток, мА</th><th>Vf диода (~)</th><th>U платы × 9 диодов</th><th>U платы × 12 диодов</th></tr></thead>
+      <tbody>
+        <tr><td>200</td><td>2.90 В</td><td>26.1 В</td><td>34.8 В</td></tr>
+        <tr><td>300</td><td>3.00 В</td><td>27.0 В</td><td>36.0 В</td></tr>
+        <tr><td>350</td><td>3.05 В</td><td>27.5 В</td><td>36.6 В</td></tr>
+        <tr><td>400</td><td>3.10 В</td><td>27.9 В</td><td>37.2 В</td></tr>
+        <tr><td>450</td><td>3.15 В</td><td>28.4 В</td><td>37.8 В</td></tr>
+        <tr><td>700</td><td>3.30 В</td><td>29.7 В</td><td>39.6 В</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tcard" style="margin-bottom:14px">
+    <h3><span style="font-size:18px">📊</span> V-I характеристика светодиода</h3>
+    <p>Светодиод — нелинейный прибор. Малое изменение тока → малое изменение Vf. Именно поэтому нельзя подключать LED прямо к источнику напряжения — нужен источник тока (драйвер).</p>
+    <svg width="100%" viewBox="0 0 580 150" style="background:var(--bg4);border-radius:8px;display:block;margin-top:10px">
+      <line x1="50" y1="130" x2="550" y2="130" stroke="var(--border2)" stroke-width="1.5"/>
+      <line x1="50" y1="10"  x2="50"  y2="130" stroke="var(--border2)" stroke-width="1.5"/>
+      <path d="M50 128 Q140 126 220 115 Q300 100 370 78 Q430 60 490 38 Q520 28 545 18"
+            fill="none" stroke="var(--ser)" stroke-width="2.5"/>
+      <circle cx="370" cy="78" r="5" fill="var(--green)"/>
+      <line x1="370" y1="78" x2="370" y2="130" stroke="var(--green)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="50"  y1="78" x2="370" y2="78"  stroke="var(--green)" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="375" y="74" font-size="9" fill="var(--green)" font-family="DM Mono">350–700 мА / 3.0–3.3 В</text>
+      <text x="50"  y="144" font-size="9" fill="var(--t3)" font-family="DM Mono">0</text>
+      <text x="200" y="144" font-size="9" fill="var(--t3)" font-family="DM Mono">200 мА</text>
+      <text x="365" y="144" font-size="9" fill="var(--t3)" font-family="DM Mono">500 мА</text>
+      <text x="490" y="144" font-size="9" fill="var(--t3)" font-family="DM Mono">800 мА</text>
+      <text x="40" y="133" text-anchor="end" font-size="9" fill="var(--t3)" font-family="DM Mono">2.5</text>
+      <text x="40" y="78"  text-anchor="end" font-size="9" fill="var(--t3)" font-family="DM Mono">3.1</text>
+      <text x="40" y="22"  text-anchor="end" font-size="9" fill="var(--t3)" font-family="DM Mono">3.6</text>
+      <text x="400" y="50" font-size="10" fill="var(--ser)" font-family="DM Mono" font-weight="600">V-I кривая LED (2835/3030)</text>
+      <text x="300" y="14" text-anchor="middle" font-size="9" fill="var(--t3)" font-family="DM Mono">Vf, В ↑</text>
+      <text x="560" y="134" font-size="9" fill="var(--t3)" font-family="DM Mono">I →</text>
+    </svg>
+  </div>
+
+  <div class="tcard">
+    <h3><span style="font-size:18px">📋</span> Популярные драйверы Mean Well</h3>
+    <table class="t" style="margin-top:8px;margin-bottom:0">
+      <thead><tr><th>Серия</th><th>P, Вт</th><th>Iout (переключаемый)</th><th>Vout диапазон</th></tr></thead>
+      <tbody>
+        <tr><td><b>LPC-20</b></td><td>20</td><td>300 / 500 / 600 мА</td><td>9–30 В</td></tr>
+        <tr><td><b>LPC-35</b></td><td>35</td><td>350 / 500 / 700 / 1050 мА</td><td>12–36 В</td></tr>
+        <tr><td><b>LPC-60</b></td><td>60</td><td>350 / 500 / 700 / 1050 / 1400 мА</td><td>18–52 В</td></tr>
+        <tr><td><b>LPC-100</b></td><td>100</td><td>700 / 1050 / 1400 / 2100 мА</td><td>24–70 В</td></tr>
+        <tr><td><b>HLG-40H</b></td><td>40</td><td>рег. резистором</td><td>фикс.: 12/24/36/48 В</td></tr>
+        <tr><td><b>ELG-75</b></td><td>75</td><td>350–1500 мА (резистор)</td><td>54–107 В и др.</td></tr>
+        <tr><td><b>XLG-50</b></td><td>50</td><td>500 / 700 / 1050 / 1400 мА</td><td>18–54 В</td></tr>
+      </tbody>
+    </table>
+    <div class="warn" style="margin-top:10px">
+      <b>⚡ DIP-переключатель тока:</b> При смене тока меняется Vf диодов → меняется U_цепи. Это нормально — драйвер сам подстроится в своём диапазоне. Проверьте, что новое U_цепи не выходит за [Vout_min … Vout_max].
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ====== TABLES ====== -->
+<div class="tsec" id="tsec-tables">
+<div class="tables-body">
+
+  <div class="sh">Типовые схемы подключения плат 22.5 В / 300–700 мА</div>
+  <table class="t">
+    <thead><tr><th>Схема</th><th>U_платы</th><th>Плат</th><th>U_цепи</th><th>I_ветви</th><th>Мощность</th><th>Драйвер</th></tr></thead>
+    <tbody>
+      <tr><td><b>1 плата</b></td><td>22.5 В</td><td>1</td><td>22.5 В</td><td>350 мА</td><td>7.9 Вт</td><td><span class="pill g">LPC-35 350мА</span></td></tr>
+      <tr><td><b>2 посл.</b></td><td>22.5 В</td><td>2</td><td>45.0 В</td><td>350 мА</td><td>15.8 Вт</td><td><span class="pill g">LPC-60 350мА</span></td></tr>
+      <tr><td><b>3 посл.</b></td><td>22.5 В</td><td>3</td><td>67.5 В</td><td>350 мА</td><td>23.6 Вт</td><td><span class="pill a">ELG-75 350мА</span></td></tr>
+      <tr><td><b>2 парал.</b></td><td>22.5 В</td><td>2</td><td>22.5 В</td><td>175 мА каждая</td><td>7.9 Вт</td><td><span class="pill">LPC-35 350мА</span></td></tr>
+      <tr><td><b>2 посл. × 2 парал.</b></td><td>22.5 В</td><td>4</td><td>45.0 В</td><td>175 мА в ветви</td><td>15.8 Вт</td><td><span class="pill g">LPC-60 350мА</span></td></tr>
+      <tr><td><b>3 посл. × 2 парал.</b></td><td>22.5 В</td><td>6</td><td>67.5 В</td><td>175 мА в ветви</td><td>23.6 Вт</td><td><span class="pill a">ELG-75 350мА</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sh">Типовые схемы для плат 27 В</div>
+  <table class="t">
+    <thead><tr><th>Схема</th><th>U_платы</th><th>Плат</th><th>U_цепи</th><th>I_ветви</th><th>Мощность</th><th>Драйвер</th></tr></thead>
+    <tbody>
+      <tr><td><b>1 плата</b></td><td>27 В</td><td>1</td><td>27.0 В</td><td>350 мА</td><td>9.45 Вт</td><td><span class="pill g">LPC-35 350мА</span></td></tr>
+      <tr><td><b>2 посл.</b></td><td>27 В</td><td>2</td><td>54.0 В</td><td>350 мА</td><td>18.9 Вт</td><td><span class="pill g">LPC-60 350мА</span></td></tr>
+      <tr><td><b>1 + 700 мА</b></td><td>27 В</td><td>1</td><td>27.0 В</td><td>700 мА</td><td>18.9 Вт</td><td><span class="pill g">LPC-35 700мА</span></td></tr>
+      <tr><td><b>2 посл. × 2 парал.</b></td><td>27 В</td><td>4</td><td>54.0 В</td><td>350 мА в ветви</td><td>18.9 Вт</td><td><span class="pill g">LPC-60 700мА</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sh">Почему параллельное подключение требует осторожности</div>
+  <table class="t">
+    <thead><tr><th>Ситуация</th><th>Плата А</th><th>Плата Б</th><th>Следствие</th><th>Решение</th></tr></thead>
+    <tbody>
+      <tr><td>Одинаковые Vf</td><td>U = 22.5 В</td><td>U = 22.5 В</td><td><span class="pill g">ток делится поровну</span></td><td>Ничего не нужно</td></tr>
+      <tr><td>Разные Vf (разные партии)</td><td>U = 22.0 В</td><td>U = 23.0 В</td><td><span class="pill r">через Б меньше тока</span></td><td>Балансировочный резистор</td></tr>
+      <tr><td>Деградация одной платы</td><td>Vf снизился</td><td>Vf норма</td><td><span class="pill r">перегрев платы А</span></td><td>Последовательное подключение</td></tr>
+      <tr><td>Разная длина проводов</td><td>Провод короткий</td><td>Провод длинный</td><td><span class="pill a">разное U на платах</span></td><td>Одинаковая длина проводов</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn">
+    <b>⚠ Главное правило:</b> При параллельном подключении используйте платы из <b>одной партии одного бина</b>. Добавляйте токоограничивающий резистор (0.5–2 Ом) последовательно с каждой ветвью для балансировки токов. Либо переходите на последовательное или смешанное подключение.
+  </div>
+
+</div>
+</div>
+
+</div>
+<script>
+// ======== STATE ========
+var conn = 'ser';
+var vBoard = 22.5;
+var iBoard_mA = 350;
+var nb = 3; // boards in series (or per branch for mixed)
+var np = 2; // parallel branches (mixed only)
+
+var drvRanges = {
+  '12_36':{vMin:12,vMax:36},
+  '18_52':{vMin:18,vMax:52},
+  '12_24':{vMin:12,vMax:24},
+  '24_48':{vMin:24,vMax:48},
+  '10_100':{vMin:10,vMax:100}
+};
+
+// ======== HELPERS ========
+function fv(n, dec){ return n.toFixed(dec !== undefined ? dec : 2); }
+function fi(n){ return Math.round(n); }
+
+function setVboard(v) {
+  vBoard = v;
+  document.getElementById('inp-vb').value = v;
+  document.getElementById('vb-display').textContent = v;
+  // highlight chip
+  document.querySelectorAll('#vb-presets .pchip').forEach(function(c){
+    c.classList.toggle('on', parseFloat(c.textContent) === v);
+  });
+  recalc();
+}
+
+function onVbInput() {
+  var v = parseFloat(document.getElementById('inp-vb').value);
+  if (isNaN(v) || v <= 0) return;
+  vBoard = v;
+  document.getElementById('vb-display').textContent = fv(v, 1);
+  document.querySelectorAll('#vb-presets .pchip').forEach(function(c){
+    c.classList.remove('on');
+  });
+  recalc();
+}
+
+function setIboard(v) {
+  iBoard_mA = v;
+  document.getElementById('inp-ib').value = v;
+  document.querySelectorAll('.isec .pchip').forEach(function(c){
+    var txt = parseInt(c.textContent);
+    c.classList.toggle('on', txt === v);
+  });
+  recalc();
+}
+
+function onIbInput() {
+  var v = parseFloat(document.getElementById('inp-ib').value);
+  if (isNaN(v) || v <= 0) return;
+  iBoard_mA = v;
+  recalc();
+}
+
+function adj(id, delta) {
+  if (id === 'nb') {
+    nb = Math.max(1, Math.min(20, nb + delta));
+    document.getElementById('disp-nb').textContent = nb;
+  } else {
+    np = Math.max(2, Math.min(10, np + delta));
+    document.getElementById('disp-np').textContent = np;
+  }
+  recalc();
+}
+
+function selConn(c) {
+  conn = c;
+  var colors = {ser:'var(--ser)',par:'var(--par)',mix:'var(--mix)'};
+  var bgs    = {ser:'var(--ser2)',par:'var(--par2)',mix:'var(--mix2)'};
+  ['ser','par','mix'].forEach(function(id){
+    var el = document.getElementById('cp-'+id);
+    el.classList.toggle('on', id === c);
+    if (id === c) {
+      el.style.borderColor = colors[c];
+      el.style.background = bgs[c];
+      el.querySelector('.cpn').style.color = colors[c];
+    } else {
+      el.style.borderColor = '';
+      el.style.background = '';
+      el.querySelector('.cpn').style.color = '';
+    }
+  });
+  document.getElementById('sec-np').style.display = (c === 'mix') ? '' : 'none';
+  var sub = document.getElementById('lbl-nb-sub');
+  if (c === 'ser')  sub.textContent = '(последовательно)';
+  if (c === 'par')  sub.textContent = '(параллельно)';
+  if (c === 'mix')  sub.textContent = '(плат в каждой ветви)';
+  recalc();
+}
+
+function onDrvChange() {
+  var k = document.getElementById('sel-drv').value;
+  var custom = document.getElementById('drv-custom');
+  custom.style.display = (k === 'custom') ? 'block' : 'none';
+  recalc();
+}
+
+function getDrvRange() {
+  var k = document.getElementById('sel-drv').value;
+  if (k === 'custom') {
+    var vmin = parseFloat(document.getElementById('inp-vmin').value) || 12;
+    var vmax = parseFloat(document.getElementById('inp-vmax').value) || 36;
+    return {vMin: vmin, vMax: vmax};
+  }
+  return drvRanges[k] || {vMin:12, vMax:36};
+}
+
+// ======== MAIN CALC ========
+function recalc() {
+  try {
+    _recalc();
+  } catch(e) {
+    document.getElementById('status').innerHTML =
+      '<div class="st-ico">⛔</div><div class="st-txt"><h4>Ошибка расчёта</h4><p>' + e.message + '</p></div>';
+  }
+}
+
+function _recalc() {
+  var drv = getDrvRange();
+
+  // --- compute circuit params ---
+  var Vcircuit, Itotal_mA, boardRows = [];
+
+  if (conn === 'ser') {
+    // nb boards in series, each carrying iBoard_mA
+    Vcircuit = vBoard * nb;
+    Itotal_mA = iBoard_mA;
+    for (var i = 0; i < nb; i++) {
+      boardRows.push({
+        label: 'Плата ' + (i+1),
+        vb: vBoard,
+        ib_mA: iBoard_mA,
+        pb: vBoard * iBoard_mA / 1000,
+        vchain: vBoard * (i+1)
+      });
+    }
+  } else if (conn === 'par') {
+    // nb boards in parallel
+    Vcircuit = vBoard;
+    Itotal_mA = iBoard_mA * nb;
+    for (var i = 0; i < nb; i++) {
+      boardRows.push({
+        label: 'Плата ' + (i+1),
+        vb: vBoard,
+        ib_mA: iBoard_mA,
+        pb: vBoard * iBoard_mA / 1000,
+        vchain: vBoard
+      });
+    }
+  } else {
+    // mixed: nb boards per branch, np branches
+    Vcircuit = vBoard * nb;
+    Itotal_mA = iBoard_mA * np;
+    for (var b = 0; b < np; b++) {
+      for (var i = 0; i < nb; i++) {
+        boardRows.push({
+          label: 'Ветвь ' + (b+1) + ' · Плата ' + (i+1),
+          vb: vBoard,
+          ib_mA: iBoard_mA,
+          pb: vBoard * iBoard_mA / 1000,
+          vchain: vBoard * (i+1)
+        });
+      }
+    }
+  }
+
+  var totalBoards = boardRows.length;
+  var Ptotal = Vcircuit * Itotal_mA / 1000;
+  var PperBoard = vBoard * iBoard_mA / 1000;
+
+  // --- metrics ---
+  var inRange = (Vcircuit >= drv.vMin && Vcircuit <= drv.vMax);
+  var Vc_color = inRange ? 'var(--green)' : 'var(--red)';
+
+  var mData = [
+    {k:'Всего плат',         v: totalBoards,          u:'шт.',   c:'var(--text)'},
+    {k:'U_цепи',             v: fv(Vcircuit,1),        u:'В',     c: Vc_color},
+    {k:'I_драйвера',         v: fi(Itotal_mA),         u:'мА',    c:'var(--blue)'},
+    {k:'P_общая',            v: fv(Ptotal,1),          u:'Вт',    c:'var(--ser)'},
+    {k:'U_одной_платы',      v: fv(vBoard,1),          u:'В',     c:'var(--amber)'},
+    {k:'I_через_плату',      v: fi(iBoard_mA),         u:'мА',    c:'var(--par)'},
+    {k:'P_одной_платы',      v: fv(PperBoard,2),       u:'Вт',    c:'var(--mix)'},
+    {k:'Диапазон_драйвера',  v: drv.vMin+'–'+drv.vMax,u:'В',     c: inRange?'var(--green)':'var(--red)'},
+  ];
+
+  document.getElementById('metrics').innerHTML = mData.map(function(m){
+    return '<div class="mc" style="border-color:'+m.c+'40">' +
+      '<div class="mk">'+m.k.replace(/_/g,' ')+'</div>' +
+      '<div class="mv" style="color:'+m.c+'">'+m.v+'</div>' +
+      '<div class="mu">'+m.u+'</div>' +
+      '</div>';
+  }).join('');
+
+  // --- table ---
+  var show = boardRows.slice(0, 15);
+  document.getElementById('tbl-body').innerHTML = show.map(function(r){
+    return '<tr>' +
+      '<td>' + r.label + '</td>' +
+      '<td style="font-weight:600;color:var(--amber)">' + fv(r.vb,1) + '</td>' +
+      '<td style="font-weight:600;color:var(--par)">'  + fi(r.ib_mA) + ' мА</td>' +
+      '<td style="font-weight:600;color:var(--ser)">'  + fv(r.pb,3)  + '</td>' +
+      '<td style="color:var(--t3)">'                   + fv(r.vchain,1) + '</td>' +
+      '</tr>';
+  }).join('') + (boardRows.length > 15 ?
+    '<tr><td colspan="5" style="color:var(--t3);font-size:9px;text-align:center">… и ещё ' +
+    (boardRows.length - 15) + ' плат с теми же значениями</td></tr>' : '');
+
+  // --- circuit ---
+  renderCircuit(conn, boardRows, nb, np, vBoard, iBoard_mA, Vcircuit, Itotal_mA, Ptotal);
+
+  // --- driver viz ---
+  renderDrv(Vcircuit, drv.vMin, drv.vMax, Itotal_mA, Ptotal);
+
+  // --- status ---
+  renderStatus(Vcircuit, drv.vMin, drv.vMax, iBoard_mA, conn);
+}
+
+// ======== CIRCUIT ========
+function renderCircuit(conn, rows, nb, np, vb, ib, Vc, It, Pt) {
+  var W = 680, H = 190;
+  var svg = '';
+  var C = conn==='ser' ? 'var(--ser)' : conn==='par' ? 'var(--par)' : 'var(--mix)';
+  var CF = conn==='ser' ? 'var(--ser2)' : conn==='par' ? 'var(--par2)' : 'var(--mix2)';
+
+  // driver box always
+  var drvW = 38, drvH = 46, drvX = 8, drvY = H/2 - drvH/2;
+  svg += '<rect x="'+drvX+'" y="'+drvY+'" width="'+drvW+'" height="'+drvH+'" rx="5" fill="#e8f8ee" stroke="var(--green)" stroke-width="1.5"/>';
+  svg += '<text x="'+(drvX+drvW/2)+'" y="'+(drvY+18)+'" text-anchor="middle" font-size="9" fill="var(--green)" font-family="DM Mono,monospace" font-weight="600">DRV</text>';
+  svg += '<text x="'+(drvX+drvW/2)+'" y="'+(drvY+30)+'" text-anchor="middle" font-size="8" fill="var(--green)" font-family="DM Mono,monospace">'+fi(It)+'mA</text>';
+  svg += '<text x="'+(drvX+drvW/2)+'" y="'+(drvY+41)+'" text-anchor="middle" font-size="8" fill="var(--green)" font-family="DM Mono,monospace">'+fv(Pt,1)+'W</text>';
+
+  if (conn === 'ser') {
+    var show = Math.min(nb, 5);
+    var bw = 72, bh = 38;
+    var margin = 46 + drvW;
+    var avail = W - margin - 20;
+    var step = avail / show;
+    var cy = H/2;
+
+    var prevX = drvX + drvW;
+    for (var i = 0; i < show; i++) {
+      var bx = margin + i * step;
+      svg += '<line x1="'+prevX+'" y1="'+cy+'" x2="'+bx+'" y2="'+cy+'" stroke="'+C+'" stroke-width="2"/>';
+      var mx = (prevX+bx)/2;
+      svg += '<text x="'+mx+'" y="'+(cy-5)+'" text-anchor="middle" font-size="8" fill="'+C+'" font-family="DM Mono,monospace">→'+fi(ib)+'mA</text>';
+      svg += '<rect x="'+bx+'" y="'+(cy-bh/2)+'" width="'+(bw-6)+'" height="'+bh+'" rx="4" fill="'+CF+'" stroke="'+C+'" stroke-width="1.5"/>';
+      svg += '<text x="'+(bx+(bw-6)/2)+'" y="'+(cy-7)+'" text-anchor="middle" font-size="8" fill="'+C+'" font-family="DM Mono,monospace" font-weight="600">П'+(i+1)+'</text>';
+      svg += '<text x="'+(bx+(bw-6)/2)+'" y="'+(cy+4)+'" text-anchor="middle" font-size="7.5" fill="'+C+'" font-family="DM Mono,monospace">'+fv(vb,1)+'В</text>';
+      svg += '<text x="'+(bx+(bw-6)/2)+'" y="'+(cy+14)+'" text-anchor="middle" font-size="7.5" fill="'+C+'" font-family="DM Mono,monospace">'+fv(vb*ib/1000,2)+'Вт</text>';
+      prevX = bx + bw - 6;
+    }
+    if (nb > show) {
+      svg += '<line x1="'+prevX+'" y1="'+cy+'" x2="'+(prevX+16)+'" y2="'+cy+'" stroke="'+C+'" stroke-width="2" stroke-dasharray="3 3"/>';
+      svg += '<text x="'+(prevX+26)+'" y="'+(cy+4)+'" font-size="10" fill="'+C+'">×'+nb+'</text>';
+      prevX += 42;
+    }
+    svg += '<line x1="'+prevX+'" y1="'+cy+'" x2="'+(W-10)+'" y2="'+cy+'" stroke="'+C+'" stroke-width="2"/>';
+    svg += '<polyline points="'+(W-10)+','+cy+' '+(W-10)+','+(H-18)+' '+(drvX+drvW/2)+','+(H-18)+' '+(drvX+drvW/2)+','+(drvY+drvH)+'" fill="none" stroke="'+C+'" stroke-width="2"/>';
+    svg += '<text x="'+(W/2)+'" y="'+(H-5)+'" text-anchor="middle" font-size="9" fill="'+C+'" font-family="DM Mono,monospace">U_цепи = '+fv(Vc,1)+' В · I = '+fi(It)+' мА · P = '+fv(Pt,1)+' Вт</text>';
+
+  } else if (conn === 'par') {
+    var show = Math.min(nb, 5);
+    var bw = 90, bh = 24;
+    var totalH2 = show*bh + (show-1)*14;
+    var startY = Math.max(16, (H - totalH2)/2);
+    var bx2 = (W - bw)/2;
+    var busL = 46, busR = W - 26;
+
+    svg += '<line x1="'+busL+'" y1="'+startY+'" x2="'+busL+'" y2="'+(startY+totalH2)+'" stroke="'+C+'" stroke-width="2.5"/>';
+    svg += '<line x1="'+busR+'" y1="'+startY+'" x2="'+busR+'" y2="'+(startY+totalH2)+'" stroke="'+C+'" stroke-width="2.5"/>';
+    svg += '<line x1="'+(drvX+drvW)+'" y1="'+(H/2)+'" x2="'+busL+'" y2="'+(H/2)+'" stroke="'+C+'" stroke-width="1.5"/>';
+
+    for (var i = 0; i < show; i++) {
+      var cy2 = startY + i*(bh+14) + bh/2;
+      svg += '<line x1="'+busL+'" y1="'+cy2+'" x2="'+bx2+'" y2="'+cy2+'" stroke="'+C+'" stroke-width="1.5"/>';
+      svg += '<rect x="'+bx2+'" y="'+(cy2-bh/2)+'" width="'+bw+'" height="'+bh+'" rx="3" fill="'+CF+'" stroke="'+C+'" stroke-width="1.5"/>';
+      svg += '<text x="'+(bx2+bw/2)+'" y="'+(cy2-4)+'" text-anchor="middle" font-size="8" fill="'+C+'" font-family="DM Mono,monospace" font-weight="600">Плата '+(i+1)+': '+fv(vb,1)+'В · '+fi(ib)+'мА · '+fv(vb*ib/1000,2)+'Вт</text>';
+      svg += '<text x="'+(bx2+bw/2)+'" y="'+(cy2+7)+'" text-anchor="middle" font-size="7.5" fill="'+C+'" font-family="DM Mono,monospace">U одна плата = Uдрайвера</text>';
+      svg += '<line x1="'+(bx2+bw)+'" y1="'+cy2+'" x2="'+busR+'" y2="'+cy2+'" stroke="'+C+'" stroke-width="1.5"/>';
+      svg += '<text x="'+(busL+8)+'" y="'+(cy2-3)+'" font-size="7.5" fill="'+C+'" font-family="DM Mono,monospace">→'+fi(ib)+'мА</text>';
+    }
+    if (nb > show) svg += '<text x="'+busL+'" y="'+(startY+totalH2+14)+'" font-size="9" fill="'+C+'" font-family="DM Mono,monospace">… и ещё '+(nb-show)+' плат</text>';
+    svg += '<text x="'+(W/2)+'" y="'+(H-5)+'" text-anchor="middle" font-size="9" fill="'+C+'" font-family="DM Mono,monospace">U_цепи = '+fv(Vc,1)+' В · I_total = '+fi(It)+' мА · P = '+fv(Pt,1)+' Вт</text>';
+
+  } else {
+    // mixed
+    var showNb = Math.min(nb, 4), showNp = Math.min(np, 3);
+    var bw3 = 58, bh3 = 24;
+    var branchH = showNb*(bh3+4) - 4;
+    var totalH3 = showNp*branchH + (showNp-1)*18;
+    var startY3 = Math.max(14, (H - totalH3)/2);
+    var busL3 = 50, busR3 = W - 16;
+
+    svg += '<line x1="'+busL3+'" y1="'+startY3+'" x2="'+busL3+'" y2="'+(startY3+totalH3)+'" stroke="'+C+'" stroke-width="2.5"/>';
+    svg += '<line x1="'+busR3+'" y1="'+startY3+'" x2="'+busR3+'" y2="'+(startY3+totalH3)+'" stroke="'+C+'" stroke-width="2.5"/>';
+    svg += '<line x1="'+(drvX+drvW)+'" y1="'+(H/2)+'" x2="'+busL3+'" y2="'+(H/2)+'" stroke="'+C+'" stroke-width="1.5"/>';
+
+    for (var b = 0; b < showNp; b++) {
+      var brY = startY3 + b*(branchH+18) + branchH/2;
+      svg += '<line x1="'+busL3+'" y1="'+brY+'" x2="'+(busL3+14)+'" y2="'+brY+'" stroke="'+C+'" stroke-width="1.5"/>';
+      var px = busL3 + 14;
+      for (var i = 0; i < showNb; i++) {
+        svg += '<rect x="'+px+'" y="'+(brY-bh3/2)+'" width="'+(bw3-2)+'" height="'+bh3+'" rx="3" fill="'+CF+'" stroke="'+C+'" stroke-width="1.2"/>';
+        svg += '<text x="'+(px+(bw3-2)/2)+'" y="'+(brY-3)+'" text-anchor="middle" font-size="7.5" fill="'+C+'" font-family="DM Mono,monospace">П'+(b*nb+i+1)+':'+fv(vb,0)+'В</text>';
+        svg += '<text x="'+(px+(bw3-2)/2)+'" y="'+(brY+7)+'" text-anchor="middle" font-size="7" fill="'+C+'" font-family="DM Mono,monospace">'+fi(ib)+'мА</text>';
+        px += bw3;
+        if (i < showNb-1) { svg += '<line x1="'+px+'" y1="'+brY+'" x2="'+(px+6)+'" y2="'+brY+'" stroke="'+C+'" stroke-width="1.2"/>'; px += 6; }
+      }
+      svg += '<line x1="'+px+'" y1="'+brY+'" x2="'+busR3+'" y2="'+brY+'" stroke="'+C+'" stroke-width="1.5"/>';
+      svg += '<text x="'+(busL3+16)+'" y="'+(brY-8)+'" font-size="7.5" fill="'+C+'" font-family="DM Mono,monospace">→'+fi(ib)+'мА</text>';
+    }
+    svg += '<text x="'+(W/2)+'" y="'+(H-5)+'" text-anchor="middle" font-size="9" fill="'+C+'" font-family="DM Mono,monospace">U_ветви = '+fv(Vc,1)+' В · I_total = '+fi(It)+' мА · P = '+fv(Pt,1)+' Вт</text>';
+  }
+
+  document.getElementById('circ-svg').innerHTML = svg;
+  document.getElementById('circ-title').textContent =
+    conn==='ser' ? 'Последовательное соединение плат' :
+    conn==='par' ? 'Параллельное соединение плат' :
+    'Смешанное соединение (последовательные ветви включены параллельно)';
+  document.getElementById('circ-note').textContent =
+    'Схема упрощена · Значения расчётные · Uплаты = '+fv(vBoard,1)+' В, Iплаты = '+fi(iBoard_mA)+' мА';
+}
+
+// ======== DRIVER RANGE ========
+function renderDrv(Vc, vMin, vMax, It, Pt) {
+  var total = vMax * 1.25;
+  var minP = (vMin/total*100).toFixed(1);
+  var maxP = (vMax/total*100).toFixed(1);
+  var vcP  = Math.min(98, (Vc/total*100)).toFixed(1);
+  var inR  = (Vc >= vMin && Vc <= vMax);
+
+  var html = '<div class="drv-row">' +
+    '<div class="drv-lbl">Диапазон драйвера</div>' +
+    '<div class="drv-track"><div class="drv-fill" style="left:'+minP+'%;width:'+(maxP-minP)+'%;background:var(--green)">'+vMin+'–'+vMax+' В</div></div>' +
+    '<span style="font-size:10px;font-weight:600;color:var(--green);min-width:60px">'+vMin+'–'+vMax+' В</span>' +
+  '</div>' +
+  '<div class="drv-row">' +
+    '<div class="drv-lbl">U_цепи нагрузки</div>' +
+    '<div class="drv-track"><div class="drv-fill" style="left:0;width:'+vcP+'%;background:'+(inR?'var(--blue)':'var(--red)')+'">'+fv(Vc,1)+' В</div></div>' +
+    '<span style="font-size:10px;font-weight:600;color:'+(inR?'var(--blue)':'var(--red)')+';min-width:60px">'+fv(Vc,1)+' В</span>' +
+  '</div>';
+
+  if (!inR) {
+    if (Vc < vMin) {
+      html += '<div class="drv-note" style="background:var(--amber2);color:var(--amber)">⚠ '+fv(Vc,1)+' В ниже минимума драйвера ('+vMin+' В). Добавьте платы последовательно или выберите драйвер с меньшим Vout_min.</div>';
+    } else {
+      html += '<div class="drv-note" style="background:var(--red2);color:var(--red)">⛔ '+fv(Vc,1)+' В выше максимума драйвера ('+vMax+' В). Уберите платы из цепи или выберите драйвер с бо́льшим Vout_max.</div>';
+    }
+  } else {
+    html += '<div class="drv-note" style="background:var(--green2);color:var(--green3)">✅ Напряжение '+fv(Vc,1)+' В в диапазоне ['+vMin+'–'+vMax+' В]. Мощность на нагрузке: '+fv(Pt,1)+' Вт.</div>';
+  }
+  document.getElementById('drv-viz').innerHTML = html;
+}
+
+// ======== STATUS ========
+function renderStatus(Vc, vMin, vMax, ib, conn) {
+  var inR = (Vc >= vMin && Vc <= vMax);
+  var s = document.getElementById('status');
+  if (!inR) {
+    s.style.cssText = 'background:var(--red2);border-color:#e0a090';
+    s.innerHTML = '<div class="st-ico">🔴</div><div class="st-txt"><h4 style="color:var(--red)">Напряжение цепи '+fv(Vc,1)+' В вне диапазона драйвера</h4>' +
+      '<p>'+(Vc<vMin ? 'Нужно минимум '+vMin+' В. Добавьте платы последовательно.' : 'Максимум '+vMax+' В. Уберите платы из цепи или смените драйвер.')+'</p></div>';
+  } else {
+    s.style.cssText = 'background:var(--green2);border-color:#90d0a8';
+    s.innerHTML = '<div class="st-ico">🟢</div><div class="st-txt"><h4 style="color:var(--green3)">Схема корректна · U = '+fv(Vc,1)+' В в диапазоне ['+vMin+'–'+vMax+' В]</h4>' +
+      '<p>Ток через плату: '+fi(ib)+' мА · Мощность на плату: '+fv(vBoard*ib/1000,2)+' Вт</p></div>';
+  }
+}
+
+// ======== TABS ========
+function sw(id, btn) {
+  document.querySelectorAll('.tsec').forEach(function(s){ s.classList.remove('on'); });
+  document.querySelectorAll('.htab').forEach(function(b){ b.classList.remove('on'); });
+  document.getElementById('tsec-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ======== INIT ========
+selConn('ser');
+recalc();
+</script>
+</body>
+</html>
