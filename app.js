@@ -80,8 +80,8 @@
     html += '</div>';
     html += '</div>';
 
-    // Категории с вложенными элементами
-    Object.keys(categories).forEach(cat => {
+    // Категории с вложенными элементами (по алфавиту)
+    Object.keys(categories).sort().forEach(cat => {
       html += '<div class="sidebar-section">';
       html += '<div class="sidebar-title">' + escapeHtml(cat) + '</div>';
 
@@ -136,7 +136,7 @@
     html += 'Все материалы';
     html += '</div>';
 
-    Object.keys(categories).forEach((cat, catIndex) => {
+    Object.keys(categories).sort().forEach((cat, catIndex) => {
       const catIcon = categoryIcons[cat] || 'folder';
       const catColor = categoryColors[catIndex % categoryColors.length];
       const items = getItemsByCategory(cat);
