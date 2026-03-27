@@ -17,6 +17,7 @@ jobs:
       - name: Собрать catalog.json
         run: |
           cd /home/brian/apps/edu
+          mkdir -p build
           bash scripts/build-catalog.sh > build/catalog.json
 
       - name: Деплой в Nginx
