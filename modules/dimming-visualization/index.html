@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обучающие визуализации: диммирование и цветовые пространства</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      color: #fff;
+      padding: 20px;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2rem;
+      background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .section {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    h2 {
+      color: #00d4ff;
+      margin-bottom: 16px;
+      font-size: 1.4rem;
+    }
+    
+    h3 {
+      color: #a0a0a0;
+      margin-bottom: 12px;
+      font-size: 1rem;
+      font-weight: normal;
+    }
+    
+    .pwm-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    
+    @media (max-width: 800px) {
+      .pwm-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #333;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,212,255,0.5);
+    }
+    
+    .lamp-demo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+    }
+    
+    .lamp {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #fff;
+      transition: opacity 0.05s;
+      box-shadow: 0 0 60px rgba(255,255,200,0.8);
+    }
+    
+    .lamp.off {
+      background: #333;
+      box-shadow: none;
+    }
+    
+    canvas {
+      background: #0a0a14;
+      border-radius: 8px;
+      width: 100%;
+    }
+    
+    .pwm-diagram {
+      margin-top: 20px;
+    }
+    
+    .curve-chart {
+      height: 350px;
+      position: relative;
+    }
+    
+    .legend {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .legend-color {
+      width: 24px;
+      height: 4px;
+      border-radius: 2px;
+    }
+    
+    .info-box {
+      background: rgba(0,212,255,0.1);
+      border-left: 4px solid #00d4ff;
+      padding: 16px;
+      margin-top: 16px;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .info-box h4 {
+      color: #00d4ff;
+      margin-bottom: 8px;
+    }
+    
+    .info-box p {
+      color: #b0b0b0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    
+    .stat-card {
+      background: rgba(255,255,255,0.05);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #00d4ff;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      color: #888;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .tab {
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.05);
+      border: none;
+      border-radius: 8px;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .tab.active {
+      background: #00d4ff;
+      color: #000;
+    }
+    
+    .tab:hover:not(.active) {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .curve-info {
+      display: none;
+    }
+    
+    .curve-info.active {
+      display: block;
+    }
+    
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.9rem;
+    }
+    
+    .comparison-table th, .comparison-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .comparison-table th {
+      background: rgba(0,212,255,0.1);
+      color: #00d4ff;
+    }
+    
+    .comparison-table td {
+      color: #b0b0b0;
+    }
+    
+    .color-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.2);
+      margin: 10px auto;
+    }
+    
+    .cie-container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 24px;
+    }
+    
+    @media (max-width: 900px) {
+      .cie-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .cie-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .source-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .source-btn {
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    
+    .source-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .source-btn.active {
+      background: #00d4ff;
+      color: #000;
+      border-color: #00d4ff;
+    }
+    
+    .sdcm-scale {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0;
+    }
+    
+    .sdcm-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    
+    .spectral-chart {
+      height: 300px;
+    }
+    
+    .source-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    
+    .source-card {
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+    
+    .source-card:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    
+    .source-card.active {
+      border-color: #00d4ff;
+    }
+    
+    .source-card h4 {
+      color: #00d4ff;
+      margin-bottom: 8px;
+    }
+    
+    .source-card p {
+      color: #888;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+    
+    .cct-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    
+    @media (max-width: 800px) {
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Обучающие визуализации освещения</h1>
+  
+  <!-- Секция 1: ШИМ анимация -->
+  <div class="section">
+    <h2>1. Как работает ШИМ-диммирование (PWM)</h2>
+    <h3>Pulse Width Modulation — широтно-импульсная модуляция</h3>
+    
+    <div class="pwm-container">
+      <div class="controls">
+        <div class="control-group">
+          <label>
+            <span>Коэффициент заполнения (Duty Cycle)</span>
+            <span id="dutyValue">50%</span>
+          </label>
+          <input type="range" id="dutyCycle" min="0" max="100" value="50">
+        </div>
+        
+        <div class="control-group">
+          <label>
+            <span>Частота (Hz)</span>
+            <span id="freqValue">10 Hz</span>
+          </label>
+          <input type="range" id="frequency" min="1" max="60" value="10">
+        </div>
+        
+        <div class="lamp-demo">
+          <div class="lamp" id="lamp"></div>
+        </div>
+        
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-value" id="avgPower">50%</div>
+            <div class="stat-label">Средняя мощность</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="period">100</div>
+            <div class="stat-label">Период (мс)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="onTime">50</div>
+            <div class="stat-label">Время включения (мс)</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="pwm-diagram">
+        <canvas id="pwmCanvas" height="250"></canvas>
+      </div>
+    </div>
+    
+    <div class="info-box">
+      <h4>Принцип работы ШИМ</h4>
+      <p>
+        ШИМ управляет яркостью, быстро включая и выключая светодиод. 
+        Коэффициент заполнения (Duty Cycle) определяет, какую часть периода сигнал находится в состоянии "ВКЛ". 
+        Глаз воспринимает среднюю яркость из-за инерции зрения. 
+        При частоте выше 200 Гц мерцание становится незаметным.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Секция 2: Сравнение кривых -->
+  <div class="section">
+    <h2>2. Кривые диммирования: DALI vs 0-10В vs ШИМ</h2>
+    <h3>Зависимость воспринимаемой яркости от уровня сигнала управления</h3>
+    
+    <div class="tabs">
+      <button class="tab active" data-tab="curve">График кривых</button>
+      <button class="tab" data-tab="perceived">Воспринимаемая яркость</button>
+      <button class="tab" data-tab="comparison">Сравнение</button>
+    </div>
+    
+    <div id="curve-content">
+      <div class="curve-chart">
+        <canvas id="curveCanvas" height="350"></canvas>
+      </div>
+      
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ff6b6b;"></div>
+          <span>ШИМ (линейная)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #4ecdc4;"></div>
+          <span>0-10В (логарифмическая)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ffe66d;"></div>
+          <span>DALI (квадратичная)</span>
+        </div>
+      </div>
+      
+      <div class="control-group" style="margin-top: 20px; max-width: 400px; margin-left: auto; margin-right: auto;">
+        <label>
+          <span>Уровень управления: <span id="levelValue">50%</span></span>
+        </label>
+        <input type="range" id="levelSlider" min="0" max="100" value="50">
+      </div>
+      
+      <div class="stats">
+        <div class="stat-card" style="border-left: 3px solid #ff6b6b;">
+          <div class="stat-value" id="pwmResult">50%</div>
+          <div class="stat-label">ШИМ яркость</div>
+        </div>
+        <div class="stat-card" style="border-left: 3px solid #4ecdc4;">
+          <div class="stat-value" id="analogResult">71%</div>
+          <div class="stat-label">0-10В яркость</div>
+        </div>
+        <div class="stat-card" style="border-left: 3px solid #ffe66d;">
+          <div class="stat-value" id="daliResult">25%</div>
+          <div class="stat-label">DALI яркость</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="curve-info" id="perceived-content">
+      <div class="info-box">
+        <h4>Воспринимаемая яркость vs Физическая</h4>
+        <p>
+          Человеческий глаз воспринимает яркость логарифмически. 
+          Физическое удвоение мощности не воспринимается как удвоение яркости. 
+          Для восприятия линейного изменения яркости требуется логарифмическое изменение мощности.
+        </p>
+      </div>
+      
+      <canvas id="perceivedCanvas" height="300" style="margin-top: 20px;"></canvas>
+      
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ff6b6b;"></div>
+          <span>Физическая мощность</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #4ecdc4;"></div>
+          <span>Воспринимаемая яркость</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="curve-info" id="comparison-content">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Параметр</th>
+            <th>ШИМ</th>
+            <th>0-10В</th>
+            <th>DALI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Тип сигнала</td>
+            <td>Цифровой (импульсы)</td>
+            <td>Аналоговый (напряжение)</td>
+            <td>Цифровой (протокол)</td>
+          </tr>
+          <tr>
+            <td>Количество уровней</td>
+            <td>256-65536</td>
+            <td>~100 (ограничено)</td>
+            <td>254 уровня</td>
+          </tr>
+          <tr>
+            <td>Кривая диммирования</td>
+            <td>Линейная</td>
+            <td>Логарифмическая</td>
+            <td>Квадратичная</td>
+          </tr>
+          <tr>
+            <td>Минимальная яркость</td>
+            <td>~0.1%</td>
+            <td>~10%</td>
+            <td>~0.1%</td>
+          </tr>
+          <tr>
+            <td>Проводка</td>
+            <td>2 провода</td>
+            <td>2 провода (+питание)</td>
+            <td>2 провода (шина)</td>
+          </tr>
+          <tr>
+            <td>Адресация</td>
+            <td>Нет</td>
+            <td>Нет</td>
+            <td>До 64 устройств</td>
+          </tr>
+          <tr>
+            <td>Обратная связь</td>
+            <td>Нет</td>
+            <td>Нет</td>
+            <td>Да</td>
+          </tr>
+          <tr>
+            <td>Применение</td>
+            <td>LED ленты, простые светильники</td>
+            <td>Традиционные диммеры</td>
+            <td>Профессиональное освещение</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="info-box" style="margin-top: 20px;">
+      <h4>Почему важна форма кривой?</h4>
+      <p>
+        <strong>DALI</strong> использует квадратичную кривую, что даёт плавное восприятие на низких уровнях яркости. 
+        <strong>0-10В</strong> имеет логарифмическую характеристику, компенсирующую восприятие глаза. 
+        <strong>ШИМ</strong> линейна по мощности, но может казаться "резкой" на низких уровнях без программной коррекции.
+        Для комфортного восприятия производители часто добавляют гамма-коррекцию в ШИМ-контроллеры.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Секция 3: Цветовые пространства CIE -->
+  <div class="section">
+    <h2>3. Цветовые пространства CIE</h2>
+    <h3>Диаграммы CIE 1931 (xy) и CIE 1976 (u'v') с линией Планка (CCT)</h3>
+    
+    <div class="tabs">
+      <button class="tab cie-tab active" data-tab="cie1931">CIE 1931 (xy)</button>
+      <button class="tab cie-tab" data-tab="cie1976">CIE 1976 (u'v')</button>
+      <button class="tab cie-tab" data-tab="compare">Сравнение</button>
+    </div>
+    
+    <div class="cie-info active" id="cie1931-content">
+      <div class="cie-container">
+        <div class="cie-controls">
+          <div class="control-group">
+            <label>
+              <span>Цветовая температура (CCT)</span>
+              <span id="cctValue1931">4000K</span>
+            </label>
+            <input type="range" id="cctSlider1931" min="2000" max="10000" value="4000">
+          </div>
+          
+          <div class="color-preview" id="colorPreview1931"></div>
+          
+          <div class="info-box">
+            <h4>CIE 1931 (xy)</h4>
+            <p>Первая математическая модель цветового восприятия человека. Ось x — красно-зелёная, ось y — жёлто-синяя. Недостаток: неравномерность восприятия расстояний.</p>
+          </div>
+          
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-value" id="xValue">0.38</div>
+              <div class="stat-label">x</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="yValue">0.38</div>
+              <div class="stat-label">y</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="pwm-diagram">
+          <canvas id="cie1931Canvas" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="cie-info" id="cie1976-content">
+      <div class="cie-container">
+        <div class="cie-controls">
+          <div class="control-group">
+            <label>
+              <span>Цветовая температура (CCT)</span>
+              <span id="cctValue1976">4000K</span>
+            </label>
+            <input type="range" id="cctSlider1976" min="2000" max="10000" value="4000">
+          </div>
+          
+          <div class="color-preview" id="colorPreview1976"></div>
+          
+          <div class="info-box">
+            <h4>CIE 1976 (u'v')</h4>
+            <p>Улучшенная версия с более равномерным восприятием расстояний. Одинаковое евклидово расстояние примерно соответствует одинаковому воспринимаемому различию цветов.</p>
+          </div>
+          
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-value" id="uValue">0.21</div>
+              <div class="stat-label">u'</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="vValue">0.48</div>
+              <div class="stat-label">v'</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="pwm-diagram">
+          <canvas id="cie1976Canvas" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="cie-info" id="compare-content">
+      <div class="info-box">
+        <h4>Зачем два цветовых пространства?</h4>
+        <p>
+          CIE 1931 исторически первое, но имеет неравномерность — в зелёной области большое изменение координат воспринимается как небольшое изменение цвета.
+          CIE 1976 (u'v') исправляет это, делая расстояния более перцептивно равномерными.
+          Для расчёта SDCM (MacAdam ellipses) используется именно u'v'.
+        </p>
+      </div>
+      
+      <canvas id="compareCanvas" height="350" style="margin-top: 20px;"></canvas>
+      
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ff6b6b;"></div>
+          <span>CIE 1931 (неравномерная)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #4ecdc4;"></div>
+          <span>CIE 1976 (равномерная)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Секция 4: Эллипсы Маккаде и SDCM -->
+  <div class="section">
+    <h2>4. Диаграмма Маккаде и допуски SDCM</h2>
+    <h3>Standard Deviation Color Matching — мера консистентности цвета</h3>
+    
+    <div class="two-column">
+      <div>
+        <canvas id="macadamCanvas" height="400"></canvas>
+      </div>
+      
+      <div>
+        <div class="info-box">
+          <h4>Что такое SDCM?</h4>
+          <p>
+            SDCM (Standard Deviation Color Matching) показывает, насколько цвет источника отличается от целевого.
+            Основано на эллипсах Маккаде — областях, внутри которых разница цветов неразличима для наблюдателя.
+          </p>
+        </div>
+        
+        <div class="sdcm-scale">
+          <span style="color: #4ecdc4;">1 SDCM</span>
+          <div class="sdcm-dot" style="background: #4ecdc4;"></div>
+          <span>— неразличимо</span>
+        </div>
+        <div class="sdcm-scale">
+          <span style="color: #ffe66d;">3 SDCM</span>
+          <div class="sdcm-dot" style="background: #ffe66d;"></div>
+          <span>— едва заметно</span>
+        </div>
+        <div class="sdcm-scale">
+          <span style="color: #ff9f43;">5 SDCM</span>
+          <div class="sdcm-dot" style="background: #ff9f43;"></div>
+          <span>— заметно</span>
+        </div>
+        <div class="sdcm-scale">
+          <span style="color: #ff6b6b;">7+ SDCM</span>
+          <div class="sdcm-dot" style="background: #ff6b6b;"></div>
+          <span>— недопустимо</span>
+        </div>
+        
+        <div class="control-group" style="margin-top: 20px;">
+          <label>
+            <span>Количество эллипсов SDCM</span>
+            <span id="sdcmValue">5</span>
+          </label>
+          <input type="range" id="sdcmSlider" min="1" max="10" value="5">
+        </div>
+        
+        <table class="comparison-table" style="margin-top: 20px;">
+          <thead>
+            <tr>
+              <th>SDCM</th>
+              <th>Применение</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1-2</td><td>Музеи, студии, премиум</td></tr>
+            <tr><td>3</td><td>Офисы, торговля</td></tr>
+            <tr><td>4-5</td><td>Общее освещение</td></tr>
+            <tr><td>6-7</td><td>Склады, утилитарное</td></tr>
+            <tr><td>>7</td><td>Не рекомендуется</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Секция 5: Спектральные характеристики -->
+  <div class="section">
+    <h2>5. Спектральные характеристики источников света</h2>
+    <h3>Спектр излучения и цветопередача (CRI, TM-30)</h3>
+    
+    <div class="source-buttons">
+      <button class="source-btn active" data-source="incandescent">Лампа накаливания</button>
+      <button class="source-btn" data-source="fluorescent">Люминесцентная</button>
+      <button class="source-btn" data-source="led2700">LED 2700K</button>
+      <button class="source-btn" data-source="led4000">LED 4000K</button>
+      <button class="source-btn" data-source="led6500">LED 6500K</button>
+      <button class="source-btn" data-source="halogen">Галоген</button>
+      <button class="source-btn" data-source="hps">ДНаТ</button>
+      <button class="source-btn" data-source="mh">МГЛ</button>
+    </div>
+    
+    <div class="two-column">
+      <div>
+        <div class="spectral-chart">
+          <canvas id="spectralCanvas" height="300"></canvas>
+        </div>
+        
+        <div class="legend" style="margin-top: 8px;">
+          <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(90deg, #9400D3, #4B0082, #0000FF, #00FF00, #FFFF00, #FF7F00, #FF0000); width: 100px;"></div>
+            <span>Видимый спектр (380-780 нм)</span>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <div class="source-cards">
+          <div class="source-card" data-source="incandescent">
+            <h4>Лампа накаливания</h4>
+            <p>Непрерывный спектр, идеальная цветопередача</p>
+            <span class="cct-badge" style="background: #ffb347;">2700K</span>
+            <span class="cct-badge" style="background: #4ecdc4;">CRI 100</span>
+          </div>
+          
+          <div class="source-card" data-source="led4000">
+            <h4>LED 4000K</h4>
+            <p>Нейтральный белый, офисы</p>
+            <span class="cct-badge" style="background: #fff;">4000K</span>
+            <span class="cct-badge" style="background: #4ecdc4;">CRI 80-95</span>
+          </div>
+          
+          <div class="source-card" data-source="fluorescent">
+            <h4>Люминесцентная</h4>
+            <p>Пики излучения, экономичность</p>
+            <span class="cct-badge" style="background: #fff;">4000K</span>
+            <span class="cct-badge" style="background: #ffe66d;">CRI 70-85</span>
+          </div>
+          
+          <div class="source-card" data-source="hps">
+            <h4>ДНаТ (натриевая)</h4>
+            <p>Монохроматический, уличное</p>
+            <span class="cct-badge" style="background: #ff9f43;">2000K</span>
+            <span class="cct-badge" style="background: #ff6b6b;">CRI 20-25</span>
+          </div>
+        </div>
+        
+        <div class="info-box" style="margin-top: 20px;">
+          <h4>CRI — Index цветопередачи</h4>
+          <p id="sourceDescription">
+            CRI (Color Rendering Index) показывает, насколько естественно выглядят цвета при освещении.
+            Измеряется от 0 до 100. Лампа накаливания = 100 (эталон).
+            Для жилых помещений рекомендуется CRI > 80, для магазинов и музеев > 90.
+          </p>
+        </div>
+        
+        <div class="stats" style="margin-top: 16px;">
+          <div class="stat-card">
+            <div class="stat-value" id="criValue">100</div>
+            <div class="stat-label">CRI</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="cctSourceValue">2700K</div>
+            <div class="stat-label">CCT</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="efficiency">15</div>
+            <div class="stat-label">лм/Вт</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== ШИМ Визуализация ====================
+    const pwmCanvas = document.getElementById('pwmCanvas');
+    const pwmCtx = pwmCanvas.getContext('2d');
+    const lamp = document.getElementById('lamp');
+    const dutySlider = document.getElementById('dutyCycle');
+    const freqSlider = document.getElementById('frequency');
+    
+    let pwmDuty = 50;
+    let pwmFreq = 10;
+    let pwmTime = 0;
+    let lastTime = 0;
+    let pwmHistory = [];
+    
+    function resizeCanvas(canvas) {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = canvas.height * window.devicePixelRatio;
+      canvas.style.width = rect.width + 'px';
+      const ctx = canvas.getContext('2d');
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      return { width: rect.width, height: canvas.height / window.devicePixelRatio };
+    }
+    
+    function drawPWM(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const dt = timestamp - lastTime;
+      lastTime = timestamp;
+      
+      pwmTime += dt;
+      
+      const period = 1000 / pwmFreq;
+      const onTime = period * (pwmDuty / 100);
+      const phase = pwmTime % period;
+      const isOn = phase < onTime && pwmDuty > 0;
+      
+      // Обновление лампы
+      if (isOn) {
+        lamp.classList.remove('off');
+        lamp.style.opacity = '1';
+      } else {
+        lamp.classList.add('off');
+        lamp.style.opacity = '0';
+      }
+      
+      // Обновление истории
+      pwmHistory.push(isOn ? 1 : 0);
+      if (pwmHistory.length > 300) pwmHistory.shift();
+      
+      const { width, height } = resizeCanvas(pwmCanvas);
+      
+      pwmCtx.fillStyle = '#0a0a14';
+      pwmCtx.fillRect(0, 0, width, height);
+      
+      // Сетка
+      pwmCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+      pwmCtx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = 30 + (height - 60) * i / 4;
+        pwmCtx.beginPath();
+        pwmCtx.moveTo(50, y);
+        pwmCtx.lineTo(width - 20, y);
+        pwmCtx.stroke();
+      }
+      
+      // Подписи
+      pwmCtx.fillStyle = '#666';
+      pwmCtx.font = '12px sans-serif';
+      pwmCtx.fillText('ВКЛ', 10, 50);
+      pwmCtx.fillText('ВЫКЛ', 10, height - 30);
+      pwmCtx.fillText('Время →', width - 70, height - 10);
+      
+      // Рисование сигнала
+      pwmCtx.strokeStyle = '#00d4ff';
+      pwmCtx.lineWidth = 2;
+      pwmCtx.beginPath();
+      
+      const graphHeight = height - 80;
+      const graphTop = 40;
+      
+      for (let i = 0; i < pwmHistory.length; i++) {
+        const x = 50 + (width - 70) * i / pwmHistory.length;
+        const y = graphTop + graphHeight * (1 - pwmHistory[i]);
+        
+        if (i === 0) {
+          pwmCtx.moveTo(x, y);
+        } else {
+          const prevY = graphTop + graphHeight * (1 - pwmHistory[i - 1]);
+          if (pwmHistory[i] !== pwmHistory[i - 1]) {
+            pwmCtx.lineTo(x, prevY);
+          }
+          pwmCtx.lineTo(x, y);
+        }
+      }
+      pwmCtx.stroke();
+      
+      // Заполнение
+      pwmCtx.lineTo(50 + (width - 70), height - 40);
+      pwmCtx.lineTo(50, height - 40);
+      pwmCtx.closePath();
+      pwmCtx.fillStyle = 'rgba(0,212,255,0.1)';
+      pwmCtx.fill();
+      
+      // Маркер текущего положения
+      const markerX = 50 + (width - 70);
+      pwmCtx.fillStyle = '#00d4ff';
+      pwmCtx.beginPath();
+      pwmCtx.arc(markerX, graphTop + graphHeight * (1 - pwmHistory[pwmHistory.length - 1]), 5, 0, Math.PI * 2);
+      pwmCtx.fill();
+      
+      // Показываем период
+      pwmCtx.fillStyle = '#888';
+      pwmCtx.font = '11px sans-serif';
+      const periodDisplay = (period).toFixed(0);
+      pwmCtx.fillText(`T = ${periodDisplay} мс`, width - 80, 25);
+      
+      requestAnimationFrame(drawPWM);
+    }
+    
+    dutySlider.addEventListener('input', (e) => {
+      pwmDuty = parseInt(e.target.value);
+      document.getElementById('dutyValue').textContent = pwmDuty + '%';
+      document.getElementById('avgPower').textContent = pwmDuty + '%';
+      document.getElementById('onTime').textContent = ((1000 / pwmFreq) * pwmDuty / 100).toFixed(1);
+    });
+    
+    freqSlider.addEventListener('input', (e) => {
+      pwmFreq = parseInt(e.target.value);
+      document.getElementById('freqValue').textContent = pwmFreq + ' Hz';
+      document.getElementById('period').textContent = (1000 / pwmFreq).toFixed(1);
+      document.getElementById('onTime').textContent = ((1000 / pwmFreq) * pwmDuty / 100).toFixed(1);
+    });
+    
+    // ==================== Кривые диммирования ====================
+    const curveCanvas = document.getElementById('curveCanvas');
+    const curveCtx = curveCanvas.getContext('2d');
+    const levelSlider = document.getElementById('levelSlider');
+    
+    function drawCurves() {
+      const { width, height } = resizeCanvas(curveCanvas);
+      
+      curveCtx.fillStyle = '#0a0a14';
+      curveCtx.fillRect(0, 0, width, height);
+      
+      const padding = { left: 60, right: 30, top: 30, bottom: 50 };
+      const graphWidth = width - padding.left - padding.right;
+      const graphHeight = height - padding.top - padding.bottom;
+      
+      // Сетка
+      curveCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+      curveCtx.lineWidth = 1;
+      
+      for (let i = 0; i <= 10; i++) {
+        const x = padding.left + graphWidth * i / 10;
+        const y = padding.top + graphHeight * i / 10;
+        
+        curveCtx.beginPath();
+        curveCtx.moveTo(x, padding.top);
+        curveCtx.lineTo(x, height - padding.bottom);
+        curveCtx.stroke();
+        
+        curveCtx.beginPath();
+        curveCtx.moveTo(padding.left, y);
+        curveCtx.lineTo(width - padding.right, y);
+        curveCtx.stroke();
+      }
+      
+      // Подписи осей
+      curveCtx.fillStyle = '#888';
+      curveCtx.font = '12px sans-serif';
+      
+      // Ось X
+      for (let i = 0; i <= 10; i += 2) {
+        const x = padding.left + graphWidth * i / 10;
+        curveCtx.fillText((i * 10) + '%', x - 15, height - 25);
+      }
+      curveCtx.fillText('Уровень управления', width / 2 - 60, height - 5);
+      
+      // Ось Y
+      for (let i = 0; i <= 10; i += 2) {
+        const y = padding.top + graphHeight * (1 - i / 10);
+        curveCtx.fillText((i * 10) + '%', 5, y + 4);
+      }
+      
+      // Сохраняем состояние для поворота текста
+      curveCtx.save();
+      curveCtx.translate(15, height / 2);
+      curveCtx.rotate(-Math.PI / 2);
+      curveCtx.fillText('Яркость', -25, 0);
+      curveCtx.restore();
+      
+      // Кривые
+      const curves = [
+        { color: '#ff6b6b', name: 'PWM', fn: (x) => x },
+        { color: '#4ecdc4', name: '0-10V', fn: (x) => Math.pow(x, 0.5) }, // Логарифмическая (квадратный корень)
+        { color: '#ffe66d', name: 'DALI', fn: (x) => x * x } // Квадратичная
+      ];
+      
+      curves.forEach(curve => {
+        curveCtx.strokeStyle = curve.color;
+        curveCtx.lineWidth = 3;
+        curveCtx.beginPath();
+        
+        for (let i = 0; i <= 100; i++) {
+          const x = padding.left + graphWidth * i / 100;
+          const y = padding.top + graphHeight * (1 - curve.fn(i / 100));
+          
+          if (i === 0) {
+            curveCtx.moveTo(x, y);
+          } else {
+            curveCtx.lineTo(x, y);
+          }
+        }
+        curveCtx.stroke();
+      });
+      
+      // Вертикальная линия текущего уровня
+      const level = levelSlider.value / 100;
+      const levelX = padding.left + graphWidth * level;
+      
+      curveCtx.strokeStyle = 'rgba(255,255,255,0.5)';
+      curveCtx.lineWidth = 1;
+      curveCtx.setLineDash([5, 5]);
+      curveCtx.beginPath();
+      curveCtx.moveTo(levelX, padding.top);
+      curveCtx.lineTo(levelX, height - padding.bottom);
+      curveCtx.stroke();
+      curveCtx.setLineDash([]);
+      
+      // Точки пересечения
+      const pwmY = padding.top + graphHeight * (1 - level);
+      const analogY = padding.top + graphHeight * (1 - Math.pow(level, 0.5));
+      const daliY = padding.top + graphHeight * (1 - level * level);
+      
+      [
+        { x: levelX, y: pwmY, color: '#ff6b6b' },
+        { x: levelX, y: analogY, color: '#4ecdc4' },
+        { x: levelX, y: daliY, color: '#ffe66d' }
+      ].forEach(point => {
+        curveCtx.fillStyle = point.color;
+        curveCtx.beginPath();
+        curveCtx.arc(point.x, point.y, 8, 0, Math.PI * 2);
+        curveCtx.fill();
+        
+        curveCtx.fillStyle = '#0a0a14';
+        curveCtx.beginPath();
+        curveCtx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+        curveCtx.fill();
+      });
+      
+      // Обновление значений
+      document.getElementById('levelValue').textContent = Math.round(level * 100) + '%';
+      document.getElementById('pwmResult').textContent = Math.round(level * 100) + '%';
+      document.getElementById('analogResult').textContent = Math.round(Math.pow(level, 0.5) * 100) + '%';
+      document.getElementById('daliResult').textContent = Math.round(level * level * 100) + '%';
+    }
+    
+    levelSlider.addEventListener('input', drawCurves);
+    
+    // ==================== Воспринимаемая яркость ====================
+    const perceivedCanvas = document.getElementById('perceivedCanvas');
+    const perceivedCtx = perceivedCanvas.getContext('2d');
+    
+    function drawPerceived() {
+      const { width, height } = resizeCanvas(perceivedCanvas);
+      
+      perceivedCtx.fillStyle = '#0a0a14';
+      perceivedCtx.fillRect(0, 0, width, height);
+      
+      const padding = { left: 60, right: 30, top: 30, bottom: 50 };
+      const graphWidth = width - padding.left - padding.right;
+      const graphHeight = height - padding.top - padding.bottom;
+      
+      // Сетка
+      perceivedCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+      perceivedCtx.lineWidth = 1;
+      
+      for (let i = 0; i <= 10; i++) {
+        const x = padding.left + graphWidth * i / 10;
+        const y = padding.top + graphHeight * i / 10;
+        
+        perceivedCtx.beginPath();
+        perceivedCtx.moveTo(x, padding.top);
+        perceivedCtx.lineTo(x, height - padding.bottom);
+        perceivedCtx.stroke();
+        
+        perceivedCtx.beginPath();
+        perceivedCtx.moveTo(padding.left, y);
+        perceivedCtx.lineTo(width - padding.right, y);
+        perceivedCtx.stroke();
+      }
+      
+      // Физическая мощность (линейная)
+      perceivedCtx.strokeStyle = '#ff6b6b';
+      perceivedCtx.lineWidth = 3;
+      perceivedCtx.beginPath();
+      
+      for (let i = 0; i <= 100; i++) {
+        const x = padding.left + graphWidth * i / 100;
+        const y = padding.top + graphHeight * (1 - i / 100);
+        
+        if (i === 0) {
+          perceivedCtx.moveTo(x, y);
+        } else {
+          perceivedCtx.lineTo(x, y);
+        }
+      }
+      perceivedCtx.stroke();
+      
+      // Воспринимаемая яркость (логарифмическая)
+      perceivedCtx.strokeStyle = '#4ecdc4';
+      perceivedCtx.lineWidth = 3;
+      perceivedCtx.beginPath();
+      
+      for (let i = 0; i <= 100; i++) {
+        const x = padding.left + graphWidth * i / 100;
+        // Формула Стивенса для яркости: воспринимаемая = физическая^0.33
+        const perceived = Math.pow(i / 100, 0.33);
+        const y = padding.top + graphHeight * (1 - perceived);
+        
+        if (i === 0) {
+          perceivedCtx.moveTo(x, y);
+        } else {
+          perceivedCtx.lineTo(x, y);
+        }
+      }
+      perceivedCtx.stroke();
+      
+      // Подписи
+      perceivedCtx.fillStyle = '#888';
+      perceivedCtx.font = '12px sans-serif';
+      perceivedCtx.fillText('Физическая мощность →', width / 2 - 80, height - 10);
+      
+      perceivedCtx.save();
+      perceivedCtx.translate(15, height / 2);
+      perceivedCtx.rotate(-Math.PI / 2);
+      perceivedCtx.fillText('Яркость', -25, 0);
+      perceivedCtx.restore();
+    }
+    
+    // ==================== Табы ====================
+    const tabs = document.querySelectorAll('.tab');
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        const tabName = tab.dataset.tab;
+        document.querySelectorAll('.curve-info').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabName + '-content').classList.add('active');
+        
+        if (tabName === 'perceived') {
+          setTimeout(drawPerceived, 50);
+        }
+      });
+    });
+    
+    // ==================== Инициализация ====================
+    window.addEventListener('resize', () => {
+      drawCurves();
+      drawPerceived();
+    });
+    
+    // Начальные значения
+    document.getElementById('period').textContent = (1000 / pwmFreq).toFixed(1);
+    document.getElementById('onTime').textContent = ((1000 / pwmFreq) * pwmDuty / 100).toFixed(1);
+    
+    requestAnimationFrame(drawPWM);
+    drawCurves();
+    drawPerceived();
+    
+    // ==================== CIE 1931 Диаграмма ====================
+    const cie1931Canvas = document.getElementById('cie1931Canvas');
+    const cie1931Ctx = cie1931Canvas.getContext('2d');
+    const cctSlider1931 = document.getElementById('cctSlider1931');
+    
+    // Данные спектрального локуса CIE 1931 (упрощённые)
+    const spectralLocus1931 = [
+      [0.1741, 0.0050], [0.1740, 0.0050], [0.1738, 0.0049], [0.1736, 0.0049],
+      [0.1733, 0.0048], [0.1730, 0.0048], [0.1726, 0.0048], [0.1721, 0.0048],
+      [0.1714, 0.0051], [0.1703, 0.0058], [0.1689, 0.0069], [0.1669, 0.0087],
+      [0.1644, 0.0109], [0.1611, 0.0138], [0.1566, 0.0177], [0.1510, 0.0227],
+      [0.1440, 0.0297], [0.1355, 0.0399], [0.1241, 0.0578], [0.1096, 0.0868],
+      [0.0913, 0.1327], [0.0687, 0.2007], [0.0454, 0.2950], [0.0235, 0.4127],
+      [0.0082, 0.5384], [0.0039, 0.6548], [0.0139, 0.7502], [0.0389, 0.8120],
+      [0.0743, 0.8338], [0.1142, 0.8262], [0.1547, 0.8059], [0.1929, 0.7816],
+      [0.2296, 0.7543], [0.2658, 0.7243], [0.3016, 0.6923], [0.3373, 0.6589],
+      [0.3731, 0.6245], [0.4087, 0.5896], [0.4441, 0.5547], [0.4788, 0.5202],
+      [0.5125, 0.4866], [0.5448, 0.4544], [0.5752, 0.4242], [0.6029, 0.3965],
+      [0.6270, 0.3725], [0.6482, 0.3514], [0.6658, 0.3340], [0.6801, 0.3197],
+      [0.6915, 0.3083], [0.7006, 0.2993], [0.7079, 0.2920], [0.7140, 0.2859],
+      [0.7190, 0.2809], [0.7230, 0.2770], [0.7260, 0.2740], [0.7283, 0.2717],
+      [0.7300, 0.2700], [0.7311, 0.2689], [0.7320, 0.2680], [0.7327, 0.2673],
+      [0.7334, 0.2666], [0.7340, 0.2660], [0.7344, 0.2656], [0.7346, 0.2654]
+    ];
+    
+    // Линия Планка для CIE 1931
+    function planckianLocus1931(cct) {
+      // Аппроксимация Робертсона
+      const t = 1000 / cct;
+      let x, y;
+      
+      if (cct <= 4000) {
+        x = -0.2661239 * Math.pow(t, 3) - 0.2343589 * Math.pow(t, 2) + 0.8776956 * t + 0.179910;
+      } else {
+        x = -3.0258469 * Math.pow(t, 3) + 2.1070379 * Math.pow(t, 2) + 0.2226347 * t + 0.240390;
+      }
+      
+      if (cct <= 2222) {
+        y = -1.1063814 * Math.pow(x, 3) - 1.34811020 * Math.pow(x, 2) + 2.18555832 * x - 0.20219683;
+      } else if (cct <= 4000) {
+        y = -0.9549476 * Math.pow(x, 3) - 1.37418593 * Math.pow(x, 2) + 2.09137015 * x - 0.16748867;
+      } else {
+        y = 3.0817580 * Math.pow(x, 3) - 5.87338670 * Math.pow(x, 2) + 3.75112997 * x - 0.37001483;
+      }
+      
+      return { x, y };
+    }
+    
+    // Преобразование xy в RGB для отображения
+    function xyToRgb(x, y, brightness = 1) {
+      const z = 1 - x - y;
+      const X = (0.64 / y) * brightness * x;
+      const Z = (0.64 / y) * brightness * z;
+      const Y = 0.64 * brightness;
+      
+      const r = 3.2404542 * X - 1.5371385 * Y - 0.4985314 * Z;
+      const g = -0.9692660 * X + 1.8760108 * Y + 0.0415560 * Z;
+      const b = 0.0556434 * X - 0.2040259 * Y + 1.0572252 * Z;
+      
+      return {
+        r: Math.max(0, Math.min(255, Math.pow(Math.max(0, r), 0.45) * 255)),
+        g: Math.max(0, Math.min(255, Math.pow(Math.max(0, g), 0.45) * 255)),
+        b: Math.max(0, Math.min(255, Math.pow(Math.max(0, b), 0.45) * 255))
+      };
+    }
+    
+    function cctToRgb(cct) {
+      let r, g, b;
+      cct = cct / 100;
+      
+      if (cct <= 66) {
+        r = 255;
+        g = 99.4708025861 * Math.log(cct) - 161.1195681661;
+        if (cct <= 19) {
+          b = 0;
+        } else {
+          b = 138.5177312231 * Math.log(cct - 10) - 305.0447927307;
+        }
+      } else {
+        r = 329.698727446 * Math.pow(cct - 60, -0.1332047592);
+        g = 288.1221695283 * Math.pow(cct - 60, -0.0755148492);
+        b = 255;
+      }
+      
+      return {
+        r: Math.max(0, Math.min(255, r)),
+        g: Math.max(0, Math.min(255, g)),
+        b: Math.max(0, Math.min(255, b))
+      };
+    }
+    
+    function drawCIE1931() {
+      const { width, height } = resizeCanvas(cie1931Canvas);
+      const ctx = cie1931Ctx;
+      
+      ctx.fillStyle = '#0a0a14';
+      ctx.fillRect(0, 0, width, height);
+      
+      const padding = { left: 50, right: 20, top: 20, bottom: 40 };
+      const graphWidth = width - padding.left - padding.right;
+      const graphHeight = height - padding.top - padding.bottom;
+      
+      // Рисуем цветную область диаграммы
+      ctx.save();
+      ctx.beginPath();
+      
+      spectralLocus1931.forEach((point, i) => {
+        const x = padding.left + point[0] * graphWidth;
+        const y = padding.top + (1 - point[1]) * graphHeight;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      
+      ctx.closePath();
+      ctx.clip();
+      
+      // Заливаем цветами
+      const imageData = ctx.createImageData(graphWidth, graphHeight);
+      for (let py = 0; py < graphHeight; py++) {
+        for (let px = 0; px < graphWidth; px++) {
+          const x = px / graphWidth;
+          const y = 1 - py / graphHeight;
+          const rgb = xyToRgb(x, y, 0.8);
+          const idx = (py * graphWidth + px) * 4;
+          imageData.data[idx] = rgb.r;
+          imageData.data[idx + 1] = rgb.g;
+          imageData.data[idx + 2] = rgb.b;
+          imageData.data[idx + 3] = 255;
+        }
+      }
+      ctx.putImageData(imageData, padding.left, padding.top);
+      ctx.restore();
+      
+      // Рисуем контур спектрального локуса
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      spectralLocus1931.forEach((point, i) => {
+        const x = padding.left + point[0] * graphWidth;
+        const y = padding.top + (1 - point[1]) * graphHeight;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.closePath();
+      ctx.stroke();
+      
+      // Линия Планка
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let cct = 2000; cct <= 10000; cct += 100) {
+        const point = planckianLocus1931(cct);
+        const x = padding.left + point.x * graphWidth;
+        const y = padding.top + (1 - point.y) * graphHeight;
+        if (cct === 2000) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      
+      // Метки CCT на линии Планка
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px sans-serif';
+      [2700, 3000, 4000, 5000, 6500].forEach(cct => {
+        const point = planckianLocus1931(cct);
+        const x = padding.left + point.x * graphWidth;
+        const y = padding.top + (1 - point.y) * graphHeight;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillText(cct + 'K', x + 6, y + 3);
+      });
+      
+      // Текущая точка
+      const cct = parseInt(cctSlider1931.value);
+      const currentPoint = planckianLocus1931(cct);
+      const cx = padding.left + currentPoint.x * graphWidth;
+      const cy = padding.top + (1 - currentPoint.y) * graphHeight;
+      
+      // Линии от точки к осям
+      ctx.strokeStyle = 'rgba(0, 212, 255, 0.5)';
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(padding.left, cy);
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx, height - padding.bottom);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // Текущая точка
+      ctx.fillStyle = '#00d4ff';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0a0a14';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Подписи осей
+      ctx.fillStyle = '#888';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('x', padding.left + graphWidth / 2, height - 10);
+      
+      ctx.save();
+      ctx.translate(15, padding.top + graphHeight / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('y', 0, 0);
+      ctx.restore();
+      
+      // Шкала x
+      for (let i = 0; i <= 8; i += 2) {
+        const x = padding.left + (i / 10) * graphWidth;
+        ctx.fillText((i / 10).toFixed(1), x - 10, height - 25);
+      }
+      
+      // Шкала y
+      for (let i = 0; i <= 8; i += 2) {
+        const y = padding.top + (1 - i / 10) * graphHeight;
+        ctx.fillText((i / 10).toFixed(1), 5, y + 4);
+      }
+      
+      // Обновление UI
+      document.getElementById('cctValue1931').textContent = cct + 'K';
+      document.getElementById('xValue').textContent = currentPoint.x.toFixed(3);
+      document.getElementById('yValue').textContent = currentPoint.y.toFixed(3);
+      
+      const rgb = cctToRgb(cct);
+      document.getElementById('colorPreview1931').style.background = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    }
+    
+    cctSlider1931.addEventListener('input', () => {
+      drawCIE1931();
+      document.getElementById('cctSlider1976').value = cctSlider1931.value;
+      drawCIE1976();
+    });
+    
+    // ==================== CIE 1976 Диаграмма ====================
+    const cie1976Canvas = document.getElementById('cie1976Canvas');
+    const cie1976Ctx = cie1976Canvas.getContext('2d');
+    const cctSlider1976 = document.getElementById('cctSlider1976');
+    
+    // Преобразование xy -> u'v'
+    function xyToUprimeVprime(x, y) {
+      const denom = -2 * x + 12 * y + 3;
+      return {
+        u: 4 * x / denom,
+        v: 9 * y / denom
+      };
+    }
+    
+    function planckianLocus1976(cct) {
+      const xy = planckianLocus1931(cct);
+      return xyToUprimeVprime(xy.x, xy.y);
+    }
+    
+    function drawCIE1976() {
+      const { width, height } = resizeCanvas(cie1976Canvas);
+      const ctx = cie1976Ctx;
+      
+      ctx.fillStyle = '#0a0a14';
+      ctx.fillRect(0, 0, width, height);
+      
+      const padding = { left: 50, right: 20, top: 20, bottom: 40 };
+      const graphWidth = width - padding.left - padding.right;
+      const graphHeight = height - padding.top - padding.bottom;
+      
+      // Преобразуем спектральный локус в u'v'
+      const spectralLocus1976 = spectralLocus1931.map(p => xyToUprimeVprime(p[0], p[1]));
+      
+      // Нормализация для отображения (u': 0-0.6, v': 0-0.6)
+      const scaleU = (u) => u / 0.6;
+      const scaleV = (v) => v / 0.6;
+      
+      // Рисуем цветную область
+      ctx.save();
+      ctx.beginPath();
+      spectralLocus1976.forEach((point, i) => {
+        const x = padding.left + scaleU(point.u) * graphWidth;
+        const y = padding.top + (1 - scaleV(point.v)) * graphHeight;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.closePath();
+      ctx.clip();
+      
+      // Заливаем цветами
+      const imageData = ctx.createImageData(graphWidth, graphHeight);
+      for (let py = 0; py < graphHeight; py++) {
+        for (let px = 0; px < graphWidth; px++) {
+          const u = (px / graphWidth) * 0.6;
+          const v = (1 - py / graphHeight) * 0.6;
+          
+          // Обратное преобразование u'v' -> xy
+          const denom = 6 * u - 16 * v + 12;
+          const x = 9 * u / denom;
+          const y = 4 * v / denom;
+          
+          const rgb = xyToRgb(x, y, 0.8);
+          const idx = (py * graphWidth + px) * 4;
+          imageData.data[idx] = rgb.r;
+          imageData.data[idx + 1] = rgb.g;
+          imageData.data[idx + 2] = rgb.b;
+          imageData.data[idx + 3] = 255;
+        }
+      }
+      ctx.putImageData(imageData, padding.left, padding.top);
+      ctx.restore();
+      
+      // Контур
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      spectralLocus1976.forEach((point, i) => {
+        const x = padding.left + scaleU(point.u) * graphWidth;
+        const y = padding.top + (1 - scaleV(point.v)) * graphHeight;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.closePath();
+      ctx.stroke();
+      
+      // Линия Планка
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let cct = 2000; cct <= 10000; cct += 100) {
+        const point = planckianLocus1976(cct);
+        const x = padding.left + scaleU(point.u) * graphWidth;
+        const y = padding.top + (1 - scaleV(point.v)) * graphHeight;
+        if (cct === 2000) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      
+      // Метки CCT
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px sans-serif';
+      [2700, 3000, 4000, 5000, 6500].forEach(cct => {
+        const point = planckianLocus1976(cct);
+        const x = padding.left + scaleU(point.u) * graphWidth;
+        const y = padding.top + (1 - scaleV(point.v)) * graphHeight;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillText(cct + 'K', x + 6, y + 3);
+      });
+      
+      // Текущая точка
+      const cct = parseInt(cctSlider1976.value);
+      const currentPoint = planckianLocus1976(cct);
+      const cx = padding.left + scaleU(currentPoint.u) * graphWidth;
+      const cy = padding.top + (1 - scaleV(currentPoint.v)) * graphHeight;
+      
+      ctx.fillStyle = '#00d4ff';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0a0a14';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Подписи осей
+      ctx.fillStyle = '#888';
+      ctx.font = '12px sans-serif';
+      ctx.fillText("u'", padding.left + graphWidth / 2, height - 10);
+      
+      ctx.save();
+      ctx.translate(15, padding.top + graphHeight / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText("v'", 0, 0);
+      ctx.restore();
+      
+      // Шкалы
+      for (let i = 0; i <= 6; i += 2) {
+        const val = (i / 10).toFixed(1);
+        ctx.fillText(val, padding.left + (i / 6) * graphWidth - 10, height - 25);
+        ctx.fillText(val, 5, padding.top + (1 - i / 6) * graphHeight + 4);
+      }
+      
+      // Обновление UI
+      document.getElementById('cctValue1976').textContent = cct + 'K';
+      document.getElementById('uValue').textContent = currentPoint.u.toFixed(3);
+      document.getElementById('vValue').textContent = currentPoint.v.toFixed(3);
+      
+      const rgb = cctToRgb(cct);
+      document.getElementById('colorPreview1976').style.background = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    }
+    
+    cctSlider1976.addEventListener('input', () => {
+      drawCIE1976();
+      document.getElementById('cctSlider1931').value = cctSlider1976.value;
+      drawCIE1931();
+    });
+    
+    // ==================== Табы CIE ====================
+    document.querySelectorAll('.cie-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.cie-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.cie-info').forEach(el => el.classList.remove('active'));
+        document.getElementById(tab.dataset.tab + '-content').classList.add('active');
+        
+        if (tab.dataset.tab === 'compare') {
+          setTimeout(drawCompare, 50);
+        }
+      });
+    });
+    
+    // Сравнение равномерности
+    const compareCanvas = document.getElementById('compareCanvas');
+    const compareCtx = compareCanvas.getContext('2d');
+    
+    function drawCompare() {
+      const { width, height } = resizeCanvas(compareCanvas);
+      const ctx = compareCtx;
+      
+      ctx.fillStyle = '#0a0a14';
+      ctx.fillRect(0, 0, width, height);
+      
+      const padding = { left: 60, right: 30, top: 30, bottom: 50 };
+      const graphWidth = width - padding.left - padding.right;
+      const graphHeight = height - padding.top - padding.bottom;
+      
+      // Демонстрация неравномерности CIE 1931
+      // В разных частях диаграммы одинаковые расстояния воспринимаются по-разному
+      
+      ctx.strokeStyle = '#ff6b6b';
+      ctx.lineWidth = 2;
+      
+      // "Большие" эллипсы в зелёной области CIE 1931 (неравномерность)
+      const cie1931Ellipses = [
+        { cx: 0.2, cy: 0.1, rx: 0.02, ry: 0.02 },
+        { cx: 0.2, cy: 0.5, rx: 0.02, ry: 0.08 },
+        { cx: 0.5, cy: 0.45, rx: 0.05, ry: 0.03 },
+      ];
+      
+      cie1931Ellipses.forEach(ellipse => {
+        ctx.beginPath();
+        ctx.ellipse(
+          padding.left + ellipse.cx * graphWidth,
+          padding.top + (1 - ellipse.cy) * graphHeight,
+          ellipse.rx * graphWidth,
+          ellipse.ry * graphHeight,
+          0, 0, Math.PI * 2
+        );
+        ctx.stroke();
+      });
+      
+      // CIE 1976 — более равномерные эллипсы
+      ctx.strokeStyle = '#4ecdc4';
+      
+      const cie1976Ellipses = [
+        { cx: 0.2, cy: 0.2, rx: 0.03, ry: 0.03 },
+        { cx: 0.2, cy: 0.5, rx: 0.03, ry: 0.03 },
+        { cx: 0.4, cy: 0.45, rx: 0.03, ry: 0.03 },
+      ];
+      
+      cie1976Ellipses.forEach(ellipse => {
+        ctx.beginPath();
+        ctx.ellipse(
+          padding.left + ellipse.cx * graphWidth,
+          padding.top + (1 - ellipse.cy) * graphHeight,
+          ellipse.rx * graphWidth,
+          ellipse.ry * graphHeight,
+          0, 0, Math.PI * 2
+        );
+        ctx.stroke();
+      });
+      
+      // Подписи
+      ctx.fillStyle = '#888';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('Одинаковые воспринимаемые различия в разных частях диаграммы', width / 2 - 180, height - 10);
+    }
+    
+    // ==================== Эллипсы Маккаде ====================
+    const macadamCanvas = document.getElementById('macadamCanvas');
+    const macadamCtx = macadamCanvas.getContext('2d');
+    const sdcmSlider = document.getElementById('sdcmSlider');
+    
+    // Центральные точки для эллипсов Маккаде (упрощённые)
+    const macadamPoints = [
+      { u: 0.259, v: 0.524, a: 0.004, b: 0.002, angle: 45 },
+      { u: 0.232, v: 0.506, a: 0.005, b: 0.003, angle: 30 },
+      { u: 0.209, v: 0.488, a: 0.004, b: 0.002, angle: 40 },
+      { u: 0.194, v: 0.472, a: 0.003, b: 0.002, angle: 50 },
+    ];
+    
+    function drawMacadam() {
+      const { width, height } = resizeCanvas(macadamCanvas);
+      const ctx = macadamCtx;
+      
+      ctx.fillStyle = '#0a0a14';
+      ctx.fillRect(0, 0, width, height);
+      
+      const padding = { left: 50, right: 20, top: 20, bottom: 40 };
+      const graphWidth = width - padding.left - padding.right;
+      const graphHeight = height - padding.top - padding.bottom;
+      
+      const scaleU = (u) => (u - 0.15) / 0.25;
+      const scaleV = (v) => (v - 0.4) / 0.25;
+      
+      // Рисуем часть спектрального локуса
+      const spectralLocus1976 = spectralLocus1931.map(p => xyToUprimeVprime(p[0], p[1]));
+      
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      spectralLocus1976.forEach((point, i) => {
+        if (point.u > 0.1 && point.u < 0.45 && point.v > 0.35 && point.v < 0.6) {
+          const x = padding.left + scaleU(point.u) * graphWidth;
+          const y = padding.top + (1 - scaleV(point.v)) * graphHeight;
+          if (i === 0 || spectralLocus1976[i-1].u < 0.1) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+      });
+      ctx.stroke();
+      
+      // Линия Планка
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let cct = 2000; cct <= 10000; cct += 50) {
+        const point = planckianLocus1976(cct);
+        if (point.u > 0.15 && point.u < 0.4 && point.v > 0.4 && point.v < 0.55) {
+          const x = padding.left + scaleU(point.u) * graphWidth;
+          const y = padding.top + (1 - scaleV(point.v)) * graphHeight;
+          if (cct === 2000) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+      }
+      ctx.stroke();
+      
+      // Метки CCT
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px sans-serif';
+      [2700, 3000, 3500, 4000, 5000, 6500].forEach(cct => {
+        const point = planckianLocus1976(cct);
+        if (point.u > 0.15 && point.u < 0.4 && point.v > 0.4 && point.v < 0.55) {
+          const x = padding.left + scaleU(point.u) * graphWidth;
+          const y = padding.top + (1 - scaleV(point.v)) * graphHeight;
+          ctx.beginPath();
+          ctx.arc(x, y, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillText(cct + 'K', x + 5, y + 3);
+        }
+      });
+      
+      // Эллипсы Маккаде
+      const numSdcm = parseInt(sdcmSlider.value);
+      const colors = ['#4ecdc4', '#4ecdc4', '#ffe66d', '#ffe66d', '#ff9f43', '#ff9f43', '#ff6b6b', '#ff6b6b'];
+      
+      macadamPoints.forEach((ellipse, idx) => {
+        const cx = padding.left + scaleU(ellipse.u) * graphWidth;
+        const cy = padding.top + (1 - scaleV(ellipse.v)) * graphHeight;
+        
+        for (let s = 1; s <= numSdcm; s++) {
+          const colorIndex = Math.min(s - 1, colors.length - 1);
+          ctx.strokeStyle = colors[colorIndex];
+          ctx.lineWidth = 1;
+          ctx.globalAlpha = 0.3 + (s / numSdcm) * 0.5;
+          
+          ctx.beginPath();
+          ctx.ellipse(
+            cx, cy,
+            ellipse.a * s * graphWidth * 15,
+            ellipse.b * s * graphHeight * 15,
+            ellipse.angle * Math.PI / 180,
+            0, Math.PI * 2
+          );
+          ctx.stroke();
+          
+          if (s === numSdcm) {
+            ctx.fillStyle = colors[Math.min(numSdcm - 1, colors.length - 1)];
+            ctx.globalAlpha = 0.3;
+            ctx.fill();
+          }
+        }
+      });
+      
+      ctx.globalAlpha = 1;
+      
+      // Центральные точки
+      macadamPoints.forEach(ellipse => {
+        const cx = padding.left + scaleU(ellipse.u) * graphWidth;
+        const cy = padding.top + (1 - scaleV(ellipse.v)) * graphHeight;
+        
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      // Подписи осей
+      ctx.fillStyle = '#888';
+      ctx.font = '12px sans-serif';
+      ctx.fillText("u'", padding.left + graphWidth / 2, height - 10);
+      
+      ctx.save();
+      ctx.translate(15, padding.top + graphHeight / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText("v'", 0, 0);
+      ctx.restore();
+      
+      document.getElementById('sdcmValue').textContent = numSdcm;
+    }
+    
+    sdcmSlider.addEventListener('input', drawMacadam);
+    
+    // ==================== Спектральные характеристики ====================
+    const spectralCanvas = document.getElementById('spectralCanvas');
+    const spectralCtx = spectralCanvas.getContext('2d');
+    
+    const lightSources = {
+      incandescent: {
+        name: 'Лампа накаливания',
+        cct: 2700,
+        cri: 100,
+        efficiency: 15,
+        description: 'Непрерывный тепловой спектр, излучаемый нагретой вольфрамовой нитью. Идеальная цветопередача (CRI 100), но низкая эффективность.',
+        spectrum: (wavelength) => {
+          // Планковский спектр для 2700K
+          const h = 6.626e-34, c = 3e8, k = 1.381e-23;
+          const T = 2700;
+          const lambda = wavelength * 1e-9;
+          return (2 * h * c * c / Math.pow(lambda, 5)) / (Math.exp(h * c / (lambda * k * T)) - 1);
+        }
+      },
+      fluorescent: {
+        name: 'Люминесцентная лампа',
+        cct: 4000,
+        cri: 82,
+        efficiency: 80,
+        description: 'Дискретный спектр с пиками от люминофора. Экономична, но цветопередача хуже из-за провалов в спектре.',
+        spectrum: (wavelength) => {
+          // Сумма гауссиан для основных пиков люминофора
+          const peaks = [
+            { w: 435, h: 0.8, s: 10 },
+            { w: 490, h: 0.6, s: 20 },
+            { w: 545, h: 0.9, s: 15 },
+            { w: 580, h: 0.5, s: 25 },
+            { w: 610, h: 0.7, s: 20 },
+          ];
+          return peaks.reduce((sum, p) => sum + p.h * Math.exp(-Math.pow(wavelength - p.w, 2) / (2 * p.s * p.s)), 0);
+        }
+      },
+      led2700: {
+        name: 'LED 2700K (тёплый)',
+        cct: 2700,
+        cri: 90,
+        efficiency: 100,
+        description: 'Синий LED + жёлтый/оранжевый люминофор. Тёплый белый свет, близкий к лампе накаливания. Высокая эффективность.',
+        spectrum: (wavelength) => {
+          const blue = 0.3 * Math.exp(-Math.pow(wavelength - 450, 2) / 200);
+          const phosphor = 0.8 * Math.exp(-Math.pow(wavelength - 590, 2) / 4000);
+          return blue + phosphor;
+        }
+      },
+      led4000: {
+        name: 'LED 4000K (нейтральный)',
+        cct: 4000,
+        cri: 85,
+        efficiency: 110,
+        description: 'Нейтральный белый, наиболее универсальный. Оптимальный баланс между тёплым и холодным светом.',
+        spectrum: (wavelength) => {
+          const blue = 0.5 * Math.exp(-Math.pow(wavelength - 450, 2) / 200);
+          const phosphor = 0.7 * Math.exp(-Math.pow(wavelength - 560, 2) / 5000);
+          return blue + phosphor;
+        }
+      },
+      led6500: {
+        name: 'LED 6500K (холодный)',
+        cct: 6500,
+        cri: 80,
+        efficiency: 120,
+        description: 'Холодный белый с повышенным содержанием синего. Используется для концентрации и в офисах.',
+        spectrum: (wavelength) => {
+          const blue = 0.7 * Math.exp(-Math.pow(wavelength - 450, 2) / 200);
+          const phosphor = 0.5 * Math.exp(-Math.pow(wavelength - 530, 2) / 6000);
+          return blue + phosphor;
+        }
+      },
+      halogen: {
+        name: 'Галогенная лампа',
+        cct: 3000,
+        cri: 100,
+        efficiency: 25,
+        description: 'Улучшенная лампа накаливания с галогенным циклом. Более высокая цветовая температура и эффективность.',
+        spectrum: (wavelength) => {
+          const h = 6.626e-34, c = 3e8, k = 1.381e-23;
+          const T = 3000;
+          const lambda = wavelength * 1e-9;
+          return (2 * h * c * c / Math.pow(lambda, 5)) / (Math.exp(h * c / (lambda * k * T)) - 1);
+        }
+      },
+      hps: {
+        name: 'ДНаТ (натриевая)',
+        cct: 2100,
+        cri: 25,
+        efficiency: 140,
+        description: 'Почти монохроматический оранжевый свет. Очень высокая эффективность, но ужасная цветопередача. Уличное освещение.',
+        spectrum: (wavelength) => {
+          const dLines = 0.9 * Math.exp(-Math.pow(wavelength - 589, 2) / 5);
+          const pressure = 0.3 * Math.exp(-Math.pow(wavelength - 589, 2) / 100);
+          return dLines + pressure;
+        }
+      },
+      mh: {
+        name: 'МГЛ (металлогалогенная)',
+        cct: 4200,
+        cri: 90,
+        efficiency: 100,
+        description: 'Дуговая лампа с металлогалогенными добавками. Хорошая цветопередача при высокой эффективности. Прожекторы, студии.',
+        spectrum: (wavelength) => {
+          const peaks = [
+            { w: 400, h: 0.5, s: 8 },
+            { w: 440, h: 0.4, s: 10 },
+            { w: 490, h: 0.5, s: 15 },
+            { w: 540, h: 0.6, s: 12 },
+            { w: 580, h: 0.7, s: 20 },
+            { w: 640, h: 0.4, s: 15 },
+          ];
+          return peaks.reduce((sum, p) => sum + p.h * Math.exp(-Math.pow(wavelength - p.w, 2) / (2 * p.s * p.s)), 0);
+        }
+      }
+    };
+    
+    let currentSource = 'incandescent';
+    
+    function wavelengthToRgb(wavelength) {
+      let r, g, b;
+      
+      if (wavelength >= 380 && wavelength < 440) {
+        r = -(wavelength - 440) / (440 - 380);
+        g = 0;
+        b = 1;
+      } else if (wavelength >= 440 && wavelength < 490) {
+        r = 0;
+        g = (wavelength - 440) / (490 - 440);
+        b = 1;
+      } else if (wavelength >= 490 && wavelength < 510) {
+        r = 0;
+        g = 1;
+        b = -(wavelength - 510) / (510 - 490);
+      } else if (wavelength >= 510 && wavelength < 580) {
+        r = (wavelength - 510) / (580 - 510);
+        g = 1;
+        b = 0;
+      } else if (wavelength >= 580 && wavelength < 645) {
+        r = 1;
+        g = -(wavelength - 645) / (645 - 580);
+        b = 0;
+      } else if (wavelength >= 645 && wavelength <= 780) {
+        r = 1;
+        g = 0;
+        b = 0;
+      } else {
+        r = g = b = 0;
+      }
+      
+      // Интенсивность на краях спектра
+      let factor;
+      if (wavelength >= 380 && wavelength < 420) {
+        factor = 0.3 + 0.7 * (wavelength - 380) / (420 - 380);
+      } else if (wavelength >= 420 && wavelength <= 700) {
+        factor = 1;
+      } else if (wavelength > 700 && wavelength <= 780) {
+        factor = 0.3 + 0.7 * (780 - wavelength) / (780 - 700);
+      } else {
+        factor = 0;
+      }
+      
+      return {
+        r: Math.round(255 * Math.pow(r * factor, 0.8)),
+        g: Math.round(255 * Math.pow(g * factor, 0.8)),
+        b: Math.round(255 * Math.pow(b * factor, 0.8))
+      };
+    }
+    
+    function drawSpectral() {
+      const { width, height } = resizeCanvas(spectralCanvas);
+      const ctx = spectralCtx;
+      
+      ctx.fillStyle = '#0a0a14';
+      ctx.fillRect(0, 0, width, height);
+      
+      const padding = { left: 50, right: 20, top: 20, bottom: 40 };
+      const graphWidth = width - padding.left - padding.right;
+      const graphHeight = height - padding.top - padding.bottom;
+      
+      const source = lightSources[currentSource];
+      
+      // Спектральная заливка
+      for (let px = 0; px < graphWidth; px++) {
+        const wavelength = 380 + (px / graphWidth) * 400;
+        const intensity = source.spectrum(wavelength);
+        
+        // Нормализация интенсивности
+        const normalizedIntensity = Math.min(1, intensity * 2);
+        
+        const rgb = wavelengthToRgb(wavelength);
+        
+        // Создаём градиент по вертикали
+        for (let py = 0; py < graphHeight; py++) {
+          const yFactor = 1 - (py / graphHeight);
+          const pixelIntensity = normalizedIntensity * yFactor;
+          
+          if (pixelIntensity > 0.01) {
+            ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${pixelIntensity * 0.8})`;
+            ctx.fillRect(padding.left + px, padding.top + py, 1, 1);
+          }
+        }
+      }
+      
+      // Кривая спектра
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      
+      let maxIntensity = 0;
+      for (let w = 380; w <= 780; w += 2) {
+        maxIntensity = Math.max(maxIntensity, source.spectrum(w));
+      }
+      
+      for (let w = 380; w <= 780; w += 2) {
+        const x = padding.left + ((w - 380) / 400) * graphWidth;
+        const intensity = source.spectrum(w) / maxIntensity;
+        const y = padding.top + (1 - intensity) * graphHeight;
+        
+        if (w === 380) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      
+      // Оси
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, height - padding.bottom);
+      ctx.lineTo(width - padding.right, height - padding.bottom);
+      ctx.stroke();
+      
+      // Подписи длины волны
+      ctx.fillStyle = '#888';
+      ctx.font = '10px sans-serif';
+      for (let w = 400; w <= 700; w += 100) {
+        const x = padding.left + ((w - 380) / 400) * graphWidth;
+        ctx.fillText(w + 'nm', x - 15, height - 20);
+      }
+      
+      ctx.fillText('Длина волны (nm)', width / 2 - 50, height - 5);
+      
+      // Название источника
+      ctx.fillStyle = '#00d4ff';
+      ctx.font = '14px sans-serif';
+      ctx.fillText(source.name, padding.left, 35);
+      
+      // Обновление информации
+      document.getElementById('criValue').textContent = source.cri;
+      document.getElementById('cctSourceValue').textContent = source.cct + 'K';
+      document.getElementById('efficiency').textContent = source.efficiency;
+      document.getElementById('sourceDescription').textContent = source.description;
+    }
+    
+    // Кнопки источников
+    document.querySelectorAll('.source-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSource = btn.dataset.source;
+        drawSpectral();
+        
+        document.querySelectorAll('.source-card').forEach(c => {
+          c.classList.toggle('active', c.dataset.source === currentSource);
+        });
+      });
+    });
+    
+    document.querySelectorAll('.source-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.source-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        currentSource = card.dataset.source;
+        drawSpectral();
+        
+        document.querySelectorAll('.source-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.source === currentSource);
+        });
+      });
+    });
+    
+    // ==================== Инициализация новых секций ====================
+    window.addEventListener('resize', () => {
+      drawCurves();
+      drawPerceived();
+      drawCIE1931();
+      drawCIE1976();
+      drawMacadam();
+      drawSpectral();
+    });
+    
+    drawCIE1931();
+    drawCIE1976();
+    drawMacadam();
+    drawSpectral();
+  </script>
+</body>
+</html>

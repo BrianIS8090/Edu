@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Схемы светотехнических систем — Интерактивный справочник</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap');
+:root{
+  --bg:#f4f5f0;--bg2:#fff;--bg3:#ecede8;--bg4:#f8f9f5;
+  --border:#d0d4c8;--border2:#b0b8a4;
+  --text:#181c12;--t2:#4a5240;--t3:#8a9278;
+  --r:8px;--r2:12px;
+  --c1:#1878c0;--c2:#d05010;--c3:#1a7a42;--c4:#7030a0;--c5:#c08010;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'JetBrains Mono',monospace;color:var(--text)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(70,90,50,.06) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(70,90,50,.06) 1px,transparent 1px);
+  background-size:26px 26px}
+.wrap{max-width:1060px;margin:0 auto;position:relative;z-index:1;padding-bottom:36px}
+
+.hdr{background:var(--bg2);border-bottom:1.5px solid var(--border);
+  padding:13px 20px 11px;position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hdr h1{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.hdr p{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.htabs{display:flex;gap:3px;margin-left:auto;flex-wrap:wrap}
+.htab{padding:5px 11px;font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s;
+  color:var(--t3);background:transparent;font-family:'JetBrains Mono',monospace}
+.htab:hover{color:var(--text);border-color:var(--border2)}
+.htab.on{background:var(--text);color:#fff;border-color:var(--text)}
+.tsec{display:none}.tsec.on{display:block}
+
+/* diagram + panel layout */
+.diag-wrap{background:var(--bg2);border-bottom:1px solid var(--border)}
+.diag-hint{text-align:center;font-size:9px;color:#c0c8b8;padding:6px 0 2px;letter-spacing:.05em}
+svg.diag{width:100%;display:block;background:var(--bg4)}
+.flow-legend{display:flex;gap:14px;padding:7px 16px;background:var(--bg3);border-top:1px solid var(--border);flex-wrap:wrap}
+.fl{display:flex;align-items:center;gap:6px;font-size:9px;color:var(--t3)}
+.fl-line{width:24px;height:3px;border-radius:2px}
+
+/* info panel */
+.panel-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);border-top:1px solid var(--border)}
+.ptab{flex:1;padding:8px 4px;text-align:center;font-size:9px;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;color:var(--t3);font-weight:600}
+.ptab.on{color:var(--panel-c,var(--text));border-bottom-color:var(--panel-c,var(--text))}
+.ptab:hover:not(.on){color:var(--t2)}
+.info-panel{background:var(--bg2);padding:1rem 1.25rem;min-height:155px}
+.info-panel h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:5px}
+.info-panel p{font-size:11px;color:var(--t2);line-height:1.75;margin-bottom:6px}
+.info-panel .tag{display:inline-block;font-size:8px;padding:1px 7px;border-radius:3px;
+  letter-spacing:.07em;text-transform:uppercase;font-weight:700;margin-bottom:7px}
+.specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px}
+.spec-row{font-size:10px;color:var(--t2);display:flex;gap:6px;line-height:1.7}
+.spec-row span:first-child{color:var(--t3);min-width:100px;flex-shrink:0}
+.tip-box{font-size:11px;color:var(--t2);line-height:1.75;border-left:2.5px solid var(--panel-c,#ccc);padding-left:10px;margin-top:4px}
+.tc{display:none}.tc.on{display:block}
+
+/* animated flows */
+.fa{stroke-dasharray:6 4;animation:da 1.1s linear infinite}
+.fb{stroke-dasharray:4 4;animation:db .9s linear infinite}
+.fc{stroke-dasharray:8 4;animation:dc .7s linear infinite}
+.fd{stroke-dasharray:5 3;animation:dd 1.4s linear infinite}
+.fe{stroke-dasharray:3 3;animation:de 1.0s linear infinite}
+.ff{stroke-dasharray:6 3;animation:df 1.3s linear infinite}
+@keyframes da{to{stroke-dashoffset:-20}}
+@keyframes db{to{stroke-dashoffset:-16}}
+@keyframes dc{to{stroke-dashoffset:-24}}
+@keyframes dd{to{stroke-dashoffset:-16}}
+@keyframes de{to{stroke-dashoffset:-12}}
+@keyframes df{to{stroke-dashoffset:-18}}
+.node{cursor:pointer}
+.node rect,.node circle,.node ellipse{transition:filter .18s}
+.node:hover rect,.node:hover circle,.node:hover ellipse{filter:brightness(.9)}
+/* pulse for active devices */
+.pulse{animation:pulse 2s ease-in-out infinite}
+.pulse2{animation:pulse 2s ease-in-out infinite .5s}
+.pulse3{animation:pulse 2s ease-in-out infinite 1s}
+@keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div>
+    <h1>Схемы светотехнических систем</h1>
+    <p>Протоколы · Топологии · Аварийное · Tunable White · HCL · Умный дом</p>
+  </div>
+  <div class="htabs">
+    <button class="htab on" onclick="sw('proto',this)">Протоколы</button>
+    <button class="htab"    onclick="sw('topo',this)">Топологии питания</button>
+    <button class="htab"    onclick="sw('emergency',this)">Аварийное</button>
+    <button class="htab"    onclick="sw('tw',this)">Tunable White</button>
+    <button class="htab"    onclick="sw('hcl',this)">HCL</button>
+    <button class="htab"    onclick="sw('smarthome',this)">Умный дом</button>
+  </div>
+</div>
+
+<!-- ===================== PROTOCOLS ===================== -->
+<div class="tsec on" id="tsec-proto">
+<div class="diag-wrap">
+  <div class="diag-hint">Нажмите на любой протокол для изучения</div>
+  <svg class="diag" viewBox="0 0 860 340" id="svg-proto">
+    <defs>
+      <pattern id="pg" width="22" height="22" patternUnits="userSpaceOnUse">
+        <path d="M22 0L0 0 0 22" fill="none" stroke="#eaeee4" stroke-width=".6"/>
+      </pattern>
+      <marker id="ap" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0,7 3.5,0 7" fill="#1878c0"/></marker>
+      <marker id="ag" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0,7 3.5,0 7" fill="#1a7a42"/></marker>
+      <marker id="aa" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0,7 3.5,0 7" fill="#c08010"/></marker>
+      <marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0,7 3.5,0 7" fill="#d05010"/></marker>
+      <marker id="av" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0,7 3.5,0 7" fill="#7030a0"/></marker>
+    </defs>
+    <rect width="860" height="340" fill="url(#pg)"/>
+
+    <!-- Central controller -->
+    <g class="node" onclick="showInfo('proto','ctrl')">
+      <rect x="340" y="130" width="180" height="80" rx="8" fill="#f0fff8" stroke="#1a7a42" stroke-width="2"/>
+      <text x="430" y="158" text-anchor="middle" fill="#0d5a30" font-size="11" font-family="JetBrains Mono" font-weight="700">ЦЕНТРАЛЬНЫЙ</text>
+      <text x="430" y="172" text-anchor="middle" fill="#0d5a30" font-size="11" font-family="JetBrains Mono" font-weight="700">КОНТРОЛЛЕР</text>
+      <text x="430" y="188" text-anchor="middle" fill="#3a9060" font-size="9" font-family="JetBrains Mono">BMS / KNX шлюз</text>
+      <text x="430" y="200" text-anchor="middle" fill="#3a9060" font-size="9" font-family="JetBrains Mono">мультипротокол</text>
+    </g>
+
+    <!-- DALI -->
+    <g class="node" onclick="showInfo('proto','dali')">
+      <rect x="30" y="20" width="130" height="68" rx="6" fill="#e8f2ff" stroke="#1878c0" stroke-width="1.8"/>
+      <text x="95" y="42" text-anchor="middle" fill="#1060a0" font-size="11" font-family="JetBrains Mono" font-weight="700">DALI-2</text>
+      <text x="95" y="56" text-anchor="middle" fill="#3080c0" font-size="9" font-family="JetBrains Mono">IEC 62386</text>
+      <text x="95" y="70" text-anchor="middle" fill="#3080c0" font-size="9" font-family="JetBrains Mono">64 устройства / шина</text>
+      <rect x="85" y="78" width="20" height="6" rx="3" fill="#1878c0" opacity=".8" class="pulse"/>
+    </g>
+    <line x1="160" y1="54" x2="340" y2="160" stroke="#1878c0" stroke-width="1.8" marker-end="url(#ap)" class="fb"/>
+    <text x="238" y="95" text-anchor="middle" fill="#6090c0" font-size="8" font-family="JetBrains Mono" transform="rotate(-25,238,95)">DALI шина 16В</text>
+
+    <!-- DMX512 -->
+    <g class="node" onclick="showInfo('proto','dmx')">
+      <rect x="30" y="130" width="130" height="68" rx="6" fill="#fff0e8" stroke="#d05010" stroke-width="1.8"/>
+      <text x="95" y="152" text-anchor="middle" fill="#a03010" font-size="11" font-family="JetBrains Mono" font-weight="700">DMX-512</text>
+      <text x="95" y="166" text-anchor="middle" fill="#d05010" font-size="9" font-family="JetBrains Mono">EIA-485 / XLR</text>
+      <text x="95" y="180" text-anchor="middle" fill="#d05010" font-size="9" font-family="JetBrains Mono">512 каналов / вселен.</text>
+      <rect x="85" y="188" width="20" height="6" rx="3" fill="#d05010" opacity=".8" class="pulse2"/>
+    </g>
+    <line x1="160" y1="164" x2="340" y2="170" stroke="#d05010" stroke-width="1.8" marker-end="url(#ar)" class="fa"/>
+
+    <!-- 0-10V -->
+    <g class="node" onclick="showInfo('proto','v10')">
+      <rect x="30" y="240" width="130" height="68" rx="6" fill="#fffbe8" stroke="#c08010" stroke-width="1.8"/>
+      <text x="95" y="262" text-anchor="middle" fill="#805010" font-size="11" font-family="JetBrains Mono" font-weight="700">0–10В</text>
+      <text x="95" y="276" text-anchor="middle" fill="#c08010" font-size="9" font-family="JetBrains Mono">аналоговый</text>
+      <text x="95" y="290" text-anchor="middle" fill="#c08010" font-size="9" font-family="JetBrains Mono">зональное управл.</text>
+      <rect x="85" y="298" width="20" height="6" rx="3" fill="#c08010" opacity=".8" class="pulse3"/>
+    </g>
+    <line x1="160" y1="274" x2="340" y2="190" stroke="#c08010" stroke-width="1.8" marker-end="url(#aa)" class="fd"/>
+
+    <!-- KNX -->
+    <g class="node" onclick="showInfo('proto','knx')">
+      <rect x="700" y="20" width="130" height="68" rx="6" fill="#f4eeff" stroke="#7030a0" stroke-width="1.8"/>
+      <text x="765" y="42" text-anchor="middle" fill="#5020a0" font-size="11" font-family="JetBrains Mono" font-weight="700">KNX / EIB</text>
+      <text x="765" y="56" text-anchor="middle" fill="#7030a0" font-size="9" font-family="JetBrains Mono">ISO/IEC 14543</text>
+      <text x="765" y="70" text-anchor="middle" fill="#7030a0" font-size="9" font-family="JetBrains Mono">BMS интеграция</text>
+      <rect x="755" y="78" width="20" height="6" rx="3" fill="#7030a0" opacity=".8" class="pulse"/>
+    </g>
+    <line x1="700" y1="54" x2="520" y2="160" stroke="#7030a0" stroke-width="1.8" marker-end="url(#av)" class="fe"/>
+
+    <!-- Modbus -->
+    <g class="node" onclick="showInfo('proto','modbus')">
+      <rect x="700" y="130" width="130" height="68" rx="6" fill="#e8fff4" stroke="#1a7a42" stroke-width="1.8"/>
+      <text x="765" y="152" text-anchor="middle" fill="#0d5a30" font-size="11" font-family="JetBrains Mono" font-weight="700">Modbus RTU</text>
+      <text x="765" y="166" text-anchor="middle" fill="#1a7a42" font-size="9" font-family="JetBrains Mono">RS-485 / TCP</text>
+      <text x="765" y="180" text-anchor="middle" fill="#1a7a42" font-size="9" font-family="JetBrains Mono">SCADA интеграция</text>
+      <rect x="755" y="188" width="20" height="6" rx="3" fill="#1a7a42" opacity=".8" class="pulse2"/>
+    </g>
+    <line x1="700" y1="164" x2="520" y2="170" stroke="#1a7a42" stroke-width="1.8" marker-end="url(#ag)" class="fb"/>
+
+    <!-- WiFi/BLE -->
+    <g class="node" onclick="showInfo('proto','wireless')">
+      <rect x="700" y="240" width="130" height="68" rx="6" fill="#fff0f8" stroke="#c03080" stroke-width="1.8"/>
+      <text x="765" y="262" text-anchor="middle" fill="#902050" font-size="11" font-family="JetBrains Mono" font-weight="700">Wi-Fi / BLE</text>
+      <text x="765" y="276" text-anchor="middle" fill="#c03080" font-size="9" font-family="JetBrains Mono">Matter / Zigbee</text>
+      <text x="765" y="290" text-anchor="middle" fill="#c03080" font-size="9" font-family="JetBrains Mono">смарт-освещение</text>
+      <rect x="755" y="298" width="20" height="6" rx="3" fill="#c03080" opacity=".8" class="pulse3"/>
+    </g>
+    <line x1="700" y1="274" x2="520" y2="190" stroke="#c03080" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#av)" class="fe"/>
+
+    <!-- PWM -->
+    <g class="node" onclick="showInfo('proto','pwm')">
+      <rect x="355" y="250" width="150" height="62" rx="6" fill="#f8f0ff" stroke="#9030c0" stroke-width="1.5"/>
+      <text x="430" y="272" text-anchor="middle" fill="#6020a0" font-size="11" font-family="JetBrains Mono" font-weight="700">ШИМ / PWM</text>
+      <text x="430" y="286" text-anchor="middle" fill="#9030c0" font-size="9" font-family="JetBrains Mono">500–20000 Гц</text>
+      <text x="430" y="300" text-anchor="middle" fill="#9030c0" font-size="9" font-family="JetBrains Mono">диммирование RGB</text>
+    </g>
+    <line x1="430" y1="210" x2="430" y2="250" stroke="#9030c0" stroke-width="1.5" marker-end="url(#av)" class="fe"/>
+
+    <!-- Luminaires bottom bar -->
+    <g onclick="showInfo('proto','luminaires')">
+      <rect x="180" y="305" width="500" height="28" rx="6" fill="#f0f4ea" stroke="#a0b090" stroke-width="1.2"/>
+      <text x="430" y="323" text-anchor="middle" fill="#5a6848" font-size="9" font-family="JetBrains Mono">СВЕТИЛЬНИКИ с ECG/драйверами — принимают команды по любому из протоколов выше</text>
+    </g>
+    <line x1="430" y1="312" x2="430" y2="305" stroke="#a0b090" stroke-width="1.2"/>
+  </svg>
+  <div class="flow-legend">
+    <div class="fl"><div class="fl-line" style="background:#1878c0"></div>DALI цифровой</div>
+    <div class="fl"><div class="fl-line" style="background:#d05010"></div>DMX-512</div>
+    <div class="fl"><div class="fl-line" style="background:#c08010"></div>0–10В аналог</div>
+    <div class="fl"><div class="fl-line" style="background:#7030a0"></div>KNX шина</div>
+    <div class="fl"><div class="fl-line" style="background:#1a7a42"></div>Modbus RS-485</div>
+    <div class="fl"><div class="fl-line" style="background:#c03080;border-top:2px dashed #c03080;height:0"></div>Беспроводной</div>
+  </div>
+</div>
+<div class="panel-tabs" style="--panel-c:#1a7a42" id="pt-proto">
+  <div class="ptab on" onclick="switchPT('proto','desc')">Описание</div>
+  <div class="ptab" onclick="switchPT('proto','spec')">Характеристики</div>
+  <div class="ptab" onclick="switchPT('proto','tips')">Советы</div>
+</div>
+<div class="info-panel" id="ip-proto">
+  <div class="tc on" id="tc-proto-desc"><h3 style="color:#1a7a42">← Выберите протокол</h3><p>Нажмите на любой блок схемы для изучения протокола управления освещением.</p></div>
+  <div class="tc" id="tc-proto-spec"><p style="color:#c0c8b0">Выберите элемент</p></div>
+  <div class="tc" id="tc-proto-tips"><p style="color:#c0c8b0">Выберите элемент</p></div>
+</div>
+</div>
+
+<!-- ===================== TOPOLOGIES ===================== -->
+<div class="tsec" id="tsec-topo">
+<div class="diag-wrap">
+  <div class="diag-hint">Нажмите на блок для изучения топологии питания</div>
+  <svg class="diag" viewBox="0 0 860 360" id="svg-topo">
+    <rect width="860" height="360" fill="url(#pg)"/>
+    <!-- Centralized -->
+    <g onclick="showInfo('topo','central')">
+      <rect x="16" y="20" width="200" height="180" rx="8" fill="#f8f9f5" stroke="#1878c0" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="116" y="42" text-anchor="middle" fill="#1060a0" font-size="10" font-family="JetBrains Mono" font-weight="700">ЦЕНТРАЛИЗОВАННАЯ</text>
+      <rect x="46" y="54" width="70" height="36" rx="5" fill="#e8f2ff" stroke="#1878c0" stroke-width="1.5"/>
+      <text x="81" y="70" text-anchor="middle" fill="#1060a0" font-size="9" font-family="JetBrains Mono" font-weight="600">БП 24В</text>
+      <text x="81" y="82" text-anchor="middle" fill="#3080c0" font-size="8" font-family="JetBrains Mono">100–300Вт</text>
+      <line x1="116" y1="90" x2="116" y2="106" stroke="#1878c0" stroke-width="1.5" class="fa"/>
+      <rect x="46" y="106" width="140" height="26" rx="4" fill="#f0f6ff" stroke="#4090c0" stroke-width="1.2"/>
+      <text x="116" y="122" text-anchor="middle" fill="#3070a0" font-size="8" font-family="JetBrains Mono">Шина питания 24В DC</text>
+      <line x1="66" y1="132" x2="66" y2="152" stroke="#1878c0" stroke-width="1.2" class="fa"/>
+      <line x1="116" y1="132" x2="116" y2="152" stroke="#1878c0" stroke-width="1.2" class="fa"/>
+      <line x1="166" y1="132" x2="166" y2="152" stroke="#1878c0" stroke-width="1.2" class="fa"/>
+      <rect x="46" y="152" width="36" height="22" rx="3" fill="#e8f2ff" stroke="#4090c0" stroke-width="1.2"/>
+      <text x="64" y="166" text-anchor="middle" fill="#3070a0" font-size="7" font-family="JetBrains Mono">Свет.1</text>
+      <rect x="98" y="152" width="36" height="22" rx="3" fill="#e8f2ff" stroke="#4090c0" stroke-width="1.2"/>
+      <text x="116" y="166" text-anchor="middle" fill="#3070a0" font-size="7" font-family="JetBrains Mono">Свет.2</text>
+      <rect x="150" y="152" width="36" height="22" rx="3" fill="#e8f2ff" stroke="#4090c0" stroke-width="1.2"/>
+      <text x="168" y="166" text-anchor="middle" fill="#3070a0" font-size="7" font-family="JetBrains Mono">Свет.3</text>
+      <text x="116" y="195" text-anchor="middle" fill="#6080a0" font-size="9" font-family="JetBrains Mono">+ – Плюсы: простота</text>
+      <text x="116" y="208" text-anchor="middle" fill="#a06050" font-size="9" font-family="JetBrains Mono">– Большой кабель</text>
+    </g>
+
+    <!-- Distributed -->
+    <g onclick="showInfo('topo','distrib')">
+      <rect x="240" y="20" width="200" height="180" rx="8" fill="#f8f9f5" stroke="#1a7a42" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="340" y="42" text-anchor="middle" fill="#0d5a30" font-size="10" font-family="JetBrains Mono" font-weight="700">РАСПРЕДЕЛЁННАЯ</text>
+      <rect x="310" y="54" width="60" height="28" rx="4" fill="#e8f8ee" stroke="#1a7a42" stroke-width="1.5"/>
+      <text x="340" y="68" text-anchor="middle" fill="#0d5a30" font-size="8" font-family="JetBrains Mono" font-weight="600">230В AC</text>
+      <text x="340" y="78" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">сеть</text>
+      <line x1="280" y1="82" x2="280" y2="102" stroke="#d03030" stroke-width="1.2" class="fc"/>
+      <line x1="340" y1="82" x2="340" y2="102" stroke="#d03030" stroke-width="1.2" class="fc"/>
+      <line x1="400" y1="82" x2="400" y2="102" stroke="#d03030" stroke-width="1.2" class="fc"/>
+      <rect x="258" y="102" width="44" height="32" rx="4" fill="#e8f8ee" stroke="#1a7a42" stroke-width="1.2"/>
+      <text x="280" y="118" text-anchor="middle" fill="#0d5a30" font-size="7" font-family="JetBrains Mono" font-weight="600">Дрв.1</text>
+      <text x="280" y="128" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">24В</text>
+      <rect x="318" y="102" width="44" height="32" rx="4" fill="#e8f8ee" stroke="#1a7a42" stroke-width="1.2"/>
+      <text x="340" y="118" text-anchor="middle" fill="#0d5a30" font-size="7" font-family="JetBrains Mono" font-weight="600">Дрв.2</text>
+      <text x="340" y="128" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">24В</text>
+      <rect x="378" y="102" width="44" height="32" rx="4" fill="#e8f8ee" stroke="#1a7a42" stroke-width="1.2"/>
+      <text x="400" y="118" text-anchor="middle" fill="#0d5a30" font-size="7" font-family="JetBrains Mono" font-weight="600">Дрв.3</text>
+      <text x="400" y="128" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">24В</text>
+      <line x1="280" y1="134" x2="280" y2="154" stroke="#1a7a42" stroke-width="1.2" class="fa"/>
+      <line x1="340" y1="134" x2="340" y2="154" stroke="#1a7a42" stroke-width="1.2" class="fa"/>
+      <line x1="400" y1="134" x2="400" y2="154" stroke="#1a7a42" stroke-width="1.2" class="fa"/>
+      <rect x="258" y="154" width="44" height="22" rx="3" fill="#e8f8ee" stroke="#2a8050" stroke-width="1.2"/>
+      <text x="280" y="168" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">Свет.1</text>
+      <rect x="318" y="154" width="44" height="22" rx="3" fill="#e8f8ee" stroke="#2a8050" stroke-width="1.2"/>
+      <text x="340" y="168" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">Свет.2</text>
+      <rect x="378" y="154" width="44" height="22" rx="3" fill="#e8f8ee" stroke="#2a8050" stroke-width="1.2"/>
+      <text x="400" y="168" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">Свет.3</text>
+      <text x="340" y="195" text-anchor="middle" fill="#4a8060" font-size="9" font-family="JetBrains Mono">+ Короткие DC кабели</text>
+      <text x="340" y="208" text-anchor="middle" fill="#a06050" font-size="9" font-family="JetBrains Mono">– Много драйверов</text>
+    </g>
+
+    <!-- PoE -->
+    <g onclick="showInfo('topo','poe')">
+      <rect x="464" y="20" width="200" height="180" rx="8" fill="#f8f9f5" stroke="#c08010" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="564" y="42" text-anchor="middle" fill="#805010" font-size="10" font-family="JetBrains Mono" font-weight="700">PoE ПИТАНИЕ</text>
+      <rect x="524" y="54" width="80" height="28" rx="5" fill="#fdf8e8" stroke="#c08010" stroke-width="1.5"/>
+      <text x="564" y="68" text-anchor="middle" fill="#805010" font-size="9" font-family="JetBrains Mono" font-weight="600">PoE Switch</text>
+      <text x="564" y="78" text-anchor="middle" fill="#c08010" font-size="8" font-family="JetBrains Mono">802.3bt до 90Вт</text>
+      <polyline points="524,82 504,100 504,152" fill="none" stroke="#c08010" stroke-width="1.2" class="fd"/>
+      <polyline points="564,82 564,152" fill="none" stroke="#c08010" stroke-width="1.2" class="fd"/>
+      <polyline points="604,82 624,100 624,152" fill="none" stroke="#c08010" stroke-width="1.2" class="fd"/>
+      <text x="488" y="96" fill="#c08010" font-size="7" font-family="JetBrains Mono">RJ-45</text>
+      <rect x="482" y="152" width="44" height="22" rx="3" fill="#fdf8e8" stroke="#c09030" stroke-width="1.2"/>
+      <text x="504" y="166" text-anchor="middle" fill="#805010" font-size="7" font-family="JetBrains Mono">PoE LED</text>
+      <rect x="542" y="152" width="44" height="22" rx="3" fill="#fdf8e8" stroke="#c09030" stroke-width="1.2"/>
+      <text x="564" y="166" text-anchor="middle" fill="#805010" font-size="7" font-family="JetBrains Mono">PoE LED</text>
+      <rect x="602" y="152" width="44" height="22" rx="3" fill="#fdf8e8" stroke="#c09030" stroke-width="1.2"/>
+      <text x="624" y="166" text-anchor="middle" fill="#805010" font-size="7" font-family="JetBrains Mono">PoE LED</text>
+      <text x="564" y="195" text-anchor="middle" fill="#806030" font-size="9" font-family="JetBrains Mono">+ Питание + данные</text>
+      <text x="564" y="208" text-anchor="middle" fill="#a06050" font-size="9" font-family="JetBrains Mono">– Макс 90Вт/порт</text>
+    </g>
+
+    <!-- Busbar -->
+    <g onclick="showInfo('topo','busbar')">
+      <rect x="688" y="20" width="152" height="180" rx="8" fill="#f8f9f5" stroke="#7030a0" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="764" y="42" text-anchor="middle" fill="#5020a0" font-size="10" font-family="JetBrains Mono" font-weight="700">ШИНОПРОВОД</text>
+      <rect x="718" y="54" width="92" height="14" rx="3" fill="#f4eeff" stroke="#7030a0" stroke-width="1.5"/>
+      <text x="764" y="65" text-anchor="middle" fill="#5020a0" font-size="8" font-family="JetBrains Mono" font-weight="600">Шина 48В DC / 230В AC</text>
+      <line x1="730" y1="68" x2="730" y2="90" stroke="#7030a0" stroke-width="1" class="fa"/>
+      <line x1="764" y1="68" x2="764" y2="90" stroke="#7030a0" stroke-width="1" class="fa"/>
+      <line x1="798" y1="68" x2="798" y2="90" stroke="#7030a0" stroke-width="1" class="fa"/>
+      <rect x="714" y="90" width="32" height="28" rx="3" fill="#f4eeff" stroke="#9050c0" stroke-width="1.2"/>
+      <text x="730" y="106" text-anchor="middle" fill="#5020a0" font-size="7" font-family="JetBrains Mono">Трек</text>
+      <text x="730" y="114" text-anchor="middle" fill="#7030a0" font-size="7" font-family="JetBrains Mono">прибор</text>
+      <rect x="748" y="90" width="32" height="28" rx="3" fill="#f4eeff" stroke="#9050c0" stroke-width="1.2"/>
+      <text x="764" y="106" text-anchor="middle" fill="#5020a0" font-size="7" font-family="JetBrains Mono">Трек</text>
+      <text x="764" y="114" text-anchor="middle" fill="#7030a0" font-size="7" font-family="JetBrains Mono">прибор</text>
+      <rect x="782" y="90" width="32" height="28" rx="3" fill="#f4eeff" stroke="#9050c0" stroke-width="1.2"/>
+      <text x="798" y="106" text-anchor="middle" fill="#5020a0" font-size="7" font-family="JetBrains Mono">Трек</text>
+      <text x="798" y="114" text-anchor="middle" fill="#7030a0" font-size="7" font-family="JetBrains Mono">прибор</text>
+      <text x="764" y="148" text-anchor="middle" fill="#604080" font-size="8" font-family="JetBrains Mono">Любое положение</text>
+      <text x="764" y="160" text-anchor="middle" fill="#604080" font-size="8" font-family="JetBrains Mono">магнитный монтаж</text>
+      <text x="764" y="195" text-anchor="middle" fill="#7040a0" font-size="9" font-family="JetBrains Mono">+ Гибкость</text>
+      <text x="764" y="208" text-anchor="middle" fill="#a06050" font-size="9" font-family="JetBrains Mono">– Цена</text>
+    </g>
+
+    <!-- Щит питания -->
+    <g onclick="showInfo('topo','panel')">
+      <rect x="16" y="220" width="828" height="120" rx="8" fill="#f5f6f1" stroke="#a0a898" stroke-width="1.5"/>
+      <text x="430" y="244" text-anchor="middle" fill="#4a5040" font-size="10" font-family="JetBrains Mono" font-weight="700">СИЛОВОЙ ЩИТОК — Типовая структура</text>
+      <!-- items -->
+      <rect x="36" y="256" width="68" height="36" rx="4" fill="#fff" stroke="#d03030" stroke-width="1.2"/>
+      <text x="70" y="272" text-anchor="middle" fill="#a02020" font-size="8" font-family="JetBrains Mono" font-weight="600">Вводной</text>
+      <text x="70" y="283" text-anchor="middle" fill="#d03030" font-size="8" font-family="JetBrains Mono">автомат</text>
+      <line x1="104" y1="274" x2="120" y2="274" stroke="#d03030" stroke-width="1.5" class="fc"/>
+      <rect x="120" y="256" width="68" height="36" rx="4" fill="#fff" stroke="#d05010" stroke-width="1.2"/>
+      <text x="154" y="272" text-anchor="middle" fill="#903010" font-size="8" font-family="JetBrains Mono" font-weight="600">УЗО</text>
+      <text x="154" y="283" text-anchor="middle" fill="#d05010" font-size="8" font-family="JetBrains Mono">30мА</text>
+      <line x1="188" y1="274" x2="204" y2="274" stroke="#d05010" stroke-width="1.5" class="fc"/>
+      <rect x="204" y="256" width="68" height="36" rx="4" fill="#fff" stroke="#c08010" stroke-width="1.2"/>
+      <text x="238" y="272" text-anchor="middle" fill="#806010" font-size="8" font-family="JetBrains Mono" font-weight="600">Диф.</text>
+      <text x="238" y="283" text-anchor="middle" fill="#c08010" font-size="8" font-family="JetBrains Mono">автоматы</text>
+      <line x1="272" y1="274" x2="288" y2="274" stroke="#c08010" stroke-width="1.5" class="fc"/>
+      <rect x="288" y="256" width="90" height="36" rx="4" fill="#e8f2ff" stroke="#1878c0" stroke-width="1.2"/>
+      <text x="333" y="272" text-anchor="middle" fill="#1060a0" font-size="8" font-family="JetBrains Mono" font-weight="600">БП / Драйверы</text>
+      <text x="333" y="283" text-anchor="middle" fill="#3080c0" font-size="8" font-family="JetBrains Mono">DIN-рейка</text>
+      <line x1="378" y1="274" x2="394" y2="274" stroke="#1878c0" stroke-width="1.5" class="fa"/>
+      <rect x="394" y="256" width="90" height="36" rx="4" fill="#e8f8ee" stroke="#1a7a42" stroke-width="1.2"/>
+      <text x="439" y="272" text-anchor="middle" fill="#0d5a30" font-size="8" font-family="JetBrains Mono" font-weight="600">DALI / KNX</text>
+      <text x="439" y="283" text-anchor="middle" fill="#2a7050" font-size="8" font-family="JetBrains Mono">контроллеры</text>
+      <line x1="484" y1="274" x2="500" y2="274" stroke="#1a7a42" stroke-width="1.5" class="fb"/>
+      <rect x="500" y="256" width="90" height="36" rx="4" fill="#fdf8e8" stroke="#c08010" stroke-width="1.2"/>
+      <text x="545" y="272" text-anchor="middle" fill="#805010" font-size="8" font-family="JetBrains Mono" font-weight="600">Аварийный</text>
+      <text x="545" y="283" text-anchor="middle" fill="#c08010" font-size="8" font-family="JetBrains Mono">блок ЦАП</text>
+      <line x1="590" y1="274" x2="606" y2="274" stroke="#c08010" stroke-width="1.5" class="fd"/>
+      <rect x="606" y="256" width="90" height="36" rx="4" fill="#fff0f8" stroke="#c03080" stroke-width="1.2"/>
+      <text x="651" y="272" text-anchor="middle" fill="#902050" font-size="8" font-family="JetBrains Mono" font-weight="600">Реле / ДИМ</text>
+      <text x="651" y="283" text-anchor="middle" fill="#c03080" font-size="8" font-family="JetBrains Mono">модули</text>
+      <line x1="696" y1="274" x2="712" y2="274" stroke="#c03080" stroke-width="1.5" class="fe"/>
+      <rect x="712" y="256" width="110" height="36" rx="4" fill="#f8f9f5" stroke="#8090a0" stroke-width="1.2"/>
+      <text x="767" y="272" text-anchor="middle" fill="#4a5868" font-size="8" font-family="JetBrains Mono" font-weight="600">Измерители</text>
+      <text x="767" y="283" text-anchor="middle" fill="#8090a0" font-size="8" font-family="JetBrains Mono">учёт энергии</text>
+      <text x="430" y="318" text-anchor="middle" fill="#8090a0" font-size="8" font-family="JetBrains Mono">↑ все компоненты монтируются на DIN-рейку 35мм в шкафу щитовом ЩМП/ЩРН</text>
+    </g>
+  </svg>
+  <div class="flow-legend">
+    <div class="fl"><div class="fl-line" style="background:#1878c0"></div>DC питание</div>
+    <div class="fl"><div class="fl-line" style="background:#d03030"></div>230В AC</div>
+    <div class="fl"><div class="fl-line" style="background:#c08010"></div>48В PoE / шина</div>
+    <div class="fl"><div class="fl-line" style="background:#7030a0"></div>Шинопровод</div>
+  </div>
+</div>
+<div class="panel-tabs" style="--panel-c:#1878c0" id="pt-topo">
+  <div class="ptab on" onclick="switchPT('topo','desc')">Описание</div>
+  <div class="ptab" onclick="switchPT('topo','spec')">Характеристики</div>
+  <div class="ptab" onclick="switchPT('topo','tips')">Советы</div>
+</div>
+<div class="info-panel" id="ip-topo">
+  <div class="tc on" id="tc-topo-desc"><h3 style="color:#1878c0">← Выберите топологию</h3><p>Нажмите на блок схемы для изучения топологии питания светильников.</p></div>
+  <div class="tc" id="tc-topo-spec"><p style="color:#c0c8b0">Выберите элемент</p></div>
+  <div class="tc" id="tc-topo-tips"><p style="color:#c0c8b0">Выберите элемент</p></div>
+</div>
+</div>
+
+<!-- ===================== EMERGENCY ===================== -->
+<div class="tsec" id="tsec-emergency">
+<div class="diag-wrap">
+  <div class="diag-hint">Аварийное освещение (EN 62034 / ГОСТ Р 55842) — нажмите на элемент</div>
+  <svg class="diag" viewBox="0 0 860 360">
+    <rect width="860" height="360" fill="url(#pg)"/>
+    <!-- Top: Normal power -->
+    <rect x="20" y="16" width="820" height="40" rx="5" fill="#fff0f0" stroke="#d03030" stroke-width="1.5"/>
+    <text x="430" y="32" text-anchor="middle" fill="#d03030" font-size="9" font-family="JetBrains Mono" font-weight="700">НОРМАЛЬНАЯ СЕТЬ — 230В AC (основное питание)</text>
+    <text x="430" y="46" text-anchor="middle" fill="#e06060" font-size="8" font-family="JetBrains Mono">При наличии сети — заряд аккумуляторов + работа в нормальном режиме</text>
+
+    <!-- Central battery system -->
+    <g class="node" onclick="showInfo('emerg','cbs')">
+      <rect x="290" y="76" width="280" height="88" rx="8" fill="#fdf8e8" stroke="#c08010" stroke-width="2"/>
+      <text x="430" y="97" text-anchor="middle" fill="#805010" font-size="11" font-family="JetBrains Mono" font-weight="700">ЦАП — Центральный</text>
+      <text x="430" y="111" text-anchor="middle" fill="#805010" font-size="11" font-family="JetBrains Mono" font-weight="700">Аккумуляторный Прибор</text>
+      <text x="430" y="127" text-anchor="middle" fill="#c09030" font-size="9" font-family="JetBrains Mono">Аккум. 24В или 48В · Инвертор · Зарядное</text>
+      <text x="430" y="141" text-anchor="middle" fill="#c09030" font-size="9" font-family="JetBrains Mono">Мониторинг · Тест 1× мес · Тест 1× год</text>
+      <text x="430" y="155" text-anchor="middle" fill="#e0a030" font-size="9" font-family="JetBrains Mono">Автономия: ≥ 1 ч (EN 62034)</text>
+    </g>
+    <line x1="430" y1="56" x2="430" y2="76" stroke="#d03030" stroke-width="1.8" class="fc"/>
+
+    <!-- Normal luminaires -->
+    <g class="node" onclick="showInfo('emerg','normal_lum')">
+      <rect x="20" y="76" width="240" height="88" rx="6" fill="#e8f2ff" stroke="#1878c0" stroke-width="1.5"/>
+      <text x="140" y="98" text-anchor="middle" fill="#1060a0" font-size="10" font-family="JetBrains Mono" font-weight="700">Рабочие светильники</text>
+      <text x="140" y="113" text-anchor="middle" fill="#3080c0" font-size="8" font-family="JetBrains Mono">Нормальная сеть / DALI</text>
+      <text x="140" y="127" text-anchor="middle" fill="#3080c0" font-size="8" font-family="JetBrains Mono">Гаснут при отключении</text>
+      <text x="140" y="141" text-anchor="middle" fill="#3080c0" font-size="8" font-family="JetBrains Mono">Зона: весь объект</text>
+      <text x="140" y="155" text-anchor="middle" fill="#6090c0" font-size="8" font-family="JetBrains Mono">Управл.: DALI / КВ</text>
+    </g>
+    <line x1="260" y1="120" x2="290" y2="120" stroke="#1878c0" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+    <!-- Emergency luminaires -->
+    <g class="node" onclick="showInfo('emerg','emerg_lum')">
+      <rect x="600" y="76" width="240" height="88" rx="6" fill="#fff8e0" stroke="#c08010" stroke-width="2"/>
+      <text x="720" y="98" text-anchor="middle" fill="#805010" font-size="10" font-family="JetBrains Mono" font-weight="700">Аварийные светильники</text>
+      <text x="720" y="113" text-anchor="middle" fill="#c08010" font-size="8" font-family="JetBrains Mono">Питание от ЦАП</text>
+      <text x="720" y="127" text-anchor="middle" fill="#c08010" font-size="8" font-family="JetBrains Mono">Включаются автоматически</text>
+      <text x="720" y="141" text-anchor="middle" fill="#c08010" font-size="8" font-family="JetBrains Mono">Минимум: 1 лк на пути эвак.</text>
+      <text x="720" y="155" text-anchor="middle" fill="#e0a030" font-size="8" font-family="JetBrains Mono">Антипаника: 0.5 лк / 5 лк</text>
+    </g>
+    <line x1="570" y1="120" x2="600" y2="120" stroke="#c08010" stroke-width="2" class="fd"/>
+
+    <!-- Types of emergency -->
+    <g class="node" onclick="showInfo('emerg','type_se')">
+      <rect x="20" y="192" width="190" height="72" rx="6" fill="#e8fff4" stroke="#1a7a42" stroke-width="1.5"/>
+      <text x="115" y="213" text-anchor="middle" fill="#0d5a30" font-size="9" font-family="JetBrains Mono" font-weight="700">СЕ — Аварийное</text>
+      <text x="115" y="227" text-anchor="middle" fill="#1a7a42" font-size="8" font-family="JetBrains Mono">Аварийное освещение</text>
+      <text x="115" y="241" text-anchor="middle" fill="#1a7a42" font-size="8" font-family="JetBrains Mono">Пути эвакуации</text>
+      <text x="115" y="255" text-anchor="middle" fill="#2a8050" font-size="8" font-family="JetBrains Mono">EN 1838 / ГОСТ Р 55842</text>
+    </g>
+    <g class="node" onclick="showInfo('emerg','type_ap')">
+      <rect x="225" y="192" width="190" height="72" rx="6" fill="#e8f8ff" stroke="#1060a0" stroke-width="1.5"/>
+      <text x="320" y="213" text-anchor="middle" fill="#1060a0" font-size="9" font-family="JetBrains Mono" font-weight="700">АО — Антипаника</text>
+      <text x="320" y="227" text-anchor="middle" fill="#1878c0" font-size="8" font-family="JetBrains Mono">Открытые пространства</text>
+      <text x="320" y="241" text-anchor="middle" fill="#1878c0" font-size="8" font-family="JetBrains Mono">&gt;60 м²  · 5 лк мин</text>
+      <text x="320" y="255" text-anchor="middle" fill="#3090c0" font-size="8" font-family="JetBrains Mono">Равномерность 40:1</text>
+    </g>
+    <g class="node" onclick="showInfo('emerg','type_hl')">
+      <rect x="430" y="192" width="190" height="72" rx="6" fill="#fdf0e8" stroke="#d05010" stroke-width="1.5"/>
+      <text x="525" y="213" text-anchor="middle" fill="#903010" font-size="9" font-family="JetBrains Mono" font-weight="700">ВО — Высокого риска</text>
+      <text x="525" y="227" text-anchor="middle" fill="#d05010" font-size="8" font-family="JetBrains Mono">Опасные рабочие места</text>
+      <text x="525" y="241" text-anchor="middle" fill="#d05010" font-size="8" font-family="JetBrains Mono">10% Eраб мин</text>
+      <text x="525" y="255" text-anchor="middle" fill="#e07030" font-size="8" font-family="JetBrains Mono">Переключение: &lt; 0.5с</text>
+    </g>
+    <g class="node" onclick="showInfo('emerg','type_self')">
+      <rect x="635" y="192" width="205" height="72" rx="6" fill="#f4eeff" stroke="#7030a0" stroke-width="1.5"/>
+      <text x="737" y="213" text-anchor="middle" fill="#5020a0" font-size="9" font-family="JetBrains Mono" font-weight="700">Автономный светильник</text>
+      <text x="737" y="227" text-anchor="middle" fill="#7030a0" font-size="8" font-family="JetBrains Mono">Встроенный аккум.</text>
+      <text x="737" y="241" text-anchor="middle" fill="#7030a0" font-size="8" font-family="JetBrains Mono">Без ЦАП · Самодостат.</text>
+      <text x="737" y="255" text-anchor="middle" fill="#9050c0" font-size="8" font-family="JetBrains Mono">DALI-202/203 мониторинг</text>
+    </g>
+
+    <!-- Testing requirement -->
+    <rect x="20" y="286" width="820" height="58" rx="6" fill="#f8f5ff" stroke="#9050c0" stroke-width="1.2"/>
+    <text x="430" y="306" text-anchor="middle" fill="#5020a0" font-size="10" font-family="JetBrains Mono" font-weight="700">ТРЕБОВАНИЯ ПО ТЕСТИРОВАНИЮ (EN 62034 / IEC 62034)</text>
+    <text x="214" y="323" text-anchor="middle" fill="#7030a0" font-size="8.5" font-family="JetBrains Mono">Функциональный тест: каждые 4 нед.</text>
+    <text x="214" y="335" text-anchor="middle" fill="#9050c0" font-size="8" font-family="JetBrains Mono">Включение на 1–2 сек</text>
+    <text x="430" y="323" text-anchor="middle" fill="#7030a0" font-size="8.5" font-family="JetBrains Mono">Длительный тест: ежегодно</text>
+    <text x="430" y="335" text-anchor="middle" fill="#9050c0" font-size="8" font-family="JetBrains Mono">Полная разрядка (≥1 ч)</text>
+    <text x="646" y="323" text-anchor="middle" fill="#7030a0" font-size="8.5" font-family="JetBrains Mono">DALI-202/203: автотестирование</text>
+    <text x="646" y="335" text-anchor="middle" fill="#9050c0" font-size="8" font-family="JetBrains Mono">Лог ошибок · Протокол · Оповещение</text>
+    <line x1="322" y1="300" x2="322" y2="340" stroke="#c0b0e0" stroke-width="0.8"/>
+    <line x1="538" y1="300" x2="538" y2="340" stroke="#c0b0e0" stroke-width="0.8"/>
+  </svg>
+  <div class="flow-legend">
+    <div class="fl"><div class="fl-line" style="background:#d03030"></div>230В AC основное</div>
+    <div class="fl"><div class="fl-line" style="background:#c08010"></div>Аварийное питание</div>
+    <div class="fl"><div class="fl-line" style="background:#1878c0"></div>Рабочее освещение</div>
+    <div class="fl"><div class="fl-line" style="background:#7030a0"></div>DALI мониторинг</div>
+  </div>
+</div>
+<div class="panel-tabs" style="--panel-c:#c08010" id="pt-emergency">
+  <div class="ptab on" onclick="switchPT('emergency','desc')">Описание</div>
+  <div class="ptab" onclick="switchPT('emergency','spec')">Характеристики</div>
+  <div class="ptab" onclick="switchPT('emergency','tips')">Советы</div>
+</div>
+<div class="info-panel" id="ip-emergency">
+  <div class="tc on" id="tc-emergency-desc"><h3 style="color:#c08010">← Выберите элемент схемы</h3><p>Нажмите на блок для изучения аварийной системы освещения.</p></div>
+  <div class="tc" id="tc-emergency-spec"><p style="color:#c0c8b0">Выберите элемент</p></div>
+  <div class="tc" id="tc-emergency-tips"><p style="color:#c0c8b0">Выберите элемент</p></div>
+</div>
+</div>
+
+<!-- ===================== TUNABLE WHITE ===================== -->
+<div class="tsec" id="tsec-tw">
+<div class="diag-wrap">
+  <div class="diag-hint">Tunable White — управление цветовой температурой</div>
+  <svg class="diag" viewBox="0 0 860 360">
+    <rect width="860" height="360" fill="url(#pg)"/>
+    <!-- CCT bar -->
+    <defs>
+      <linearGradient id="cct-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#ff9a30"/>
+        <stop offset="40%" style="stop-color:#ffe8b0"/>
+        <stop offset="70%" style="stop-color:#f0f4ff"/>
+        <stop offset="100%" style="stop-color:#c0d8ff"/>
+      </linearGradient>
+    </defs>
+    <rect x="50" y="16" width="760" height="28" rx="6" fill="url(#cct-grad)" stroke="#d0c0a0" stroke-width="1"/>
+    <text x="130" y="34" text-anchor="middle" fill="#804010" font-size="9" font-family="JetBrains Mono" font-weight="700">2700К тёплый</text>
+    <text x="430" y="34" text-anchor="middle" fill="#806040" font-size="9" font-family="JetBrains Mono" font-weight="700">4000К нейтральный</text>
+    <text x="730" y="34" text-anchor="middle" fill="#4060a0" font-size="9" font-family="JetBrains Mono" font-weight="700">6500К холодный</text>
+
+    <!-- Driver with 2ch -->
+    <g class="node" onclick="showInfo('tw','driver')">
+      <rect x="330" y="60" width="200" height="80" rx="7" fill="#e8f2ff" stroke="#1878c0" stroke-width="2"/>
+      <text x="430" y="82" text-anchor="middle" fill="#1060a0" font-size="10" font-family="JetBrains Mono" font-weight="700">TUNABLE WHITE</text>
+      <text x="430" y="96" text-anchor="middle" fill="#1878c0" font-size="9" font-family="JetBrains Mono">ДРАЙВЕР 2-канальный</text>
+      <text x="390" y="116" text-anchor="middle" fill="#3080c0" font-size="8" font-family="JetBrains Mono">CH1: тёплый</text>
+      <text x="470" y="116" text-anchor="middle" fill="#3080c0" font-size="8" font-family="JetBrains Mono">CH2: холодный</text>
+      <text x="430" y="130" text-anchor="middle" fill="#6090b0" font-size="8" font-family="JetBrains Mono">DALI-DT8 / 0–10В × 2</text>
+    </g>
+
+    <!-- Controller -->
+    <g class="node" onclick="showInfo('tw','ctrl')">
+      <rect x="330" y="160" width="200" height="60" rx="6" fill="#f4eeff" stroke="#7030a0" stroke-width="1.8"/>
+      <text x="430" y="182" text-anchor="middle" fill="#5020a0" font-size="10" font-family="JetBrains Mono" font-weight="700">КОНТРОЛЛЕР CCT</text>
+      <text x="430" y="197" text-anchor="middle" fill="#7030a0" font-size="8" font-family="JetBrains Mono">задаёт CCT + уровень яркости</text>
+      <text x="430" y="211" text-anchor="middle" fill="#9050c0" font-size="8" font-family="JetBrains Mono">DALI-DT8 / Scene / Schedule</text>
+    </g>
+    <line x1="430" y1="140" x2="430" y2="160" stroke="#7030a0" stroke-width="1.5" marker-end="url(#av)" class="fb"/>
+
+    <!-- Warm channel -->
+    <g class="node" onclick="showInfo('tw','warm')">
+      <rect x="60" y="60" width="230" height="170" rx="7" fill="#fff8ee" stroke="#e87020" stroke-width="1.8"/>
+      <text x="175" y="82" text-anchor="middle" fill="#a04010" font-size="10" font-family="JetBrains Mono" font-weight="700">Канал ТЁПЛЫЙ</text>
+      <text x="175" y="97" text-anchor="middle" fill="#e07020" font-size="9" font-family="JetBrains Mono">WW 2700–3000К</text>
+      <!-- LED chips warm -->
+      <rect x="80" y="110" width="16" height="16" rx="3" fill="#ffb840" class="pulse"/>
+      <rect x="102" y="110" width="16" height="16" rx="3" fill="#ffb840" class="pulse2"/>
+      <rect x="124" y="110" width="16" height="16" rx="3" fill="#ffb840" class="pulse3"/>
+      <rect x="146" y="110" width="16" height="16" rx="3" fill="#ffb840" class="pulse"/>
+      <rect x="168" y="110" width="16" height="16" rx="3" fill="#ffb840" class="pulse2"/>
+      <rect x="190" y="110" width="16" height="16" rx="3" fill="#ffb840" class="pulse3"/>
+      <rect x="212" y="110" width="16" height="16" rx="3" fill="#ffb840" class="pulse"/>
+      <rect x="234" y="110" width="16" height="16" rx="3" fill="#ffb840" class="pulse2"/>
+      <text x="175" y="148" text-anchor="middle" fill="#c06010" font-size="8" font-family="JetBrains Mono">Яркость = I_CH1(t)</text>
+      <text x="175" y="162" text-anchor="middle" fill="#c06010" font-size="8" font-family="JetBrains Mono">При 2700К: CH1=100%</text>
+      <text x="175" y="176" text-anchor="middle" fill="#c06010" font-size="8" font-family="JetBrains Mono">При 6500К: CH1=0%</text>
+      <text x="175" y="198" text-anchor="middle" fill="#e07020" font-size="8" font-family="JetBrains Mono">CCT_mixed = (CCT1×I1 + CCT2×I2)</text>
+      <text x="175" y="210" text-anchor="middle" fill="#e07020" font-size="8" font-family="JetBrains Mono">/ (I1 + I2)</text>
+      <text x="175" y="224" text-anchor="middle" fill="#a05010" font-size="8" font-family="JetBrains Mono" font-weight="700">Ra чистый WW: ≥90</text>
+    </g>
+    <line x1="290" y1="140" x2="330" y2="110" stroke="#e87020" stroke-width="2" class="fa"/>
+
+    <!-- Cold channel -->
+    <g class="node" onclick="showInfo('tw','cold')">
+      <rect x="570" y="60" width="230" height="170" rx="7" fill="#eef4ff" stroke="#3070d0" stroke-width="1.8"/>
+      <text x="685" y="82" text-anchor="middle" fill="#1040a0" font-size="10" font-family="JetBrains Mono" font-weight="700">Канал ХОЛОДНЫЙ</text>
+      <text x="685" y="97" text-anchor="middle" fill="#3070d0" font-size="9" font-family="JetBrains Mono">CW 5000–6500К</text>
+      <!-- LED chips cold -->
+      <rect x="590" y="110" width="16" height="16" rx="3" fill="#c8e0ff" class="pulse3"/>
+      <rect x="612" y="110" width="16" height="16" rx="3" fill="#c8e0ff" class="pulse2"/>
+      <rect x="634" y="110" width="16" height="16" rx="3" fill="#c8e0ff" class="pulse"/>
+      <rect x="656" y="110" width="16" height="16" rx="3" fill="#c8e0ff" class="pulse3"/>
+      <rect x="678" y="110" width="16" height="16" rx="3" fill="#c8e0ff" class="pulse2"/>
+      <rect x="700" y="110" width="16" height="16" rx="3" fill="#c8e0ff" class="pulse"/>
+      <rect x="722" y="110" width="16" height="16" rx="3" fill="#c8e0ff" class="pulse3"/>
+      <rect x="744" y="110" width="16" height="16" rx="3" fill="#c8e0ff" class="pulse2"/>
+      <text x="685" y="148" text-anchor="middle" fill="#1050b0" font-size="8" font-family="JetBrains Mono">Яркость = I_CH2(t)</text>
+      <text x="685" y="162" text-anchor="middle" fill="#1050b0" font-size="8" font-family="JetBrains Mono">При 6500К: CH2=100%</text>
+      <text x="685" y="176" text-anchor="middle" fill="#1050b0" font-size="8" font-family="JetBrains Mono">При 2700К: CH2=0%</text>
+      <text x="685" y="198" text-anchor="middle" fill="#3070d0" font-size="8" font-family="JetBrains Mono">Равная мощность каналов:</text>
+      <text x="685" y="210" text-anchor="middle" fill="#3070d0" font-size="8" font-family="JetBrains Mono">I1+I2 = const (Dim↔CCT)</text>
+      <text x="685" y="224" text-anchor="middle" fill="#1050a0" font-size="8" font-family="JetBrains Mono" font-weight="700">Ra чистый CW: ≥80</text>
+    </g>
+    <line x1="530" y1="110" x2="570" y2="140" stroke="#3070d0" stroke-width="2" class="fb"/>
+
+    <!-- Mix formula -->
+    <g class="node" onclick="showInfo('tw','formula')">
+      <rect x="200" y="256" width="460" height="86" rx="7" fill="#f8f9f5" stroke="#a0a890" stroke-width="1.5"/>
+      <text x="430" y="275" text-anchor="middle" fill="#485040" font-size="9" font-family="JetBrains Mono" font-weight="700">ФОРМУЛА СМЕШЕНИЯ И ПОДДЕРЖАНИЕ ЯРКОСТИ</text>
+      <text x="430" y="292" text-anchor="middle" fill="#5a6850" font-size="9" font-family="JetBrains Mono">CCT_цель = (CCT_тепл × I_тепл + CCT_хол × I_хол) / (I_тепл + I_хол)</text>
+      <text x="430" y="308" text-anchor="middle" fill="#5a6850" font-size="9" font-family="JetBrains Mono">I_тепл = I_total × (CCT_хол − CCT_цель) / (CCT_хол − CCT_тепл)</text>
+      <text x="430" y="324" text-anchor="middle" fill="#5a6850" font-size="9" font-family="JetBrains Mono">I_хол  = I_total − I_тепл   ·   Яркость: I_total = const при изменении CCT</text>
+      <text x="430" y="338" text-anchor="middle" fill="#8a9280" font-size="8" font-family="JetBrains Mono">Нажмите на блок для подробностей</text>
+    </g>
+  </svg>
+  <div class="flow-legend">
+    <div class="fl"><div class="fl-line" style="background:#e87020"></div>Тёплый канал WW</div>
+    <div class="fl"><div class="fl-line" style="background:#3070d0"></div>Холодный канал CW</div>
+    <div class="fl"><div class="fl-line" style="background:#7030a0"></div>Управление CCT</div>
+    <div class="fl"><div class="fl-line" style="background:#1878c0"></div>Данные DALI-DT8</div>
+  </div>
+</div>
+<div class="panel-tabs" style="--panel-c:#3070d0" id="pt-tw">
+  <div class="ptab on" onclick="switchPT('tw','desc')">Описание</div>
+  <div class="ptab" onclick="switchPT('tw','spec')">Характеристики</div>
+  <div class="ptab" onclick="switchPT('tw','tips')">Советы</div>
+</div>
+<div class="info-panel" id="ip-tw">
+  <div class="tc on" id="tc-tw-desc"><h3 style="color:#3070d0">← Выберите элемент</h3><p>Нажмите на блок для изучения Tunable White системы.</p></div>
+  <div class="tc" id="tc-tw-spec"><p style="color:#c0c8b0">Выберите элемент</p></div>
+  <div class="tc" id="tc-tw-tips"><p style="color:#c0c8b0">Выберите элемент</p></div>
+</div>
+</div>
+
+<!-- ===================== HCL ===================== -->
+<div class="tsec" id="tsec-hcl">
+<div class="diag-wrap">
+  <div class="diag-hint">Human Centric Lighting (HCL) — биодинамическое освещение</div>
+  <svg class="diag" viewBox="0 0 860 360">
+    <rect width="860" height="360" fill="url(#pg)"/>
+    <!-- Sun arc timeline -->
+    <path d="M50 180 Q430 -40 810 180" fill="none" stroke="#f0c030" stroke-width="2.5" stroke-dasharray="6 4"/>
+    <text x="100" y="200" text-anchor="middle" fill="#c07010" font-size="8" font-family="JetBrains Mono">06:00 ~3000К</text>
+    <text x="430" y="38" text-anchor="middle" fill="#c07010" font-size="8" font-family="JetBrains Mono">12:00 ~6000К пик</text>
+    <text x="760" y="200" text-anchor="middle" fill="#c07010" font-size="8" font-family="JetBrains Mono">22:00 ~2700К</text>
+    <!-- Sun icon -->
+    <circle cx="430" cy="54" r="14" fill="#f0c030" opacity=".5"/>
+    <text x="430" y="59" text-anchor="middle" font-size="14">☀</text>
+
+    <!-- HCL Controller -->
+    <g class="node" onclick="showInfo('hcl','ctrl')">
+      <rect x="320" y="190" width="220" height="80" rx="8" fill="#e8fff4" stroke="#1a7a42" stroke-width="2"/>
+      <text x="430" y="212" text-anchor="middle" fill="#0d5a30" font-size="10" font-family="JetBrains Mono" font-weight="700">HCL КОНТРОЛЛЕР</text>
+      <text x="430" y="227" text-anchor="middle" fill="#2a7050" font-size="9" font-family="JetBrains Mono">Биодинамический алгоритм</text>
+      <text x="430" y="242" text-anchor="middle" fill="#2a7050" font-size="8" font-family="JetBrains Mono">Расписание · Сцены · Сенсоры</text>
+      <text x="430" y="256" text-anchor="middle" fill="#4a8060" font-size="8" font-family="JetBrains Mono">Протоколы: DALI-DT8 / KNX</text>
+    </g>
+
+    <!-- Inputs -->
+    <g class="node" onclick="showInfo('hcl','clock')">
+      <rect x="40" y="210" width="120" height="52" rx="6" fill="#fffbe8" stroke="#c08010" stroke-width="1.5"/>
+      <text x="100" y="230" text-anchor="middle" font-size="16">🕐</text>
+      <text x="100" y="248" text-anchor="middle" fill="#805010" font-size="9" font-family="JetBrains Mono" font-weight="600">Астрочасы / RTC</text>
+      <text x="100" y="258" text-anchor="middle" fill="#c09030" font-size="8" font-family="JetBrains Mono">Геолокация, сезон</text>
+    </g>
+    <line x1="160" y1="236" x2="320" y2="230" stroke="#c08010" stroke-width="1.5" marker-end="url(#aa)" class="fb"/>
+
+    <g class="node" onclick="showInfo('hcl','sensor')">
+      <rect x="40" y="280" width="120" height="52" rx="6" fill="#e8fff4" stroke="#1a7a42" stroke-width="1.5"/>
+      <text x="100" y="300" text-anchor="middle" font-size="16">👁</text>
+      <text x="100" y="318" text-anchor="middle" fill="#0d5a30" font-size="9" font-family="JetBrains Mono" font-weight="600">Датчики</text>
+      <text x="100" y="328" text-anchor="middle" fill="#2a7050" font-size="8" font-family="JetBrains Mono">Lux · Присутствие</text>
+    </g>
+    <line x1="160" y1="306" x2="320" y2="256" stroke="#1a7a42" stroke-width="1.5" marker-end="url(#ag)" class="fe"/>
+
+    <g class="node" onclick="showInfo('hcl','user')">
+      <rect x="700" y="210" width="130" height="52" rx="6" fill="#f4eeff" stroke="#7030a0" stroke-width="1.5"/>
+      <text x="765" y="230" text-anchor="middle" font-size="16">👤</text>
+      <text x="765" y="248" text-anchor="middle" fill="#5020a0" font-size="9" font-family="JetBrains Mono" font-weight="600">Пользователь</text>
+      <text x="765" y="258" text-anchor="middle" fill="#7030a0" font-size="8" font-family="JetBrains Mono">Ручная корректировка</text>
+    </g>
+    <line x1="700" y1="236" x2="540" y2="230" stroke="#7030a0" stroke-width="1.5" marker-end="url(#av)" class="fe"/>
+
+    <!-- Outputs: TW luminaires -->
+    <g class="node" onclick="showInfo('hcl','tw_lum')">
+      <rect x="320" y="300" width="220" height="52" rx="6" fill="#fff8e8" stroke="#e08020" stroke-width="1.8"/>
+      <text x="430" y="320" text-anchor="middle" fill="#905010" font-size="10" font-family="JetBrains Mono" font-weight="700">TW Светильники</text>
+      <text x="430" y="334" text-anchor="middle" fill="#c07020" font-size="8" font-family="JetBrains Mono">DALI-DT8 · Tunable White · CRI≥90</text>
+      <text x="430" y="346" text-anchor="middle" fill="#d09030" font-size="8" font-family="JetBrains Mono">CCT: 2700–6500К · Яркость: 5–100%</text>
+    </g>
+    <line x1="430" y1="270" x2="430" y2="300" stroke="#e08020" stroke-width="2" marker-end="url(#aa)" class="fa"/>
+
+    <!-- Effects boxes -->
+    <g class="node" onclick="showInfo('hcl','melanopsin')">
+      <rect x="590" y="280" width="165" height="72" rx="6" fill="#e8f0ff" stroke="#1060a0" stroke-width="1.5"/>
+      <text x="672" y="300" text-anchor="middle" fill="#1040a0" font-size="9" font-family="JetBrains Mono" font-weight="700">Меланопсин / ipRGC</text>
+      <text x="672" y="315" text-anchor="middle" fill="#1878c0" font-size="8" font-family="JetBrains Mono">Пик чувств.: ~480 нм</text>
+      <text x="672" y="329" text-anchor="middle" fill="#1878c0" font-size="8" font-family="JetBrains Mono">Синий свет → бодрость</text>
+      <text x="672" y="343" text-anchor="middle" fill="#3080c0" font-size="8" font-family="JetBrains Mono">Вечером → мелатонин</text>
+    </g>
+
+    <!-- CCT timeline at bottom -->
+    <rect x="40" y="134" width="780" height="44" rx="5" fill="none" stroke="#d0c8b0" stroke-width="1"/>
+    <text x="60" y="152" fill="#806040" font-size="8" font-family="JetBrains Mono" font-weight="600">Типовое расписание HCL:</text>
+    <rect x="40" y="134" width="100" height="44" rx="5" fill="#ffe0a0" opacity=".4"/>
+    <rect x="140" y="134" width="120" height="44" rx="0" fill="#ffe8b8" opacity=".4"/>
+    <rect x="260" y="134" width="200" height="44" rx="0" fill="#f4f8ff" opacity=".5"/>
+    <rect x="460" y="134" width="120" height="44" rx="0" fill="#fff8e0" opacity=".4"/>
+    <rect x="580" y="134" width="120" height="44" rx="0" fill="#ffe0a0" opacity=".4"/>
+    <rect x="700" y="134" width="120" height="44" rx="5" fill="#ffd0a0" opacity=".5"/>
+    <text x="90"  y="162" text-anchor="middle" fill="#a05010" font-size="8" font-family="JetBrains Mono">06–08</text>
+    <text x="90"  y="172" text-anchor="middle" fill="#a05010" font-size="7" font-family="JetBrains Mono">3000К 40%</text>
+    <text x="200" y="162" text-anchor="middle" fill="#905020" font-size="8" font-family="JetBrains Mono">08–10</text>
+    <text x="200" y="172" text-anchor="middle" fill="#905020" font-size="7" font-family="JetBrains Mono">4500К 80%</text>
+    <text x="360" y="162" text-anchor="middle" fill="#504080" font-size="8" font-family="JetBrains Mono">10–16 рабочий день</text>
+    <text x="360" y="172" text-anchor="middle" fill="#504080" font-size="7" font-family="JetBrains Mono">5000–6000К 100%</text>
+    <text x="520" y="162" text-anchor="middle" fill="#806040" font-size="8" font-family="JetBrains Mono">16–18</text>
+    <text x="520" y="172" text-anchor="middle" fill="#806040" font-size="7" font-family="JetBrains Mono">4000К 70%</text>
+    <text x="640" y="162" text-anchor="middle" fill="#a06030" font-size="8" font-family="JetBrains Mono">18–20</text>
+    <text x="640" y="172" text-anchor="middle" fill="#a06030" font-size="7" font-family="JetBrains Mono">3500К 50%</text>
+    <text x="760" y="162" text-anchor="middle" fill="#c05010" font-size="8" font-family="JetBrains Mono">20–24</text>
+    <text x="760" y="172" text-anchor="middle" fill="#c05010" font-size="7" font-family="JetBrains Mono">2700К 20%</text>
+  </svg>
+  <div class="flow-legend">
+    <div class="fl"><div class="fl-line" style="background:#c08010"></div>Время / расписание</div>
+    <div class="fl"><div class="fl-line" style="background:#1a7a42"></div>Сенсоры / обратная связь</div>
+    <div class="fl"><div class="fl-line" style="background:#e08020"></div>TW светильники</div>
+    <div class="fl"><div class="fl-line" style="background:#7030a0"></div>Пользователь</div>
+  </div>
+</div>
+<div class="panel-tabs" style="--panel-c:#1a7a42" id="pt-hcl">
+  <div class="ptab on" onclick="switchPT('hcl','desc')">Описание</div>
+  <div class="ptab" onclick="switchPT('hcl','spec')">Характеристики</div>
+  <div class="ptab" onclick="switchPT('hcl','tips')">Советы</div>
+</div>
+<div class="info-panel" id="ip-hcl">
+  <div class="tc on" id="tc-hcl-desc"><h3 style="color:#1a7a42">← Выберите элемент</h3><p>Нажмите на блок для изучения Human Centric Lighting системы.</p></div>
+  <div class="tc" id="tc-hcl-spec"><p style="color:#c0c8b0">Выберите элемент</p></div>
+  <div class="tc" id="tc-hcl-tips"><p style="color:#c0c8b0">Выберите элемент</p></div>
+</div>
+</div>
+
+<!-- ===================== SMART HOME ===================== -->
+<div class="tsec" id="tsec-smarthome">
+<div class="diag-wrap">
+  <div class="diag-hint">Архитектура умного дома + светотехника — нажмите на слой</div>
+  <svg class="diag" viewBox="0 0 860 380">
+    <rect width="860" height="380" fill="url(#pg)"/>
+    <!-- Layers -->
+    <!-- L1: Cloud -->
+    <g class="node" onclick="showInfo('sh','cloud')">
+      <rect x="16" y="10" width="828" height="52" rx="7" fill="#f0f6ff" stroke="#3070d0" stroke-width="1.5"/>
+      <text x="430" y="30" text-anchor="middle" fill="#1050b0" font-size="10" font-family="JetBrains Mono" font-weight="700">ОБЛАКО / СЕРВЕР — Удалённое управление · Аналитика · ИИ алгоритмы</text>
+      <text x="200" y="50" text-anchor="middle" fill="#3070d0" font-size="8" font-family="JetBrains Mono">REST API · MQTT · HTTPS</text>
+      <text x="430" y="50" text-anchor="middle" fill="#3070d0" font-size="8" font-family="JetBrains Mono">Apple HomeKit · Google Home · Amazon Alexa · Yandex</text>
+      <text x="700" y="50" text-anchor="middle" fill="#3070d0" font-size="8" font-family="JetBrains Mono">Energy Management · Отчёты</text>
+    </g>
+    <!-- L2: Controller -->
+    <g class="node" onclick="showInfo('sh','gateway')">
+      <rect x="16" y="76" width="828" height="56" rx="7" fill="#e8fff4" stroke="#1a7a42" stroke-width="2"/>
+      <text x="180" y="98" text-anchor="middle" fill="#0d5a30" font-size="10" font-family="JetBrains Mono" font-weight="700">HUB / ШЛЮЗ / КОНТРОЛЛЕР</text>
+      <text x="180" y="114" text-anchor="middle" fill="#2a7050" font-size="8" font-family="JetBrains Mono">KNX IP / DALI Gateway / Loxone / Crestron / AMX</text>
+      <rect x="400" y="82" width="100" height="36" rx="4" fill="#d0f0e0" stroke="#1a7a42" stroke-width="1.2"/>
+      <text x="450" y="100" text-anchor="middle" fill="#0d5a30" font-size="8" font-family="JetBrains Mono" font-weight="600">KNX шина</text>
+      <text x="450" y="112" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">2-проводная</text>
+      <rect x="516" y="82" width="100" height="36" rx="4" fill="#d0f0e0" stroke="#1a7a42" stroke-width="1.2"/>
+      <text x="566" y="100" text-anchor="middle" fill="#0d5a30" font-size="8" font-family="JetBrains Mono" font-weight="600">DALI-шина</text>
+      <text x="566" y="112" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">64 устр./шина</text>
+      <rect x="632" y="82" width="100" height="36" rx="4" fill="#d0f0e0" stroke="#1a7a42" stroke-width="1.2"/>
+      <text x="682" y="100" text-anchor="middle" fill="#0d5a30" font-size="8" font-family="JetBrains Mono" font-weight="600">IP-сеть</text>
+      <text x="682" y="112" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">PoE / Wi-Fi</text>
+      <rect x="748" y="82" width="88" height="36" rx="4" fill="#d0f0e0" stroke="#1a7a42" stroke-width="1.2"/>
+      <text x="792" y="100" text-anchor="middle" fill="#0d5a30" font-size="8" font-family="JetBrains Mono" font-weight="600">Matter/Zigbee</text>
+      <text x="792" y="112" text-anchor="middle" fill="#2a7050" font-size="7" font-family="JetBrains Mono">беспровод.</text>
+    </g>
+    <line x1="430" y1="62" x2="430" y2="76" stroke="#1a7a42" stroke-width="1.5" class="fb"/>
+
+    <!-- L3: Rooms -->
+    <g onclick="showInfo('sh','room')">
+      <rect x="16" y="148" width="828" height="134" rx="7" fill="#f8f9f5" stroke="#a0b090" stroke-width="1.2"/>
+      <text x="430" y="166" text-anchor="middle" fill="#485040" font-size="9" font-family="JetBrains Mono" font-weight="700">ПОМЕЩЕНИЯ — Зоны автоматизации освещения</text>
+      <!-- Room 1 -->
+      <g class="node" onclick="showInfo('sh','room_living')">
+        <rect x="30" y="172" width="155" height="96" rx="5" fill="#fff8ee" stroke="#c08010" stroke-width="1.2"/>
+        <text x="107" y="190" text-anchor="middle" fill="#805010" font-size="9" font-family="JetBrains Mono" font-weight="600">Гостиная</text>
+        <text x="107" y="204" text-anchor="middle" fill="#c09030" font-size="7.5" font-family="JetBrains Mono">Сцены освещения</text>
+        <text x="107" y="217" text-anchor="middle" fill="#c09030" font-size="7.5" font-family="JetBrains Mono">Кино · Вечер · Прием</text>
+        <text x="107" y="230" text-anchor="middle" fill="#c09030" font-size="7.5" font-family="JetBrains Mono">TW 2700–5000К</text>
+        <text x="107" y="243" text-anchor="middle" fill="#c09030" font-size="7.5" font-family="JetBrains Mono">Dim: 1–100%</text>
+        <text x="107" y="258" text-anchor="middle" fill="#d0a040" font-size="7.5" font-family="JetBrains Mono">DALI · Трекинг</text>
+      </g>
+      <!-- Room 2 -->
+      <g class="node" onclick="showInfo('sh','room_work')">
+        <rect x="198" y="172" width="155" height="96" rx="5" fill="#e8f2ff" stroke="#1878c0" stroke-width="1.2"/>
+        <text x="275" y="190" text-anchor="middle" fill="#1060a0" font-size="9" font-family="JetBrains Mono" font-weight="600">Рабочий кабинет</text>
+        <text x="275" y="204" text-anchor="middle" fill="#3080c0" font-size="7.5" font-family="JetBrains Mono">HCL расписание</text>
+        <text x="275" y="217" text-anchor="middle" fill="#3080c0" font-size="7.5" font-family="JetBrains Mono">E = 500 лк норма</text>
+        <text x="275" y="230" text-anchor="middle" fill="#3080c0" font-size="7.5" font-family="JetBrains Mono">UGR &lt; 19</text>
+        <text x="275" y="243" text-anchor="middle" fill="#3080c0" font-size="7.5" font-family="JetBrains Mono">5000–6500К днём</text>
+        <text x="275" y="258" text-anchor="middle" fill="#4090c0" font-size="7.5" font-family="JetBrains Mono">Датчик движения</text>
+      </g>
+      <!-- Room 3 -->
+      <g class="node" onclick="showInfo('sh','room_bed')">
+        <rect x="366" y="172" width="155" height="96" rx="5" fill="#f4eeff" stroke="#7030a0" stroke-width="1.2"/>
+        <text x="443" y="190" text-anchor="middle" fill="#5020a0" font-size="9" font-family="JetBrains Mono" font-weight="600">Спальня</text>
+        <text x="443" y="204" text-anchor="middle" fill="#7030a0" font-size="7.5" font-family="JetBrains Mono">Подъём / Засыпание</text>
+        <text x="443" y="217" text-anchor="middle" fill="#7030a0" font-size="7.5" font-family="JetBrains Mono">2700К вечером</text>
+        <text x="443" y="230" text-anchor="middle" fill="#7030a0" font-size="7.5" font-family="JetBrains Mono">Плавный рассвет</text>
+        <text x="443" y="243" text-anchor="middle" fill="#7030a0" font-size="7.5" font-family="JetBrains Mono">Ночник &lt;5 лк</text>
+        <text x="443" y="258" text-anchor="middle" fill="#9050c0" font-size="7.5" font-family="JetBrains Mono">0% синего спектра</text>
+      </g>
+      <!-- Room 4 -->
+      <g class="node" onclick="showInfo('sh','room_kitchen')">
+        <rect x="534" y="172" width="155" height="96" rx="5" fill="#e8fff4" stroke="#1a7a42" stroke-width="1.2"/>
+        <text x="611" y="190" text-anchor="middle" fill="#0d5a30" font-size="9" font-family="JetBrains Mono" font-weight="600">Кухня</text>
+        <text x="611" y="204" text-anchor="middle" fill="#2a7050" font-size="7.5" font-family="JetBrains Mono">Рабочая + общая</text>
+        <text x="611" y="217" text-anchor="middle" fill="#2a7050" font-size="7.5" font-family="JetBrains Mono">E = 300/500 лк</text>
+        <text x="611" y="230" text-anchor="middle" fill="#2a7050" font-size="7.5" font-family="JetBrains Mono">CRI ≥ 90 Ra</text>
+        <text x="611" y="243" text-anchor="middle" fill="#2a7050" font-size="7.5" font-family="JetBrains Mono">Акцент / Общий</text>
+        <text x="611" y="258" text-anchor="middle" fill="#3a8060" font-size="7.5" font-family="JetBrains Mono">Под шкафами LED</text>
+      </g>
+      <!-- Room 5 -->
+      <g class="node" onclick="showInfo('sh','room_corr')">
+        <rect x="702" y="172" width="130" height="96" rx="5" fill="#fff0f8" stroke="#c03080" stroke-width="1.2"/>
+        <text x="767" y="190" text-anchor="middle" fill="#902050" font-size="9" font-family="JetBrains Mono" font-weight="600">Коридор</text>
+        <text x="767" y="204" text-anchor="middle" fill="#c03080" font-size="7.5" font-family="JetBrains Mono">Датчик движения</text>
+        <text x="767" y="217" text-anchor="middle" fill="#c03080" font-size="7.5" font-family="JetBrains Mono">Автовыкл. 3 мин</text>
+        <text x="767" y="230" text-anchor="middle" fill="#c03080" font-size="7.5" font-family="JetBrains Mono">Dim: 5% ночью</text>
+        <text x="767" y="243" text-anchor="middle" fill="#c03080" font-size="7.5" font-family="JetBrains Mono">Dim: 80% днём</text>
+        <text x="767" y="258" text-anchor="middle" fill="#d04090" font-size="7.5" font-family="JetBrains Mono">Авар. освещение</text>
+      </g>
+    </g>
+    <line x1="430" y1="132" x2="430" y2="148" stroke="#a0b090" stroke-width="1.2" class="fe"/>
+
+    <!-- L4: Devices -->
+    <g onclick="showInfo('sh','devices')">
+      <rect x="16" y="296" width="828" height="72" rx="7" fill="#f5f6f1" stroke="#8a9280" stroke-width="1"/>
+      <text x="430" y="312" text-anchor="middle" fill="#485040" font-size="9" font-family="JetBrains Mono" font-weight="700">ИСПОЛНИТЕЛЬНЫЕ УСТРОЙСТВА</text>
+      <text x="120" y="330" text-anchor="middle" fill="#5a6848" font-size="8" font-family="JetBrains Mono">💡 Dim-светильники</text>
+      <text x="250" y="330" text-anchor="middle" fill="#5a6848" font-size="8" font-family="JetBrains Mono">🎚 RGB/TW панели</text>
+      <text x="380" y="330" text-anchor="middle" fill="#5a6848" font-size="8" font-family="JetBrains Mono">🔆 LED ленты</text>
+      <text x="500" y="330" text-anchor="middle" fill="#5a6848" font-size="8" font-family="JetBrains Mono">🎯 Трековые</text>
+      <text x="620" y="330" text-anchor="middle" fill="#5a6848" font-size="8" font-family="JetBrains Mono">📡 Датчики Lux/PIR</text>
+      <text x="760" y="330" text-anchor="middle" fill="#5a6848" font-size="8" font-family="JetBrains Mono">🔌 Розетки/реле</text>
+      <text x="430" y="358" text-anchor="middle" fill="#8a9280" font-size="8" font-family="JetBrains Mono">Нажмите на зону помещения выше для подробностей</text>
+    </g>
+    <line x1="430" y1="282" x2="430" y2="296" stroke="#8a9280" stroke-width="1.2" class="fe"/>
+  </svg>
+  <div class="flow-legend">
+    <div class="fl"><div class="fl-line" style="background:#3070d0"></div>Облако / Интернет</div>
+    <div class="fl"><div class="fl-line" style="background:#1a7a42"></div>KNX / DALI шина</div>
+    <div class="fl"><div class="fl-line" style="background:#c08010"></div>Зоны помещений</div>
+    <div class="fl"><div class="fl-line" style="background:#7030a0"></div>Matter / Zigbee</div>
+  </div>
+</div>
+<div class="panel-tabs" style="--panel-c:#1a7a42" id="pt-smarthome">
+  <div class="ptab on" onclick="switchPT('smarthome','desc')">Описание</div>
+  <div class="ptab" onclick="switchPT('smarthome','spec')">Характеристики</div>
+  <div class="ptab" onclick="switchPT('smarthome','tips')">Советы</div>
+</div>
+<div class="info-panel" id="ip-smarthome">
+  <div class="tc on" id="tc-smarthome-desc"><h3 style="color:#1a7a42">← Выберите слой или помещение</h3><p>Нажмите на блок для изучения архитектуры умного дома + светотехника.</p></div>
+  <div class="tc" id="tc-smarthome-spec"><p style="color:#c0c8b0">Выберите элемент</p></div>
+  <div class="tc" id="tc-smarthome-tips"><p style="color:#c0c8b0">Выберите элемент</p></div>
+</div>
+</div>
+
+</div>
+<script>
+// ===================== DATA =====================
+var DATA={
+  proto:{
+    ctrl:{c:'#1a7a42',title:'Центральный контроллер / шлюз',tag:'МУЛЬТИПРОТОКОЛ',
+      desc:'Центральный узел объединяет несколько протоколов управления. Обычно это KNX IP Router + DALI Gateway или специализированный BMS-контроллер (Loxone, Crestron, AMX). Переводит команды между протоколами.',
+      specs:[['Протоколы','KNX, DALI, Modbus, BACnet'],['Интерфейсы','Ethernet, RS-485, USB'],['Программирование','ETS5/6 (KNX), DALI Tool'],['Резервирование','горячее дублирование в BMS'],['ПО','Visualization, Scene, Schedule']],
+      tips:'Выбирайте контроллер с открытым API для интеграции с облаком. KNX + DALI — оптимальная связка для коммерческих объектов. Предусмотрите UPS питание контроллера.'},
+    dali:{c:'#1878c0',title:'DALI-2 (IEC 62386)',tag:'ЦИФРОВОЙ ПРОТОКОЛ',
+      desc:'DALI-2 — профессиональный цифровой протокол управления освещением. Двунаправленный: контроллер не только отдаёт команды, но и получает статус каждого устройства (лампа перегорела, уровень заряда аккумулятора).',
+      specs:[['Стандарт','IEC 62386 (DALI-2)'],['Устройств на шину','64 адреса (0–63)'],['Групп','16 (одно устройство — неск. групп)'],['Сцен','16 сцен на устройство'],['Кабель','2×0.75 мм², до 300м'],['Питание шины','16В DC, макс. 250мА']],
+      tips:'DALI-2 обязателен для новых проектов — он требует сертификации устройств. DALI-DT8 добавляет управление Tunable White и RGBW. Device Type 202/203 — аварийное освещение с автотестированием.'},
+    dmx:{c:'#d05010',title:'DMX-512 / RDM',tag:'СЦЕНИЧЕСКИЙ ПРОТОКОЛ',
+      desc:'DMX-512 — отраслевой стандарт управления световыми приборами в театре, архитектурном освещении, концертной индустрии. Однонаправленный (без RDM). 512 каналов на одно «вселенную» (universe).',
+      specs:[['Стандарт','ANSI E1.11 (DMX512), E1.20 (RDM)'],['Каналов','512 / universe'],['Интерфейс','EIA-485 / XLR-5pin'],['Скорость','250 кбит/с'],['Дальность','до 1200м (с ретранслятором)'],['RDM','двунаправленный (ответ устройств)']],
+      tips:'DMX — незаменим для прожекторов, заливного света, RGB систем с частой сменой сцен. При длинных кабельных трассах используйте DMX сплиттеры и терминаторы (120 Ом). Для IP-сетей: Art-Net / sACN (E1.31).'},
+    v10:{c:'#c08010',title:'0–10В аналоговый',tag:'АНАЛОГОВЫЙ СИГНАЛ',
+      desc:'Простейший аналоговый протокол диммирования. Два провода от контроллера к драйверу: 0В = минимум (или выкл), 10В = 100% яркость. Нет адресации — только зональное управление.',
+      specs:[['Тип','Аналоговый постоянный ток'],['Диапазон','0–10В DC (некоторые: 1–10В)'],['Ток','источник тока ≤1мА или токоприёмник'],['Кабель','2×0.5 мм², до 300м'],['Адресация','нет (зоны)'],['Применение','офис, пром., уличное']],
+      tips:'Важно: 0–10В и 1–10В — разные стандарты. При 0В часть драйверов идёт в минимум, не выключается. Для полного отключения нужен выключатель в силовой цепи. Параллельно — до 10 драйверов на канал.'},
+    knx:{c:'#7030a0',title:'KNX / EIB',tag:'ШИНА УМНОГО ЗДАНИЯ',
+      desc:'KNX — открытый стандарт автоматизации зданий (ISO/IEC 14543). Управляет не только освещением, но и отоплением, вентиляцией, безопасностью, жалюзи. Двунаправленный, децентрализованный.',
+      specs:[['Стандарт','ISO/IEC 14543-3 / EN 50090'],['Кабель','2-проводная шина (YCYM 2×2×0.8)'],['Топология','линия/область/магистраль'],['Устройств','до 64 / линия, до 65535 / сеть'],['ПО','ETS (Engineering Tool Software)'],['Интеграция','BACnet, Modbus, IP']],
+      tips:'KNX — стандарт де-факто для коммерческих зданий Европы. Программирование ETS требует обучения. Для связки с DALI используйте DALI Gateway. Двухпроводная шина = питание + данные.'},
+    modbus:{c:'#1a7a42',title:'Modbus RTU / TCP',tag:'ПРОМЫШЛЕННЫЙ ПРОТОКОЛ',
+      desc:'Modbus — классический промышленный протокол для управления и мониторинга. В светотехнике применяется для интеграции с SCADA системами, управления промышленным освещением, учёта энергопотребления.',
+      specs:[['Тип','Modbus RTU (RS-485) / Modbus TCP'],['Кабель','RS-485, витая пара, до 1200м'],['Устройств','до 247 на сегмент RTU'],['Скорость','9600–115200 бод (RTU)'],['Регистры','Holding, Input, Coil, Discrete'],['Применение','SCADA, промышленность, склады']],
+      tips:'Modbus TCP — через стандартный Ethernet. Modbus RTU — через RS-485 (3 провода). Не забудьте терминирующие резисторы на концах шины. Адреса: 1–247 (0 = broadcast).'},
+    wireless:{c:'#c03080',title:'Wi-Fi / BLE / Matter / Zigbee',tag:'БЕСПРОВОДНЫЕ ПРОТОКОЛЫ',
+      desc:'Беспроводные протоколы для умного дома. Matter (2022) — новый унифицированный стандарт Apple/Google/Amazon. Zigbee — mesh-сеть до 65000 устройств. BLE Mesh — Bluetooth 5.x для освещения.',
+      specs:[['Matter','IP-based, Wi-Fi + Thread'],['Zigbee','2.4 ГГц, Mesh, до 65536 узлов'],['BLE Mesh','Bluetooth 5.0+, до 32767 узлов'],['Z-Wave','868 МГц, Mesh, до 232 узлов'],['Wi-Fi','802.11 b/g/n/ac, облачная инт.'],['Применение','жилые, малые офисы, ретрофит']],
+      tips:'Matter — выбор для новых жилых проектов. Zigbee — для средних объектов без кабельного монтажа. Для надёжных коммерческих объектов — проводные KNX/DALI предпочтительнее. Wi-Fi: риск перегрузки канала при >50 устройств.'},
+    pwm:{c:'#9030c0',title:'ШИМ / PWM управление',tag:'ДИММИРОВАНИЕ',
+      desc:'Широтно-импульсная модуляция используется непосредственно в контроллерах LED для управления яркостью и цветом. Частота 500–20000 Гц. При низкой частоте — мерцание видно на видео.',
+      specs:[['Частота','500–20000 Гц'],['Диапазон','0.1–100%'],['Каналов','1–4+ (Mono/RGB/RGBW)'],['Мерцание','при f<1кГц — риск на видео'],['Разрешение','8–16 бит (256–65536 шагов)'],['Применение','LED ленты, контроллеры, RGBW']],
+      tips:'Для видеосъёмки: частота ШИМ ≥ 3× частоты кадров камеры. При 50 fps камера: ШИМ ≥ 150 Гц, лучше ≥ 1000 Гц. 16-bit ШИМ обязателен для плавного диммирования в диапазоне 1–5%.'},
+    luminaires:{c:'#5a6848',title:'Светильники с ECG/драйверами',tag:'ИСПОЛНИТЕЛЬНЫЕ УСТРОЙСТВА',
+      desc:'Конечные световые приборы принимают команды по протоколам управления. ECG (Electronic Control Gear) — электронный пускорегулирующий аппарат, встроенный в светильник или внешний.',
+      specs:[['ECG',  'Electronic Control Gear (DALI)'],['Типы', 'Downlight, Трековый, Линейный, Панель'],['Протоколы','DALI-2, 0–10В, ШИМ, Matter'],['Стандарт','IEC 60598-1 конструкция'],['IP класс','IP20–IP68 по применению'],['КПД','>90% у LED драйверов']],
+      tips:'При выборе светильников для DALI-проекта: проверяйте совместимость с DALI-2 (не только DALI-1). DT8 нужен для Tunable White. Для аварийного освещения — DALI Part 202/203.'},
+  },
+  topo:{
+    central:{c:'#1878c0',title:'Централизованная топология',tag:'ОДИН БП — ВСЕ СВЕТИЛЬНИКИ',
+      desc:'Один большой блок питания питает шину, от которой запитаны все светильники. Простая схема, минимум оборудования. Подходит для небольших помещений с компактным расположением светильников.',
+      specs:[['Преимущества','простота, мало оборудования'],['Недостатки','длинные DC кабели, потери напряжения'],['Кабель DC','сечение по расчёту ΔU≤3%'],['Применение','до 20 светильников в одном зале'],['БП','один 150–600 Вт'],['Защита','предохранитель на каждой ветви']],
+      tips:'Расчёт сечения кабеля: S = 2×L×I / (γ×ΔU), где γ=57 (медь). При длине >10м и токе >5А — переходите на распределённую топологию. Звёздная разводка от щита предпочтительнее шинной.'},
+    distrib:{c:'#1a7a42',title:'Распределённая топология',tag:'ДРАЙВЕР НА КАЖДЫЙ ПРИБОР',
+      desc:'Каждый светильник или небольшая группа имеет свой драйвер 230В AC → DC. Сеть 230В AC прокладывается до каждой точки. Драйвер размещается в корпусе светильника или рядом.',
+      specs:[['Преимущества','короткие DC кабели, гибкость'],['Недостатки','много драйверов, сложность монтажа'],['Применение','коммерческие объекты, офисы, ритейл'],['Кабель','230В AC → драйвер → DC светильник'],['Управление','DALI/0-10В к каждому драйверу'],['Замена','простая замена одного драйвера']],
+      tips:'Оптимальная топология для больших офисных пространств. Драйверы с DALI легко объединяются в группы и сцены. Предусмотрите доступ к драйверам для обслуживания (потолочный люк).'},
+    poe:{c:'#c08010',title:'PoE (Power over Ethernet)',tag:'ПИТАНИЕ ПО ВИТОЙ ПАРЕ',
+      desc:'PoE IEEE 802.3bt позволяет передавать до 90 Вт по кабелю Ethernet. Светильник получает питание и данные по одному кабелю RJ-45. Идеально для открытых пространств с гибкой расстановкой.',
+      specs:[['Стандарт','IEEE 802.3bt (Type 3/4)'],['Макс. мощность','60Вт (Type 3), 90Вт (Type 4)'],['Напряжение','48–57В DC'],['Кабель','Cat5e/Cat6, до 100м'],['Протокол','IP / DALI over IP'],['Применение','Open Space, коворкинги, школы']],
+      tips:'PoE-светильники имеют встроенный IP-адрес — индивидуальное управление каждым прибором через сеть. Функция Cisco Digital Ceiling. Учтите: PoE switch стоит дорого, но исключает отдельный кабельный монтаж для управления.'},
+    busbar:{c:'#7030a0',title:'Шинопровод (Track)',tag:'МАГНИТНЫЙ / ЭЛЕКТРИЧЕСКИЙ ТРЕК',
+      desc:'Шинопровод — механическая шина с электрическими контактами. Светильники крепятся магнитно или механически в любом месте по длине. Питание + данные через шину. Гибкость расстановки без кабельного монтажа.',
+      specs:[['Типы','1-фазный, 3-фазный, DC48В магнитный'],['Питание','230В AC (3-фазный) / 48В DC (маг.)'],['Управление','DALI / Bluetooth / 0–10В в шине'],['Мощность','до 3.5кВт/м (3-фазный)'],['Монтаж','накладной, подвесной, встраиваемый'],['IP','IP20–IP65 (внешний)]']],
+      tips:'Магнитный шинопровод 48В DC — наиболее безопасный (БСНН), не требует разрешений на монтаж в жилых. Гибкость: светильники перемещаются без инструмента. Минус: система проприетарная, светильники и шина одного производителя.'},
+    panel:{c:'#4a5040',title:'Силовой щиток освещения',tag:'РАСПРЕДЕЛИТЕЛЬНЫЙ ЩИТ',
+      desc:'Щиток объединяет все компоненты управления питанием и светом: автоматы, УЗО, БП, контроллеры DALI/KNX, аварийные блоки. Монтируется на DIN-рейку 35мм.',
+      specs:[['УЗО','30мА для группы освещения'],['Автоматы','C6–C16 на каждую группу'],['БП DIN','Mean Well HDR / MDR серии'],['DALI','контроллер 1–4 шины'],['Авар. блок','ЦАП или DALI Part 202'],['Измерение','SDM630 или аналог']],
+      tips:'Разделяйте цепи рабочего и аварийного освещения на отдельных автоматах и в отдельных кабельных трассах. Для DALI: каждая шина на отдельный контроллер. Щит должен быть доступен для обслуживания (не замуровывать в стену).'},
+  },
+  emerg:{
+    cbs:{c:'#c08010',title:'ЦАП — Центральный Аккумуляторный Прибор',tag:'АВАРИЙНОЕ ПИТАНИЕ',
+      desc:'ЦАП — основа централизованной системы аварийного освещения. Содержит аккумуляторы (обычно 24В или 48В VRLA/Li), зарядное устройство, инвертор 230В AC для подключения обычных аварийных светильников и систему мониторинга.',
+      specs:[['Ёмкость','расчёт: P_авар. × t_авт. / КПД'],['Напряжение акк.','24В или 48В (VRLA / Li-Ion)'],['Автономия','≥1 ч (EN 62034), обычно 3 ч'],['Выход','230В AC через инвертор'],['Мониторинг','DALI Part 202/203, BACnet'],['Тесты','функцион. 4 нед., полный 1 год']],
+      tips:'Расчёт аккумулятора: Ε = P_аварийного × t_авт. × 1.25 (запас). При Li-Ion: 30% меньше объёма, 3× дольше срок. VRLA: замена каждые 4–6 лет. Температурная компенсация зарядного важна в холодных помещениях.'},
+    normal_lum:{c:'#1878c0',title:'Рабочие светильники',tag:'ОСНОВНОЕ ОСВЕЩЕНИЕ',
+      desc:'Обычные светильники, работающие от основной сети. При исчезновении питания гаснут. Управляются по DALI или другим протоколам. Могут быть совмещены с аварийными функциями (ТМ светильники).',
+      specs:[['Питание','230В AC от основной сети'],['Управление','DALI / KNX / 0–10В'],['При отказе','гаснут немедленно'],['Замена аварийн.','нельзя заменить ЦАП'],['Класс','обычные светильники']],
+      tips:'Для снижения стоимости: используйте ТМ (conversion kit) — аварийный модуль, устанавливаемый в обычный светильник. Один светильник выполняет функции и рабочего, и аварийного.'},
+    emerg_lum:{c:'#c08010',title:'Аварийные светильники',tag:'АВАРИЙНОЕ ОСВЕЩЕНИЕ',
+      desc:'Светильники, питаемые от ЦАП (или со встроенным аккумулятором). Включаются автоматически при исчезновении основного питания. Должны обеспечивать нормируемую освещённость на путях эвакуации.',
+      specs:[['Нормативы','EN 1838, СП 256.1325800, ГОСТ Р 55842'],['Мин. освещённость','1 лк на оси пути эвакуации'],['Равномерность','40:1 (Emax/Emin)'],['Автономия','≥1 ч EN 62034 (до 3 ч)'],['Переключение','≤5с (стандарт), ≤0.5с (высокий риск)'],['Тест','автоматич. через DALI-202/203']],
+      tips:'Размещение: через каждые 25м на пути эвакуации, у каждой двери на пути выхода, у лестниц (каждый пролёт), у изменений уровня, у пожарного инвентаря. Минимум: 1 светильник в помещении >60м².'},
+    type_se:{c:'#1a7a42',title:'СЕ — Аварийное освещение путей эвакуации',tag:'ESCAPE ROUTE LIGHTING',
+      desc:'Освещение, обеспечивающее безопасную эвакуацию людей из здания. Горизонтальная освещённость на полу вдоль центральной оси пути — не менее 1 лк. Вертикальная на дверях — не менее 0.5 лк.',
+      specs:[['Нормируемая Eh','≥1 лк на оси пути'],['Равномерность','40:1 (центр/край)'],['Ширина пути','до 2м (один ряд), >2м → два ряда'],['Знаки','светящиеся указатели ВЫХОД'],['Стандарт','EN 1838 / ГОСТ Р 55842']],
+      tips:'При ширине коридора >2м необходимо два ряда аварийных светильников. Знаки «ВЫХОД» должны быть видны из любой точки пути эвакуации. Высота монтажа знака: ≥2м, ≤2.5м (EN ISO 7010).'},
+    type_ap:{c:'#1060a0',title:'АО — Антипаника (Open Area)',tag:'ANTI-PANIC LIGHTING',
+      desc:'Освещение открытых пространств (залов ожидания, торговых залов, конференц-залов) для предотвращения паники при отключении основного освещения. Равномерное освещение всей площади.',
+      specs:[['Нормируемая Eh','≥0.5 лк (EN 1838) горизонтально'],['Применение','помещения >60м², площадки сборных пунктов'],['Равномерность','40:1 / нет резких теней'],['Стандарт','EN 1838, часть 3'],['Переключение','≤5с']],
+      tips:'Для больших залов проверяйте равномерность расчётом в DIALux или Relux. При высоких потолках используйте направленные аварийные прожекторы. Учитывайте блокировку от мебели при расчёте.'},
+    type_hl:{c:'#d05010',title:'ВО — Освещение высокого риска',tag:'HIGH RISK TASK AREA',
+      desc:'Освещение для работников на потенциально опасных рабочих местах: токарные станки, конвейеры, высоковольтное оборудование. При отказе освещения возможна травма. Требует немедленного переключения.',
+      specs:[['Нормируемая Eh','≥10% от Eраб (мин. 15 лк)'],['Переключение','≤0.5 сек (!!)'],['Применение','станки, хим. производство, операционные'],['Стандарт','EN 1838, часть 4'],['Управление','прямое переключение без задержки']],
+      tips:'Для ВО нельзя использовать ЦАП с инвертором — задержка >0.5с. Используйте UPS с непрерывным преобразованием (онлайн) или местные аккумуляторные блоки с мгновенным переключением.'},
+    type_self:{c:'#7030a0',title:'Автономный аварийный светильник',tag:'SELF-CONTAINED',
+      desc:'Светильник со встроенными аккумулятором, зарядным устройством и схемой автоматического включения. Не требует ЦАП. Мониторинг через DALI Part 202/203 или автономно.',
+      specs:[['Аккумулятор','встроенный NiMH или Li-Ion'],['Автономия','1–3 ч (EN 62034)'],['Тест DALI-202','автоматический, протокол, лог'],['Тест ручной','кнопка или провод «тест»'],['Замена акк.','каждые 4–6 лет (NiMH)'],['Применение','малые объекты, ретрофит']],
+      tips:'DALI Part 202 (экстренный свет) + Part 203 (испытания) — автоматизируют весь цикл: зарядка, функциональный тест, длительный тест, запись в лог, сигнализация при неисправности. Значительно снижает затраты на обслуживание.'},
+  },
+  tw:{
+    driver:{c:'#1878c0',title:'Tunable White Драйвер (2-канальный)',tag:'DALI-DT8 / 2×0–10В',
+      desc:'Двухканальный LED-драйвер с независимым управлением каналами WW (тёплый) и CW (холодный). Поддерживает DALI Device Type 8 (DT8) — специальный протокол для управления CCT и цветностью.',
+      specs:[['Каналов','2: WW (2700-3000К) + CW (5000-6500К)'],['Управление','DALI-DT8 / 2×0–10В / 2×ШИМ'],['CCT диапазон','2700–6500К (зависит от ламп)'],['Диммирование','0.1–100% каждого канала'],['Совмещение','яркость + CCT одновременно'],['Стандарт','IEC 62386-209 (DT8)']],
+      tips:'DALI-DT8 позволяет задавать CCT и яркость одной командой. При 2×0–10В: два независимых канала, нужно синхронизировать в контроллере. Важно: сумма токов каналов должна оставаться постоянной при изменении CCT — иначе меняется яркость.'},
+    ctrl:{c:'#7030a0',title:'Контроллер CCT / Tunable White',tag:'УПРАВЛЕНИЕ ТЕМПЕРАТУРОЙ',
+      desc:'Контроллер вычисляет нужное соотношение каналов WW/CW для получения целевой CCT и отправляет команды в драйвер. Работает по расписанию (HCL), от пульта или автоматически.',
+      specs:[['Вход','Время, сенсоры, расписание, пульт'],['Выход','DALI-DT8 или 2×0–10В команды'],['CCT шаг','от 100К (грубо) до 1К (точно)'],['Сцены','2700К/тёплая · 4000К/нейтр · 6500К/хол'],['Интеграция','KNX, Modbus, RS-485'],['Применение','HCL, офисы, гостиницы, больницы']],
+      tips:'Для HCL: привяжите CCT к астрономическим часам через геолокацию. Плавный переход между CCT: не менее 20–30 минут для незаметной смены. Резкая смена CCT (особенно вечером → утром) не рекомендуется.'},
+    warm:{c:'#e87020',title:'Тёплый канал WW (2700–3000К)',tag:'WARM WHITE LED',
+      desc:'Светодиоды тёплого белого цвета (~2700–3000К). Содержат люминофор с высоким содержанием красного компонента. Высокий CRI за счёт полного спектра, включая красную область.',
+      specs:[['CCT','2700–3000К'],['CRI','≥90 Ra (хорошие WW диоды)'],['R9','≥50 (насыщенный красный)'],['Яркость при 100%','100% тёплого канала'],['Применение','вечернее, ресторан, спальня'],['Эффект на физиологию','снижение мелатонина мало']],
+      tips:'WW LED на основе синего чипа + красно-жёлтый люминофор. CRI WW обычно выше, чем CW того же производителя. При проектировании TW: выбирайте WW с R9 ≥ 50 для правильного воспроизведения тёплых оттенков.'},
+    cold:{c:'#3070d0',title:'Холодный канал CW (5000–6500К)',tag:'COOL WHITE LED',
+      desc:'Светодиоды холодного белого цвета (~5000–6500К). Содержат больше синего компонента (пик ~450нм). Стимулируют меланопсиновые рецепторы (ipRGC) — повышают бодрость и концентрацию.',
+      specs:[['CCT','5000–6500К'],['CRI','≥80 Ra (зависит от производителя)'],['R9','обычно низкий (<30)'],['Меланопсин','высокая стимуляция ipRGC'],['Применение','рабочая зона, утро, офис'],['Эффект','подавляет мелатонин, бодрость']],
+      tips:'CW LED имеют более высокую световую отдачу (лм/Вт), чем WW — при равной мощности CW ярче. Учитывайте это при расчёте смешения: при переходе к CW яркость растёт. Компенсируйте снижением общего тока.'},
+    formula:{c:'#485040',title:'Формула смешения каналов TW',tag:'АЛГОРИТМ РАСЧЁТА',
+      desc:'Для получения заданной CCT при постоянной яркости: вычисляем пропорцию тёплого и холодного каналов. Суммарный ток остаётся постоянным. Реализуется в микроконтроллере или DALI-DT8.',
+      specs:[['Формула CCT','CCT = (CCT_w×I_w + CCT_c×I_c)/(I_w+I_c)'],['Расчёт I_w','I_total×(CCT_c−CCT)/(CCT_c−CCT_w)'],['Расчёт I_c','I_total − I_w'],['Постоянство яркости','I_total = const'],['Пример 4000К','50% WW + 50% CW (при 2700+6500К)'],['DALI-DT8','задаёт X, Y или CCT + Duv прямо']],
+      tips:'Формула работает только при одинаковой световой отдаче каналов (лм/мА). На практике WW и CW разные по эффективности — нужна калибровка. DALI-DT8 поддерживает режим «xy color point» для точного управления цветностью.'},
+  },
+  hcl:{
+    ctrl:{c:'#1a7a42',title:'HCL Контроллер',tag:'БИОДИНАМИЧЕСКОЕ УПРАВЛЕНИЕ',
+      desc:'Центральный «мозг» HCL системы. Вычисляет параметры освещения (CCT, яркость) на основе времени суток, сезона, геолокации и биологических ритмов человека. Отправляет команды в TW-светильники.',
+      specs:[['Алгоритм','имитация естественного света'],['Входы','RTC, GPS/геолок., сенсоры, пульт'],['Выходы','DALI-DT8, KNX, 0–10В × 2'],['Расписание','минимум 4 сцены за день'],['Корректировка','±500К пользователем'],['Стандарты','WELL Building Standard, CIE S 026']],
+      tips:'HCL должен давать пользователю возможность ручной коррекции — жёсткое автоматическое управление вызывает дискомфорт. Рекомендуемые переходы: CCT меняется плавно за 20–30 мин. Интеграция со шторами/жалюзи значительно усиливает эффект.'},
+    clock:{c:'#c08010',title:'Астрономические часы / RTC',tag:'ВРЕМЕННОЙ ОРИЕНТИР',
+      desc:'Реальные часы (RTC) + астрономический алгоритм на основе геолокации определяют положение солнца в любой момент. CCT и яркость синхронизированы с естественным циклом дня.',
+      specs:[['RTC','Real-Time Clock с батарейным резервом'],['Точность','±1 мин/год (TCXO), ±5 мин/год (обычный)'],['Геолокация','широта, долгота, часовой пояс'],['Алгоритм','NOAA Solar Calculator'],['NTP','синхронизация по сети (предпочтит.)'],['Сезонность','автоматический учёт дня/ночи']],
+      tips:'Используйте NTP-синхронизацию через интернет вместо только RTC — точность выше. Геолокация влияет на рассвет/закат: разница Москва/Сочи = 1.5 ч летом. Учитывайте переход на летнее/зимнее время.'},
+    sensor:{c:'#1a7a42',title:'Датчики освещённости и присутствия',tag:'ОБРАТНАЯ СВЯЗЬ',
+      desc:'Датчики обеспечивают обратную связь HCL системы с реальными условиями. Фотодатчик Lux измеряет естественный свет и корректирует искусственное. PIR/микроволновой датчик определяет присутствие людей.',
+      specs:[['Lux датчик','0.1–10000 лк, точность ±5%'],['Спектр датчика','CIE V(λ), широкополосный'],['Датчик прис.','PIR до 8м, 360° / микроволн.'],['High Bay','микроволна предпочт. (высокий потолок)'],['Протокол','DALI, KNX, 0–10В, Modbus'],['Размещение','горизонтальная поверхность стола']],
+      tips:'Размещайте Lux датчики горизонтально на уровне рабочей поверхности (0.8м) или на потолке с поправочным коэффициентом. Не направляйте датчик в сторону окна — прямой свет искажает показания.'},
+    user:{c:'#7030a0',title:'Пользовательское управление',tag:'РУЧНАЯ КОРРЕКТИРОВКА',
+      desc:'Несмотря на автоматику, пользователь должен иметь возможность корректировки. Это критично для комфорта — у разных людей разные потребности. WELL Standard требует предоставить пользователю управление освещением.',
+      specs:[['Коррекция CCT','±500–1000К от автоматического'],['Коррекция яркости','±30% от расчётного'],['Сброс','возврат к автоматическому через 1–2 ч'],['Интерфейс','сенсорная панель, смартфон, пульт'],['WELL B02','требование к индивидуальному управлению'],['Персонализация','профили для разных пользователей']],
+      tips:'Принцип: автоматика — умолчание, но пользователь всегда «в приоритете». После ручного изменения через 1–2 часа система мягко возвращается к алгоритму. Избегайте систем, где нельзя изменить яркость вручную.'},
+    tw_lum:{c:'#e08020',title:'Tunable White светильники в HCL',tag:'СВЕТОВЫЕ ПРИБОРЫ',
+      desc:'Светильники должны поддерживать DALI-DT8, иметь широкий CCT диапазон (2700–6500К), высокий CRI (≥90 Ra) и малую долю синего при низкой CCT (вечерний режим). Оптимально — RGBW или сочетание WW+CW+NW трёх каналов.',
+      specs:[['CCT','≥2700–6500К (шире — лучше)'],['CRI','≥90 Ra (для жилого и офиса)'],['R9','≥50 (красный для тёплого режима)'],['Протокол','DALI-DT8 обязательно'],['Мерцание','≤35% Flicker Index при любом диммировании'],['Синий пик','минимален при 2700К (биобезопасность)']],
+      tips:'При выборе TW светильников для спальни: проверяйте спектр при 2700К — синий пик <450нм должен быть минимален. Это критично для секреции мелатонина. RGBW 4-канальные дают лучший спектральный контроль, чем 2-канальные WW+CW.'},
+    melanopsin:{c:'#1060a0',title:'Меланопсин и ipRGC рецепторы',tag:'БИОЛОГИЯ ВОСПРИЯТИЯ',
+      desc:'ipRGC (intrinsically photosensitive Retinal Ganglion Cells) — нефотические рецепторы сетчатки, содержащие фотопигмент меланопсин. Максимум чувствительности ~480нм (голубой свет). Управляют циркадными ритмами.',
+      specs:[['Макс. чувств.','~480 нм (голубой)'],['Функции','синхронизация циркадных ритмов'],['Мелатонин','подавляется синим вечером'],['EML','Equivalent Melanopic Lux (CIE S 026)'],['WELL','требует ≥150 EML днём, ≤1 EML ночью'],['Измерение','спектрорадиометр или α-opic lux метр']],
+      tips:'CIE S 026 (2018) вводит метрику «меланопические люксы» (EML). Для правильного HCL: днём EML ≥ 150 лк (вертикальная плоскость глаза), ночью EML → минимум. Тёплый свет 2700К при 100 лк даёт ~30 EML, холодный 6500К при тех же 100 лк — ~120 EML.'},
+  },
+  sh:{
+    cloud:{c:'#3070d0',title:'Облачный уровень — Сервер и аналитика',tag:'CLOUD / API',
+      desc:'Верхний уровень архитектуры: облачные сервисы для удалённого управления, хранения данных об энергопотреблении, ИИ-алгоритмов оптимизации. Интеграция с голосовыми ассистентами.',
+      specs:[['Протоколы','MQTT, REST API, HTTPS, WebSocket'],['Интеграция','Apple HomeKit, Google Home, Amazon Alexa'],['Данные','энергопотребление, аналитика, лог'],['Безопасность','TLS 1.3, OAuth2, изолир. VPN'],['Резервирование','локальное управление при потере связи'],['ПО','Home Assistant, Loxone Cloud, KNX IoT']],
+      tips:'Критично: система не должна терять управление при отключении интернета. Локальный хаб обязателен. Данные энергопотребления по ISO 50001 — основа для EnMS. Используйте encrypted MQTT с TLS для безопасности.'},
+    gateway:{c:'#1a7a42',title:'Шлюз / Контроллер умного дома',tag:'ЦЕНТРАЛЬНЫЙ HUB',
+      desc:'Центральный узел, объединяющий все устройства и протоколы. Исполняет правила автоматизации, управляет сценами, обеспечивает интеграцию между KNX, DALI, Wi-Fi и облаком.',
+      specs:[['Системы','Loxone, Crestron, Savant, Control4, KNX'],['Протоколы','KNX TP/IP + DALI + Modbus + IP'],['Программирование','визуальный редактор + скриптинг'],['Backup','UPS, автономная работа'],['Интерфейс','touch-панель, смартфон, веб'],['Масштаб','от 10 до 5000+ точек управления']],
+      tips:'Выбор платформы: KNX+DALI — открытый стандарт, не привязывает к вендору. Crestron/Savant — мощно, но проприетарно и дорого. Home Assistant — открытый, для DIY и небольших объектов. Loxone — баланс: открытый, доступный, хорошая экосистема.'},
+    room:{c:'#485040',title:'Уровень помещений — Зоны управления',tag:'ЗОНАЛЬНАЯ АВТОМАТИЗАЦИЯ',
+      desc:'Каждое помещение — отдельная зона с собственными сценами, расписанием и датчиками. Зоны могут быть объединены (весь этаж) или разделены (половина комнаты). Максимальная гибкость.',
+      specs:[['Зона','логическое объединение светильников'],['Сцены','до 16 DALI / неограничено KNX'],['Датчики','Lux + PIR на зону (желательно)'],['Расписание','день/ночь, будни/выходные'],['Переопределение','ручная корректировка пользователем'],['Гибкость','реконфигурация без монтажа (DALI)']],
+      tips:'Планируйте зоны по функциональному использованию, не по геометрии. Конференц-зал 100м² может делиться на 4 зоны. При аренде офиса: каждый арендатор — отдельная зона с независимым биллингом.'},
+    room_living:{c:'#c08010',title:'Гостиная — Сцены освещения',tag:'ЖИЛОЕ ПРОСТРАНСТВО',
+      desc:'Многофункциональное пространство требует нескольких сцен: яркое для уборки, мягкое для общения, направленное для чтения, тёмное для кино. Управление одним нажатием.',
+      specs:[['Сцена Кино','Dim 10%, 2700К, подсветка'],['Сцена Вечер','Dim 60%, 3000К, тёплый'],['Сцена Активный','Dim 100%, 4000К'],['Сцена Приём','акцент + общий, 3000К'],['Управление','сенсорная панель + голос + автомат'],['CRI','≥90 Ra обязательно']],
+      tips:'Планируйте многослойное освещение: общий свет (даунлайты), акцентный (трековые), декоративный (ленты). Все слои диммируются независимо и объединяются в сцены. Оптимальный шаг диммирования: логарифмический.'},
+    room_work:{c:'#1878c0',title:'Рабочий кабинет — Эффективность',tag:'РАБОЧАЯ ЗОНА',
+      desc:'Офис или домашний кабинет требует высокой освещённости (≥500 лк на рабочей поверхности), низкого блёска (UGR<19), хорошей CRI и HCL для поддержания концентрации.',
+      specs:[['Е_рабочей поверхности','≥500 лк (EN 12464-1)'],['UGR','≤19 (VDT нормы)'],['CCT','5000–6500К днём, 4000К вечером'],['CRI','≥80 Ra, R9≥50'],['HCL','6000К/100% утром → 4000К/70% вечером'],['Датчик','Lux closed-loop поддержание E=const']],
+      tips:'Замкнутый контур: датчик Lux измеряет E на рабочей поверхности, контроллер поддерживает заданный уровень. Экономия до 50% электроэнергии. Доступ к индивидуальному управлению — требование EN 12464-1.'},
+    room_bed:{c:'#7030a0',title:'Спальня — Биологически здоровое освещение',tag:'ЦИРКАДНЫЕ РИТМЫ',
+      desc:'Критически важно для здорового сна. Вечером: тёплый свет 2700К, минимум синего (<450нм). Ночник должен быть <5 лк. Режим «рассвет»: плавное увеличение яркости за 20–30 мин до подъёма.',
+      specs:[['Вечерний режим','2700К, <30 лк, Dim 20%'],['Ночник','<5 лк, 2200К (янтарный)'],['Рассвет','2700К → 4000К за 30 мин'],['Синий спектр','<10% при вечернем режиме'],['EML вечером','<30 EML (биологическая безопасность)'],['Автовыкл.','через 30 мин после засыпания']],
+      tips:'Янтарные лампы (<2200К) — минимальное влияние на мелатонин. Приложение f.lux на экранах работает по тому же принципу. Ночники: красный или янтарный свет (>600нм) не подавляет мелатонин даже при высокой освещённости.'},
+    room_kitchen:{c:'#1a7a42',title:'Кухня — Функциональное + декоративное',tag:'МНОГОСЛОЙНОЕ ОСВЕЩЕНИЕ',
+      desc:'Кухня требует двух типов света: общий рабочий (300–500 лк) и подсветка рабочих поверхностей под шкафами (≥500 лк). CRI ≥ 90 обязателен для правильного восприятия цвета продуктов.',
+      specs:[['Е_рабочей зоны','≥500 лк (под шкафами)'],['Е_общая','≥300 лк (потолок)'],['CRI','≥90 Ra (цвет продуктов)'],['Под шкафами','LED лента 4000–5000К, IP20'],['Над столом','подвесной / трековый, 2700–3000К'],['Управление','датчик движения + ручное диммирование']],
+      tips:'Подсветка под шкафами — самостоятельная зона, не зависящая от общего света. 4000–5000К для рабочей зоны лучше различает цвет продуктов, чем тёплый 2700К. Датчик в нише шкафа включает подсветку при открытии дверцы.'},
+    room_corr:{c:'#c03080',title:'Коридор — Автоматика и безопасность',tag:'ДАТЧИК + АВТО',
+      desc:'Коридоры работают по датчику присутствия — пустой коридор должен потреблять минимум. Аварийное освещение обязательно. Ночной режим: минимальная яркость для ориентации.',
+      specs:[['Автовыкл.','через 3–5 мин после последнего движения'],['Ночной режим','5% = ~5–10 лк постоянно'],['Дневной режим','80% при обнаружении движения'],['Датчик','PIR 180°, покрытие коридора'],['Авар. освещение','1 лк на оси, ≥3 ч'],['Экономия','до 80% по сравнению с ручным управлением']],
+      tips:'Коридоры без окон — самые затратные зоны при ручном управлении. Датчик движения окупается за 3–6 месяцев. Плавное включение (fade in 3–5 сек) снижает психологический дискомфорт от резкого включения ночью.'},
+    devices:{c:'#485040',title:'Исполнительные устройства',tag:'СВЕТОВЫЕ ПРИБОРЫ',
+      desc:'Все типы световых приборов, управляемых из единой системы умного дома. Диммируемые светильники, RGB/TW панели, LED ленты, трековые прожекторы, датчики Lux/PIR и управляемые розетки.',
+      specs:[['Диммируемые','DALI, 0–10В, ШИМ совместимые'],['RGB/TW','DALI-DT8, RGBW контроллеры'],['LED ленты','контроллер DALI или RF для лент'],['Датчики','KNX или DALI совместимые'],['Трековые','1-фазный, 3-фазный, магнитный 48В'],['Розетки','KNX актуаторы, Z-Wave, Matter']],
+      tips:'Единый протокол для всех устройств упрощает программирование сцен. DALI — для профессиональных светильников. Matter / Zigbee — для бытовых устройств и интеграции с голосовыми ассистентами.'},
+  }
+};
+
+// current tab state
+var curPT={proto:'desc',topo:'desc',emergency:'desc',tw:'desc',hcl:'desc',smarthome:'desc'};
+var curC={proto:'#1a7a42',topo:'#1878c0',emergency:'#c08010',tw:'#3070d0',hcl:'#1a7a42',smarthome:'#1a7a42'};
+
+function showInfo(section, key){
+  var d=DATA[section][key]; if(!d) return;
+  var c=d.c;
+  curC[section]=c;
+  document.querySelectorAll('#pt-'+section+' .ptab').forEach(function(t){t.style.setProperty('--panel-c',c);});
+
+  var desc=document.getElementById('tc-'+section+'-desc');
+  var spec=document.getElementById('tc-'+section+'-spec');
+  var tips=document.getElementById('tc-'+section+'-tips');
+
+  desc.innerHTML='<h3 style="color:'+c+'">'+d.title+'</h3><span class="tag" style="background:'+c+'18;color:'+c+';border:1px solid '+c+'40">'+d.tag+'</span><p>'+d.desc+'</p>';
+  var specsHtml=d.specs.map(function(s){return'<div class="spec-row"><span>'+s[0]+'</span><span>'+s[1]+'</span></div>';}).join('');
+  spec.innerHTML='<h3 style="color:'+c+';margin-bottom:8px">'+d.title+'</h3><div class="specs-grid">'+specsHtml+'</div>';
+  tips.innerHTML='<h3 style="color:'+c+';margin-bottom:6px">Советы инженера</h3><div class="tip-box" style="border-color:'+c+'">'+d.tips+'</div>';
+
+  switchPT(section, curPT[section]);
+}
+
+function switchPT(section, tab){
+  curPT[section]=tab;
+  var tabs=['desc','spec','tips'];
+  tabs.forEach(function(t){
+    var ptEl=document.querySelector('#pt-'+section+' .ptab[onclick*="\''+t+'\'"]');
+    var tcEl=document.getElementById('tc-'+section+'-'+t);
+    if(ptEl) ptEl.classList.toggle('on',t===tab);
+    if(tcEl) tcEl.classList.toggle('on',t===tab);
+  });
+}
+
+function sw(id, btn){
+  document.querySelectorAll('.tsec').forEach(function(s){s.classList.remove('on');});
+  document.querySelectorAll('.htab').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('tsec-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>
