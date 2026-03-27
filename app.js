@@ -104,14 +104,85 @@
   function renderList(category) {
     category = category || 'all';
     currentCategory = category;
+
+    const listEl = document.getElementById('content-list');
+
+    if (category === 'all') {
+      // Вкладка "Все" — плитки 4 колонки, группировка по категориям
+      listEl.classList.add('content-wide');
+      renderTilesView(listEl);
+    } else {
+      // Конкретная категория — список карточек
+      listEl.classList.remove('content-wide');
+      renderCategoryList(listEl, category);
+    }
+
+    listEl.style.display = 'block';
+    document.getElementById('content-page').style.display = 'none';
+    currentItem = null;
+
+    // Сбросить активный элемент в sidebar
+    document.querySelectorAll('.sidebar-lesson').forEach(l => l.classList.remove('active'));
+    lucide.createIcons();
+  }
+
+  // Рендер плиточного вида (вкладка "Все") с группировкой по категориям
+  function renderTilesView(container) {
+    const categories = getCategories();
+    let html = '';
+
+    html += '<div class="section-header">';
+    html += '<i data-lucide="layers" style="width:20px;height:20px;color:#4f46e5;"></i>';
+    html += 'Все материалы';
+    html += '</div>';
+
+    Object.keys(categories).forEach((cat, catIndex) => {
+      const catIcon = categoryIcons[cat] || 'folder';
+      const catColor = categoryColors[catIndex % categoryColors.length];
+      const items = getItemsByCategory(cat);
+
+      html += '<div class="category-group">';
+      html += '<div class="category-group-header">';
+      html += '<i data-lucide="' + catIcon + '" style="width:18px;height:18px;color:' + catColor.fg + ';"></i>';
+      html += escapeHtml(cat);
+      html += '</div>';
+
+      html += '<div class="tiles-grid">';
+      items.forEach((item, i) => {
+        const color = categoryColors[(catIndex + i) % categoryColors.length];
+        const typeTag = item.type === 'module'
+          ? '<span class="tag tag-type interactive">интерактив</span>'
+          : '<span class="tag tag-type">урок</span>';
+
+        html += '<div class="tile-card" onclick="app.openItem(\'' + item.id + '\')">';
+        html += '<div class="tile-icon" style="background:' + color.bg + ';">';
+        html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+        html += '</div>';
+        html += '<div class="tile-title">' + escapeHtml(item.title) + '</div>';
+        if (item.description) {
+          html += '<div class="tile-desc">' + escapeHtml(item.description) + '</div>';
+        }
+        html += '<div class="tile-tags">' + typeTag;
+        (item.tags || []).forEach(tag => {
+          html += '<span class="tag">' + escapeHtml(tag) + '</span>';
+        });
+        html += '</div></div>';
+      });
+      html += '</div></div>';
+    });
+
+    container.innerHTML = html;
+  }
+
+  // Рендер списка карточек для конкретной категории
+  function renderCategoryList(container, category) {
     const items = getItemsByCategory(category);
-    const title = category === 'all' ? 'Все материалы' : category;
-    const icon = category === 'all' ? 'layers' : (categoryIcons[category] || 'folder');
+    const icon = categoryIcons[category] || 'folder';
 
     let html = '';
     html += '<div class="section-header">';
     html += '<i data-lucide="' + icon + '" style="width:20px;height:20px;color:#4f46e5;"></i>';
-    html += escapeHtml(title);
+    html += escapeHtml(category);
     html += '</div>';
 
     html += '<div class="lessons-grid">';
@@ -138,15 +209,7 @@
     });
     html += '</div>';
 
-    const listEl = document.getElementById('content-list');
-    listEl.innerHTML = html;
-    listEl.style.display = 'block';
-    document.getElementById('content-page').style.display = 'none';
-    currentItem = null;
-
-    // Сбросить активный элемент в sidebar
-    document.querySelectorAll('.sidebar-lesson').forEach(l => l.classList.remove('active'));
-    lucide.createIcons();
+    container.innerHTML = html;
   }
 
   // Открыть урок (Markdown) или модуль (iframe)
