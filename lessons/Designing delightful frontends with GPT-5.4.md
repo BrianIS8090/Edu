@@ -1,16 +1,15 @@
 ---
 title: Designing delightful frontends with GPT-5.4
 category: Фронтенд
-tags: [frontend, GPT, дизайн, UI]
+tags: \[frontend, GPT, дизайн, UI]
 ---
-
 # **Designing delightful frontends with GPT-5.4**
 
 Practical techniques for steering GPT-5.4 toward polished, production-ready frontend designs.
 
 **Authors:** Brian Fioca, Alistair Gillespie, Kevin Leneway, Robert Tinn
 
-![Designing delightful frontends with GPT-5.4](https://developers.openai.com/images/blog/designing-beautiful-frontends.png "Designing delightful frontends with GPT-5.4")
+![1.00](https://developers.openai.com/images/blog/designing-beautiful-frontends.png "Designing delightful frontends with GPT-5.4")
 
 GPT-5.4 is a better web developer than its predecessors—generating more visually appealing and ambitious frontends. Notably, we trained GPT-5.4 with a focus on improved UI capabilities and use of images. With the right guidance, the model can produce production-ready frontends incorporating subtle touches, well-crafted interactions, and beautiful imagery.
 
@@ -25,7 +24,9 @@ This guide explains practical techniques for steering GPT-5.4 toward crafting th
 While GPT-5.4 improves across a **[range of axes](https://openai.com/index/introducing-gpt-5-4/)**, for front-end work we focused on three practical gains:
 
 * stronger image understanding throughout the design process
+
 * more functionally complete apps and websites
+
 * better use of tools to inspect, test, and verify its own work
 
 ### **Image understanding and tool use**
@@ -97,7 +98,7 @@ Define constraints such as one H1 headline, no more than six sections, two typef
 
 Reference screenshots or mood boards help the model infer layout rhythm, typography scale, spacing systems, and imagery treatment. Below is an example of GPT-5.4 generating its own mood board for the user to review.
 
-![Example mood board used to guide GPT-5.4 toward a cohesive visual direction](https://cdn.openai.com/devhub/blog/codex_moodboard.png "Example mood board used to guide GPT-5.4 toward a cohesive visual direction")
+![1.00](https://cdn.openai.com/devhub/blog/codex_moodboard.png "Example mood board used to guide GPT-5.4 toward a cohesive visual direction")
 
 <br />
 
