@@ -14,6 +14,11 @@ jobs:
           cd /home/brian/apps/edu
           git pull origin main
 
+      - name: Собрать catalog.json
+        run: |
+          cd /home/brian/apps/edu
+          bash scripts/build-catalog.sh > build/catalog.json
+
       - name: Деплой в Nginx
         run: |
           sudo rsync -a /home/brian/apps/edu/ /var/www/edu/ --exclude .git
