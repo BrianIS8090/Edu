@@ -1,66 +1,66 @@
 ---
-title: Designing delightful frontends with GPT-5.4
+title: Создание потрясающих интерфейсов с помощью GPT-5.4
 category: Фронтенд
-tags: \[frontend, GPT, дизайн, UI]
+tags: [frontend, GPT, дизайн, UI]
 ---
-# **Designing delightful frontends with GPT-5.4**
+----------------------------------
 
-Practical techniques for steering GPT-5.4 toward polished, production-ready frontend designs.
+# **Создание потрясающих интерфейсов с помощью GPT-5.4**
 
-**Authors:** Brian Fioca, Alistair Gillespie, Kevin Leneway, Robert Tinn
+Практические методы, которые помогут вам использовать GPT-5.4 для создания отточенных, готовых к запуску интерфейсов.
 
-![1.00](https://developers.openai.com/images/blog/designing-beautiful-frontends.png "Designing delightful frontends with GPT-5.4")
+**Авторы:** Брайан Фиока, Алистер Гиллеспи, Кевин Ленуэй, Роберт Тинн
 
-GPT-5.4 is a better web developer than its predecessors—generating more visually appealing and ambitious frontends. Notably, we trained GPT-5.4 with a focus on improved UI capabilities and use of images. With the right guidance, the model can produce production-ready frontends incorporating subtle touches, well-crafted interactions, and beautiful imagery.
+![Создание потрясающих интерфейсов с помощью GPT-5.4](https://developers.openai.com/images/blog/designing-beautiful-frontends.png "Создание потрясающих интерфейсов с помощью GPT-5.4")
 
-Web design can produce a large surface area of outcomes. Great design balances restraint with invention—drawing from patterns that have stood the test of time while introducing something new. GPT-5.4 has learned this wide spectrum of design approaches and understands many different ways a website can be built.
+GPT-5.4 — более совершенный веб-разработчик, чем его предшественники. Он создает более визуально привлекательные и амбициозные интерфейсы. Примечательно, что мы обучали GPT-5.4, уделяя особое внимание улучшению возможностей пользовательского интерфейса и использованию изображений. При правильном подходе модель может создавать готовые к использованию интерфейсы с продуманными деталями, продуманными взаимодействиями и красивыми изображениями.
 
-When prompts are underspecified, models often fall back to high-frequency patterns from the training data. Some of these are proven conventions, but many are simply overrepresented habits we want to avoid. The result is usually plausible and functional, but it can drift toward generic structure, weak visual hierarchy, and design choices that fall short of what we visualize in our heads.
+Веб-дизайн может давать множество различных результатов. Хороший дизайн сочетает в себе сдержанность и новаторство: он опирается на проверенные временем шаблоны и привносит что-то новое. GPT-5.4 изучила широкий спектр подходов к дизайну и понимает, как можно создать веб-сайт.
 
-This guide explains practical techniques for steering GPT-5.4 toward crafting the designs you envision.
+При недостаточной конкретизации подсказок модели часто возвращаются к часто встречающимся шаблонам из обучающих данных. Некоторые из них являются проверенными приемами, но многие — это просто распространенные привычки, которых лучше избегать. Результат обычно правдоподобен и функционален, но может тяготеть к общей структуре, слабой визуальной иерархии и дизайнерским решениям, которые не соответствуют тому, что мы представляем в своем воображении.
 
-## **Model Improvements**
+В этом руководстве описаны практические методы работы с GPT-5.4 для создания проектов, которые вы себе представляете.
 
-While GPT-5.4 improves across a **[range of axes](https://openai.com/index/introducing-gpt-5-4/)**, for front-end work we focused on three practical gains:
+## **Улучшения в модели**
 
-* stronger image understanding throughout the design process
+Несмотря на то, что GPT-5.4 совершенствуется по **[целому ряду направлений](https://openai.com/index/introducing-gpt-5-4/)**, при работе над интерфейсом мы сосредоточились на трех практических улучшениях:
 
-* more functionally complete apps and websites
+* более глубокое понимание изображений на протяжении всего процесса проектирования
+* более функциональные приложения и веб-сайты
+* более эффективное использование инструментов для проверки, тестирования и подтверждения результатов собственной работы
 
-* better use of tools to inspect, test, and verify its own work
+### **Понимание изображений и использование инструментов**
 
-### **Image understanding and tool use**
+GPT-5.4 был обучен использовать инструменты поиска и генерации изображений, что позволяет ему напрямую применять визуальное мышление в процессе проектирования. Для достижения наилучших результатов дайте модели задание сначала сгенерировать доску настроения или несколько визуальных вариантов, прежде чем выбирать окончательные варианты.
 
-GPT-5.4 was trained to use image search and image generation tools natively, allowing it to incorporate visual reasoning directly into its design process. For best results, instruct the model to first generate a mood board or several visual options before selecting the final assets.
-
-You can guide the model toward strong visual references by explicitly describing the attributes the images should capture (e.g., style, color palette, composition, or mood). You should also include prompt instructions that guide the model to reuse previously generated images, call the image generation tool to create new visuals, or reference specific external images when required.
+Вы можете задать модели четкие визуальные ориентиры, явно описав характеристики, которые должны быть отражены в изображениях (например, стиль, цветовая палитра, композиция или настроение). Кроме того, следует добавить инструкции, которые помогут модели повторно использовать ранее сгенерированные изображения, вызывать инструмент для создания изображений для генерации новых визуальных элементов или при необходимости ссылаться на конкретные внешние изображения.
 
 ```plaintext
 Default to using any uploaded/pre-generated images. Otherwise use the image generation tool to create visually stunning image artifacts. Do not reference or link to web images unless the user explicitly asks for them.
 ```
 
-### **Functionality improvements**
+### **Улучшения в функциональности**
 
-The model was trained to develop more complete and functionally sound apps. Expect the model to be more reliable over long-horizon tasks. Games and complex user experiences you previously thought were impossible are a reality in one or two turns.
+Модель была обучена создавать более полноценные и функциональные приложения. Ожидается, что модель станет более надёжной при выполнении задач с долгосрочным горизонтом планирования. Игры и сложные пользовательские интерфейсы, которые раньше казались невозможными, теперь доступны за один-два хода.
 
-### **Computer Use and Verification**
+### **Использование и проверка на компьютере**
 
-GPT-5.4 is our first mainline model trained for computer use. It can natively navigate interfaces, and combined with tools such as Playwright, it can iteratively inspect its work, validate behavior, and refine implementations—enabling longer, more autonomous development workflows.
+GPT-5.4 — наша первая основная модель, обученная для использования на компьютере. Он может работать с интерфейсами, а в сочетании с такими инструментами, как Playwright, может итеративно проверять свою работу, тестировать поведение и дорабатывать реализации, обеспечивая более длительные и автономные процессы разработки.
 
-Watch our **[launch video](https://openai.com/index/introducing-gpt-5-4/?video=1170427106%20)** to see these capabilities in action.
+Посмотрите наше **[запускное видео](https://openai.com/index/introducing-gpt-5-4/?video=1170427106%20)**, чтобы увидеть эти возможности в действии.
 
-Playwright is particularly valuable for front-end development. It allows the model to inspect rendered pages, test multiple viewports, navigate application flows, and detect issues with state or navigation. Providing a Playwright tool or skill significantly improves the likelihood that GPT-5.4 produces polished, functionally complete interfaces. With improved image understanding, it also provides a way for the model to verify its work visually and check that it matches the reference UI if provided.
+Playwright особенно полезен для фронтенд-разработки. Он позволяет модели проверять отображаемые страницы, тестировать несколько областей просмотра, перемещаться по приложениям и выявлять проблемы с состоянием или навигацией. Наличие инструмента или навыка Playwright значительно повышает вероятность того, что GPT-5.4 создаст отполированные, функционально полноценные интерфейсы. Благодаря улучшенному распознаванию изображений модель может визуально проверять свою работу и сверяться с эталонным пользовательским интерфейсом, если таковой имеется.
 
-## **Practical tips quickstart**
+## **Практические советы для быстрого старта**
 
-If you adopt only a few practices from this document, start with these:
+Если вы хотите внедрить лишь несколько практик из этого документа, начните с них:
 
-1. Select low reasoning level to begin with.
-2. Define your design system and constraints upfront (i.e., typography, color palette, layout).
-3. Provide visual references or a mood board (i.e., attach a screenshot) to provide visual guardrails for the model.
-4. Define a narrative or content strategy upfront to guide the model’s content creation.
+1. Для начала выберите низкий уровень детализации.
+2. Заранее определите свою дизайн-систему и ограничения (например, типографику, цветовую палитру, макет).
+3. Предоставьте визуальные референсы или доску настроения (например, прикрепите скриншот), чтобы задать визуальные ориентиры для модели.
+4. Заранее определите нарративную или контентную стратегию, которая будет определять создание контента для модели.
 
-Here’s a prompt to get started.
+Вот подсказка для начала работы.
 
 ```plaintext
 ## Frontend tasks
@@ -88,54 +88,79 @@ When doing frontend design tasks, avoid generic, overbuilt layouts.
 Exception: If working within an existing website or design system, preserve the established patterns, structure, and visual language.
 ```
 
-## **Techniques for better designs**
+## **Методы создания более качественного дизайна**
 
-### **Start with design principles**
+### **Начните с принципов дизайна**
 
-Define constraints such as one H1 headline, no more than six sections, two typefaces maximum, one accent color, and one primary CTA above the fold.
+Определите ограничения, например: один заголовок H1, не более шести разделов, максимум два шрифта, один акцентный цвет и один основной призыв к действию в верхней части страницы.
 
-### **Provide visual references**
+### **Предоставьте визуальные ориентиры**
 
-Reference screenshots or mood boards help the model infer layout rhythm, typography scale, spacing systems, and imagery treatment. Below is an example of GPT-5.4 generating its own mood board for the user to review.
+Снимки экрана или мудборды помогут модели определить ритм макета, масштаб типографики, систему интервалов и оформление изображений. Ниже приведен пример того, как GPT-5.4 создает собственную мудборд для пользователя.
 
-![1.00](https://cdn.openai.com/devhub/blog/codex_moodboard.png "Example mood board used to guide GPT-5.4 toward a cohesive visual direction")
-
-<br />
-
-*Mood board created with GPT-5.4 in Codex inspired by NYC coffee culture and Y2K aesthetics*
+![Пример мудборда, который помог GPT-5.4 выбрать единое визуальное направление](https://cdn.openai.com/devhub/blog/codex_moodboard.png "Пример мудборда, который помог GPT-5.4 выбрать единое визуальное направление")
 
 <br />
 
-### **Structure the page as a narrative**
+*Макет, созданный с помощью GPT-5.4 в Codex, вдохновлен кофейной культурой Нью-Йорка и эстетикой 2000-х*
 
-Typical marketing page structure:
+<br />
 
-1. Hero — establish identity and promise
-2. Supporting imagery — show context or environment
-3. Product detail — explain the offering
-4. Social proof — establish credibility
-5. Final CTA — convert interest into action
+### **Структурируйте страницу в виде повествования**
 
-### **Instruct design system adherence**
+Типичная структура маркетинговой страницы:
 
-Encourage the model to establish a clear design system early in the build. Define core design tokens such as `background`, `surface`, `primary text`, `muted text`, and `accent`, along with typography roles like `display`, `headline`, `body`, and `caption`. This structure helps the model produce consistent, scalable UI patterns across the application.
+1. Герой — формирует образ и обещание
+2. Вспомогательные изображения — показывают контекст или окружение
+3. Описание продукта — объясняет предложение
+4. Социальное доказательство — повышает доверие
+5. Финальный призыв к действию — превращает интерес в действие
 
-For most web projects, starting with a familiar stack such as **React and Tailwind** works well. GPT-5.4 performs particularly strongly with these tools, making it easier to iterate quickly and reach polished results.
+### **Поручите разработчику придерживаться единой системы дизайна**
 
-Motion and layered UI elements can introduce complexity, especially when fixed or floating components interact with primary content. When working with animations, overlays, or decorative layers, it helps to include guidance that encourages safe layout behavior. For example:
+Поощряйте разработчиков создавать единую систему дизайна на ранних этапах разработки. Определите основные элементы дизайна, такие как `background`, `surface`, `primary text`, `muted text` и `accent`, а также типографические элементы, такие как `display`, `headline`, `body` и `caption`. Такая структура поможет разработчикам создавать единообразные и масштабируемые шаблоны пользовательского интерфейса для всего приложения.
+
+Для большинства веб-проектов хорошо подходит знакомый стек технологий, такой как **React и Tailwind**. GPT-5.4 особенно хорошо работает с этими инструментами, что позволяет быстро вносить изменения и добиваться безупречных результатов.
+
+Анимированные и многослойные элементы пользовательского интерфейса могут усложнить работу, особенно если фиксированные или плавающие компоненты взаимодействуют с основным контентом. При работе с анимацией, наложениями или декоративными слоями полезно использовать рекомендации, которые обеспечивают безопасное поведение макета. Например:
 
 ```plaintext
 Keep fixed or floating UI elements from overlapping text, buttons, or other key content across screen sizes. Place them in safe areas, behind primary content where appropriate, and maintain sufficient spacing.
 ```
 
-### **Dial back the reasoning**
+### **Ограничьте количество рассуждений**
 
-For simpler websites, more reasoning is not always better. In practice, **low and medium reasoning levels often lead to stronger front-end results**, helping the model stay fast, focused, and less prone to overthinking, while still leaving headroom to turn reasoning up for more ambitious designs.
+Для простых веб-сайтов чем больше рассуждений, тем лучше не всегда. На практике **низкий и средний уровни рассуждений часто приводят к более качественным результатам на стороне клиента**, помогая модели работать быстро, сосредоточенно и не слишком углубляться в детали, но при этом оставляя пространство для более амбициозных проектов.
 
-### **Ground the design in real content**
+### **Опирайтесь на реальный контент**
 
-Providing the model with real copy, product context, or a clear project goal is one of the simplest ways to improve front-end results. That context helps it choose the right site structure, shape clearer section-level narratives, and write more believable messaging instead of falling back to generic placeholder patterns.
+Предоставление модели реального текста, контекста продукта или четкой цели проекта — один из самых простых способов улучшить результаты на стороне клиента. Этот контекст помогает модели выбрать правильную структуру сайта, сформировать более понятные описания на уровне разделов и писать более правдоподобные тексты, не прибегая к шаблонным шаблонам-заполнителям.
 
-## **Bringing it all together with the Frontend Skill**
+## **Объединяем все это с помощью навыка Frontend**
 
-To help people get the most out of GPT-5.4 on general front-end tasks, we’ve also prepared a dedicated [`frontend-skill`](https://github.com/openai/skills/tree/main/skills/.curated/frontend-skill) you can find below. It gives the model stronger guidance on structure, taste, and interaction patterns, helping it produce more polished, intentional, and delightful designs out of the box.
+Чтобы помочь пользователям максимально эффективно использовать GPT-5.4 для решения общих задач, связанных с фронтенд-разработкой, мы подготовили специальный [`frontend-skill`](https://github.com/openai/skills/tree/main/skills/.curated/frontend-skill) инструмент, который вы можете найти ниже. Он дает модели более четкие указания по структуре, стилю и шаблонам взаимодействия, помогая ей создавать более продуманные, продуманные до мелочей и привлекательные дизайны.
+
+```plaintext
+```
+
+Установите `frontend-skill` с помощью следующей команды в приложении Codex:
+
+```plaintext
+$skill-installer frontend-skill
+```
+
+Вот несколько примеров сайтов, созданных с помощью навыка «Фронтенд-дизайн».
+
+### **Целевые страницы**
+
+### **Игры**
+
+### **Панели мониторинга**
+
+## **Ключевой вывод**
+
+GPT-5.4 может генерировать высококачественные пользовательские интерфейсы, если в подсказках указаны четкие требования к дизайну, визуальные референсы, структурированные описания и определенные системы проектирования.
+
+Мы надеемся, что эти методы помогут вам создавать более оригинальные и продуманные приложения.
+
+Если вы хотите поделиться проектом, полностью созданным с помощью GPT-5.4 и агента кодирования, такого как **[Codex](http://developers.openai.com/codex)**, отправьте свое приложение, чтобы его показали в нашей **[галерее](http://developers.openai.com/showcase)**.
