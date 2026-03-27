@@ -1,2 +1,8 @@
 build/catalog.json
 .superpowers/
+.claude/skills/agent-teams/README.md
+.claude/skills/agent-teams/README.ru.md
+.claude/skills/agent-teams/SKILL.md
+.claude/skills/ceo-council/README.md
+.claude/skills/ceo-council/README.ru.md
+.claude/skills/ceo-council/SKILL.md

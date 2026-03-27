@@ -264,6 +264,9 @@
     const sidebarItem = document.querySelector('.sidebar-lesson[data-id="' + id + '"]');
     if (sidebarItem) sidebarItem.classList.add('active');
 
+    // Привязать лайтбокс к картинкам урока
+    if (item.type === 'lesson') attachLightbox();
+
     lucide.createIcons();
   }
 
@@ -291,8 +294,82 @@
     document.body.classList.toggle('sidebar-collapsed');
   }
 
+  // Лайтбокс-галерея для картинок в уроках
+  let lightboxImages = [];
+  let lightboxIndex = 0;
+
+  // Открыть лайтбокс на конкретной картинке
+  function openLightbox(index) {
+    lightboxIndex = index;
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    const counter = document.getElementById('lightbox-counter');
+
+    img.src = lightboxImages[index].src;
+    img.alt = lightboxImages[index].alt || '';
+
+    // Счётчик
+    if (lightboxImages.length > 1) {
+      counter.textContent = (index + 1) + ' / ' + lightboxImages.length;
+      counter.style.display = '';
+    } else {
+      counter.style.display = 'none';
+    }
+
+    // Кнопки навигации
+    document.querySelector('.lightbox-nav.prev').disabled = (index === 0);
+    document.querySelector('.lightbox-nav.next').disabled = (index === lightboxImages.length - 1);
+
+    // Показать/скрыть навигацию если одна картинка
+    var navVisible = lightboxImages.length > 1 ? '' : 'none';
+    document.querySelector('.lightbox-nav.prev').style.display = navVisible;
+    document.querySelector('.lightbox-nav.next').style.display = navVisible;
+
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    lucide.createIcons();
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function lightboxPrev() {
+    if (lightboxIndex > 0) openLightbox(lightboxIndex - 1);
+  }
+
+  function lightboxNext() {
+    if (lightboxIndex < lightboxImages.length - 1) openLightbox(lightboxIndex + 1);
+  }
+
+  // Привязать лайтбокс к картинкам внутри .md-body
+  function attachLightbox() {
+    var imgs = document.querySelectorAll('.md-body img');
+    lightboxImages = Array.from(imgs);
+    imgs.forEach(function(img, i) {
+      img.addEventListener('click', function() {
+        openLightbox(i);
+      });
+    });
+  }
+
+  // Закрытие по клику на фон или Escape
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') lightboxPrev();
+    if (e.key === 'ArrowRight') lightboxNext();
+  });
+
   // Публичный API для вызова из onclick-обработчиков
-  window.app = { openItem, filterCategory, showList, toggleSidebar };
+  window.app = {
+    openItem, filterCategory, showList, toggleSidebar,
+    closeLightbox, lightboxPrev, lightboxNext,
+  };
 
   // Запуск приложения
   init();

@@ -212,6 +212,52 @@
       display: flex; align-items: center; gap: 8px;
     }
 
+    /* Картинки в уроках — курсор указывает на возможность увеличения */
+    .md-body img { cursor: zoom-in; }
+
+    /* Лайтбокс-галерея */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.85);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+    .lightbox.open { opacity: 1; visibility: visible; }
+    .lightbox img {
+      max-width: 90vw; max-height: 90vh;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      object-fit: contain;
+      transition: transform 0.2s;
+    }
+    .lightbox-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: none;
+      color: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.3); }
+    .lightbox-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: none;
+      color: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .lightbox-nav:hover { background: rgba(255,255,255,0.3); }
+    .lightbox-nav.prev { left: 16px; }
+    .lightbox-nav.next { right: 16px; }
+    .lightbox-nav[disabled] { opacity: 0.3; cursor: default; }
+    .lightbox-counter {
+      position: absolute; bottom: 16px; left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.7); font-size: 13px;
+    }
+
     /* Состояние загрузки */
     .loading {
       display: flex; align-items: center; justify-content: center;
@@ -247,6 +293,21 @@
       <!-- Страница урока/модуля (динамическая) -->
       <div class="content lesson-page" id="content-page"></div>
     </div>
+  </div>
+
+  <!-- Лайтбокс-галерея -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" onclick="app.closeLightbox()">
+      <i data-lucide="x" style="width:20px;height:20px;"></i>
+    </button>
+    <button class="lightbox-nav prev" onclick="app.lightboxPrev()">
+      <i data-lucide="chevron-left" style="width:24px;height:24px;"></i>
+    </button>
+    <img id="lightbox-img" src="" alt="">
+    <button class="lightbox-nav next" onclick="app.lightboxNext()">
+      <i data-lucide="chevron-right" style="width:24px;height:24px;"></i>
+    </button>
+    <div class="lightbox-counter" id="lightbox-counter"></div>
   </div>
 
   <script src="app.js"></script>
