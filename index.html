@@ -3,471 +3,183 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>7lamp Education - Образовательный портал по светотехнике</title>
-  <meta name="description" content="Образовательный портал по светотехнике от компании 7lamp. Интерактивные курсы по LED-освещению, проектированию и монтажу.">
-  <!-- Шрифты: JetBrains Mono для технических текстов, Syne для заголовков -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <!-- Lucide иконки -->
+  <title>EduPlatform</title>
+
+  <!-- Favicon: SVG book-open -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/><path d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/></svg>">
+
+  <!-- CDN-зависимости -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
   <style>
-    /* === Сброс и базовые стили === */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
+    /* Сброс стилей */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #0f172a;
-      color: #e2e8f0;
-      font-family: 'JetBrains Mono', monospace;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.6;
+      font-family: -apple-system, 'Segoe UI', sans-serif;
+      background: #f5f5f5; color: #111;
     }
 
-    /* === Шапка портала === */
-    .portal-header {
-      text-align: center;
-      padding: 60px 24px 40px;
-      position: relative;
-      overflow: hidden;
+    /* Хедер */
+    .header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 24px; background: #fff; border-bottom: 1px solid #e5e7eb;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 10; height: 52px;
+    }
+    .header-logo {
+      font-weight: 700; font-size: 16px;
+      display: flex; align-items: center; gap: 8px; color: #111;
     }
 
-    /* Декоративный градиент на фоне шапки */
-    .portal-header::before {
-      content: '';
-      position: absolute;
-      top: -120px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 600px;
-      height: 400px;
-      background: radial-gradient(ellipse, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
-      pointer-events: none;
+    /* Основной layout */
+    .main { display: flex; margin-top: 52px; min-height: calc(100vh - 52px); }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px; background: #fff; border-right: 1px solid #e5e7eb;
+      padding: 20px 0; position: fixed; top: 52px; bottom: 0; overflow-y: auto;
+    }
+    .sidebar-section { margin-bottom: 20px; }
+    .sidebar-title {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.5px; color: #999; padding: 0 20px; margin-bottom: 8px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 8px; padding: 7px 20px;
+      font-size: 13px; color: #555; cursor: pointer; transition: all 0.15s;
+    }
+    .sidebar-item:hover { background: #f9fafb; color: #111; }
+    .sidebar-item.active { background: #f0f0ff; color: #4f46e5; font-weight: 500; }
+    .sidebar-item i { width: 16px; height: 16px; flex-shrink: 0; }
+    .sidebar-count { margin-left: auto; font-size: 11px; color: #bbb; }
+
+    .sidebar-lesson {
+      display: flex; align-items: center; gap: 8px; padding: 6px 20px 6px 32px;
+      font-size: 12px; color: #666; cursor: pointer; transition: all 0.15s;
+      border-left: 2px solid transparent;
+    }
+    .sidebar-lesson:hover { background: #f9fafb; color: #111; }
+    .sidebar-lesson.active {
+      color: #4f46e5; font-weight: 500;
+      border-left-color: #4f46e5; background: #f8f7ff;
+    }
+    .sidebar-lesson i { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* Контент */
+    .content-wrapper {
+      flex: 1; margin-left: 260px;
+      display: flex; justify-content: center;
+    }
+    .content { width: 100%; max-width: 760px; padding: 32px 48px; }
+
+    /* Карточки уроков */
+    .lessons-grid { display: flex; flex-direction: column; gap: 12px; }
+    .lesson-card {
+      display: flex; align-items: center; gap: 16px; padding: 16px 20px;
+      background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .lesson-card:hover {
+      border-color: #c7d2fe;
+      box-shadow: 0 2px 8px rgba(79,70,229,0.06);
+    }
+    .lesson-icon {
+      width: 40px; height: 40px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .lesson-info { flex: 1; min-width: 0; }
+    .lesson-title { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 4px; }
+    .lesson-desc { font-size: 12px; color: #888; margin-bottom: 6px; }
+    .lesson-tags-row { display: flex; gap: 4px; flex-wrap: wrap; }
+    .tag { font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #f3f4f6; color: #666; }
+    .tag-type { background: #e0e7ff; color: #4f46e5; font-weight: 500; }
+    .tag-type.interactive { background: #ecfdf5; color: #059669; }
+
+    /* Страница урока */
+    .lesson-page { display: none; }
+    .breadcrumb {
+      font-size: 13px; color: #888; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 6px; cursor: pointer;
+    }
+    .breadcrumb:hover { color: #4f46e5; }
+    .lesson-page-header { margin-bottom: 24px; }
+    .lesson-page-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+    .lesson-page-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* Markdown рендер */
+    .md-body { font-size: 15px; line-height: 1.75; color: #333; }
+    .md-body h1 { font-size: 22px; font-weight: 700; margin: 28px 0 12px; color: #111; }
+    .md-body h2 {
+      font-size: 18px; font-weight: 600; margin: 28px 0 12px; color: #111;
+      padding-bottom: 6px; border-bottom: 1px solid #e5e7eb;
+    }
+    .md-body h3 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; color: #222; }
+    .md-body p { margin-bottom: 14px; }
+    .md-body ul, .md-body ol { padding-left: 24px; margin-bottom: 14px; }
+    .md-body li { margin-bottom: 6px; }
+    .md-body a { color: #4f46e5; text-decoration: none; }
+    .md-body a:hover { text-decoration: underline; }
+    .md-body img { max-width: 100%; border-radius: 8px; margin: 16px 0; border: 1px solid #e5e7eb; }
+    .md-body code {
+      background: #f3f4f6; padding: 2px 6px; border-radius: 4px;
+      font-size: 13px; font-family: 'JetBrains Mono', monospace;
+    }
+    .md-body pre {
+      background: #1e1e2e; color: #cdd6f4; padding: 16px;
+      border-radius: 8px; margin: 16px 0; overflow-x: auto;
+    }
+    .md-body pre code { background: none; padding: 0; color: inherit; }
+    .md-body hr { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }
+    .md-body strong { font-weight: 600; color: #111; }
+    .md-body blockquote {
+      border-left: 3px solid #4f46e5; padding-left: 16px;
+      margin: 16px 0; color: #666;
     }
 
-    .portal-logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      position: relative;
+    /* iframe для модулей */
+    .module-frame {
+      width: 100%; height: 80vh;
+      border: 1px solid #e5e7eb; border-radius: 8px; margin-top: 8px;
     }
 
-    /* Лого-индикатор 7lamp */
-    .logo-dot {
-      width: 10px;
-      height: 10px;
-      background: #3b82f6;
-      border-radius: 50%;
-      box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
-      animation: pulse-dot 2.5s ease-in-out infinite;
+    .section-header {
+      font-size: 18px; font-weight: 600; color: #111; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
     }
 
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 0.7; box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
-      50% { opacity: 1; box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
-    }
-
-    .portal-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 42px;
-      font-weight: 800;
-      color: #f8fafc;
-      letter-spacing: -0.02em;
-      line-height: 1.1;
-    }
-
-    .portal-title span {
-      color: #3b82f6;
-    }
-
-    .portal-subtitle {
-      font-size: 14px;
-      color: #64748b;
-      margin-top: 12px;
-      letter-spacing: 0.04em;
-      position: relative;
-    }
-
-    /* === Контейнер карточек === */
-    .modules-container {
-      max-width: 1100px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 0 24px 60px;
-      flex: 1;
-    }
-
-    .modules-heading {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: #94a3b8;
-      margin-bottom: 28px;
-      padding-left: 4px;
-      letter-spacing: 0.02em;
-    }
-
-    /* === Сетка карточек === */
-    .modules-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
-    }
-
-    /* === Карточка модуля === */
-    .module-card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 28px 24px 24px;
-      position: relative;
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* Доступный модуль: реагирует на наведение */
-    .module-card.available:hover {
-      transform: translateY(-4px);
-      border-color: #3b82f6;
-      box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15), 0 0 0 1px rgba(59, 130, 246, 0.1);
-    }
-
-    /* Недоступный модуль: приглушённый вид */
-    .module-card.coming-soon {
-      opacity: 0.5;
-      cursor: default;
-    }
-
-    /* Иконка модуля (Lucide) */
-    .module-icon {
-      margin-bottom: 4px;
-      color: #3b82f6;
-    }
-
-    .module-icon i {
-      width: 28px;
-      height: 28px;
-      stroke-width: 1.5;
-    }
-
-    .coming-soon .module-icon {
-      color: #475569;
-    }
-
-    /* Заголовок карточки со статусом */
-    .module-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .module-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 17px;
-      font-weight: 700;
-      color: #f1f5f9;
-    }
-
-    /* Индикатор статуса: цветная точка */
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 10px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 3px 10px;
-      border-radius: 20px;
-      flex-shrink: 0;
-    }
-
-    .status-badge.active {
-      background: rgba(34, 197, 94, 0.12);
-      color: #22c55e;
-      border: 1px solid rgba(34, 197, 94, 0.25);
-    }
-
-    .status-badge.soon {
-      background: rgba(100, 116, 139, 0.12);
-      color: #64748b;
-      border: 1px solid rgba(100, 116, 139, 0.25);
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-    }
-
-    .status-badge.active .status-dot {
-      background: #22c55e;
-      box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
-    }
-
-    .status-badge.soon .status-dot {
-      background: #64748b;
-    }
-
-    /* Описание модуля */
-    .module-desc {
-      font-size: 13px;
-      color: #94a3b8;
-      line-height: 1.7;
-      flex: 1;
-    }
-
-    /* Кнопка "Начать обучение" */
-    .module-action {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      background: rgba(59, 130, 246, 0.1);
-      color: #3b82f6;
-      border: 1px solid rgba(59, 130, 246, 0.25);
-      border-radius: 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      font-weight: 600;
-      text-decoration: none;
-      letter-spacing: 0.04em;
-      transition: background 0.2s, border-color 0.2s, transform 0.15s;
-      align-self: flex-start;
-      margin-top: 4px;
-    }
-
-    .module-action:hover {
-      background: rgba(59, 130, 246, 0.2);
-      border-color: rgba(59, 130, 246, 0.5);
-      transform: translateX(2px);
-    }
-
-    .module-action .arrow {
-      transition: transform 0.2s;
-    }
-
-    .module-action:hover .arrow {
-      transform: translateX(3px);
-    }
-
-    /* === Футер === */
-    .portal-footer {
-      text-align: center;
-      padding: 32px 24px;
-      border-top: 1px solid #1e293b;
-      color: #475569;
-      font-size: 12px;
-      letter-spacing: 0.04em;
-    }
-
-    .portal-footer a {
-      color: #3b82f6;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .portal-footer a:hover {
-      color: #60a5fa;
-    }
-
-    /* === Адаптивность === */
-
-    /* Планшет */
-    @media (max-width: 768px) {
-      .portal-header {
-        padding: 40px 20px 30px;
-      }
-
-      .portal-title {
-        font-size: 32px;
-      }
-
-      .portal-subtitle {
-        font-size: 13px;
-      }
-
-      .modules-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .modules-container {
-        padding: 0 16px 40px;
-      }
-    }
-
-    /* Мобильный */
-    @media (max-width: 480px) {
-      .portal-title {
-        font-size: 26px;
-      }
-
-      .module-card {
-        padding: 22px 18px 20px;
-      }
-
-      .module-title {
-        font-size: 15px;
-      }
-
-      .module-desc {
-        font-size: 12px;
-      }
-
-      .modules-heading {
-        font-size: 15px;
-      }
+    /* Состояние загрузки */
+    .loading {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 200px; color: #999; font-size: 14px;
     }
   </style>
 </head>
 <body>
-
-  <!-- Шапка портала -->
-  <header class="portal-header">
-    <div class="portal-logo">
-      <div class="logo-dot"></div>
-      <span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:#64748b;letter-spacing:0.08em;text-transform:uppercase">7lamp</span>
+  <!-- Хедер -->
+  <div class="header">
+    <div class="header-logo">
+      <i data-lucide="book-open" style="width:20px;height:20px;color:#4f46e5;"></i>
+      EduPlatform
     </div>
-    <h1 class="portal-title">7lamp <span>Education</span></h1>
-    <p class="portal-subtitle">Образовательный портал по светотехнике</p>
-  </header>
+  </div>
 
-  <!-- Сетка учебных модулей -->
-  <main class="modules-container">
-    <div class="modules-grid">
-
-      <!-- === ОСНОВЫ СВЕТОТЕХНИКИ === -->
-      <h2 class="modules-heading" style="grid-column:1/-1;margin-top:8px">Основы светотехники</h2>
-
-      <!-- Системы управления LED -->
-      <article class="module-card available">
-        <div class="module-icon"><i data-lucide="circuit-board"></i></div>
-        <div class="module-header">
-          <h3 class="module-title">Системы управления LED</h3>
-          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
-        </div>
-        <p class="module-desc">Интерактивные схемы подключения RGBW, RGB, Монохром, DALI, 0-10В. Компоненты, характеристики, советы.</p>
-        <a href="led-systems.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
-      </article>
-
-      <!-- Цветовая наука -->
-      <article class="module-card available">
-        <div class="module-icon"><i data-lucide="palette"></i></div>
-        <div class="module-header">
-          <h3 class="module-title">Цветовая наука</h3>
-          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
-        </div>
-        <p class="module-desc">CIE 1931, цветовые температуры CCT, эллипсы MacAdam, SDCM, спектры светодиодов.</p>
-        <a href="color_science.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
-      </article>
-
-      <!-- Оптика светильников -->
-      <article class="module-card available">
-        <div class="module-icon"><i data-lucide="focus"></i></div>
-        <div class="module-header">
-          <h3 class="module-title">Оптика светильников</h3>
-          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
-        </div>
-        <p class="module-desc">Углы распределения света, типы оптических элементов, линзы, рефлекторы и их применение.</p>
-        <a href="optics_guide.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
-      </article>
-
-      <!-- Диммирование и цвет -->
-      <article class="module-card available">
-        <div class="module-icon"><i data-lucide="sun-dim"></i></div>
-        <div class="module-header">
-          <h3 class="module-title">Диммирование и цвет</h3>
-          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
-        </div>
-        <p class="module-desc">Интерактивные визуализации процессов диммирования и цветовых пространств.</p>
-        <a href="dimming-visualization.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
-      </article>
-
-      <!-- ШИМ-диммирование -->
-      <article class="module-card available">
-        <div class="module-icon"><i data-lucide="activity"></i></div>
-        <div class="module-header">
-          <h3 class="module-title">ШИМ-диммирование</h3>
-          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
-        </div>
-        <p class="module-desc">Осциллограф ШИМ-сигнала, кривые регулирования, влияние частоты на мерцание.</p>
-        <a href="pwm_dimming.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
-      </article>
-
-      <!-- === ПРОЕКТИРОВАНИЕ === -->
-      <h2 class="modules-heading" style="grid-column:1/-1;margin-top:24px">Проектирование</h2>
-
-      <!-- Калькулятор радиатора -->
-      <article class="module-card available">
-        <div class="module-icon"><i data-lucide="calculator"></i></div>
-        <div class="module-header">
-          <h3 class="module-title">Калькулятор радиатора</h3>
-          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
-        </div>
-        <p class="module-desc">Расчёт площади радиатора для LED-светильников. Выбор материала, ориентации монтажа, теплоотвод.</p>
-        <a href="heatsink_calc.html" class="module-action">Открыть калькулятор <span class="arrow">&rarr;</span></a>
-      </article>
-
-      <!-- Схемы систем -->
-      <article class="module-card available">
-        <div class="module-icon"><i data-lucide="network"></i></div>
-        <div class="module-header">
-          <h3 class="module-title">Схемы систем освещения</h3>
-          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
-        </div>
-        <p class="module-desc">DALI, DMX, 0-10В, аварийное освещение, Tunable White, HCL, умный дом.</p>
-        <a href="lighting_systems_diagrams.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
-      </article>
-
-      <!-- === МОНТАЖ === -->
-      <h2 class="modules-heading" style="grid-column:1/-1;margin-top:24px">Монтаж и подключение</h2>
-
-      <!-- Подключение LED -->
-      <article class="module-card available">
-        <div class="module-icon"><i data-lucide="cable"></i></div>
-        <div class="module-header">
-          <h3 class="module-title">Подключение LED плат</h3>
-          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
-        </div>
-        <p class="module-desc">Подключение LED-плат к драйверу: последовательное и параллельное соединение, расчёт токов и напряжений.</p>
-        <a href="led_conn2.html" class="module-action">Начать обучение <span class="arrow">&rarr;</span></a>
-      </article>
-
-      <!-- === СТАНДАРТЫ === -->
-      <h2 class="modules-heading" style="grid-column:1/-1;margin-top:24px">Стандарты и классификация</h2>
-
-      <!-- IP/IK классификатор -->
-      <article class="module-card available">
-        <div class="module-icon"><i data-lucide="shield-check"></i></div>
-        <div class="module-header">
-          <h3 class="module-title">IP / IK Классификатор</h3>
-          <span class="status-badge active"><span class="status-dot"></span>Доступен</span>
-        </div>
-        <p class="module-desc">Степени защиты корпусов IEC 60529 (IP) и IEC 62262 (IK). Подбор класса защиты для условий эксплуатации.</p>
-        <a href="ip_ik_classifier.html" class="module-action">Открыть классификатор <span class="arrow">&rarr;</span></a>
-      </article>
-
+  <div class="main">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="loading">Загрузка...</div>
     </div>
-  </main>
 
-  <!-- Подвал -->
-  <footer class="portal-footer">
-    7lamp Education Portal&ensp;|&ensp;<a href="https://7lamp.ru" target="_blank" rel="noopener">7lamp.ru</a>
-  </footer>
+    <div class="content-wrapper">
+      <!-- Список материалов -->
+      <div class="content" id="content-list">
+        <div class="loading">Загрузка каталога...</div>
+      </div>
 
-  <!-- Инициализация Lucide иконок -->
-  <script>lucide.createIcons();</script>
+      <!-- Страница урока/модуля (динамическая) -->
+      <div class="content lesson-page" id="content-page"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>

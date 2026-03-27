@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edu - 7lamp</title>
+</head>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{background:#f5f6f8;color:#1a2030;font-family:'JetBrains Mono',monospace;min-height:600px}
+.sys-tabs{display:flex;background:#fff;border-bottom:1.5px solid #e0e4ec;overflow-x:auto;scrollbar-width:none}
+.sys-tabs::-webkit-scrollbar{display:none}
+.sys-tab{flex-shrink:0;padding:10px 20px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#9aa0b0;cursor:pointer;border-bottom:2.5px solid transparent;letter-spacing:.07em;text-transform:uppercase;transition:all .2s;white-space:nowrap;background:#fff}
+.sys-tab.active{color:var(--tc);border-bottom-color:var(--tc);font-weight:600}
+.sys-tab:hover:not(.active){color:#5a6070}
+.diagram-area{position:relative;width:100%;background:#f5f6f8}
+svg.main{width:100%;display:block}
+.flow-legend{display:flex;gap:18px;padding:8px 16px;background:#fff;border-top:1px solid #e8eaf0;flex-wrap:wrap}
+.fl-item{display:flex;align-items:center;gap:7px;font-size:10px;color:#7080a0}
+.fl-dot{width:28px;height:3px;border-radius:2px}
+.comp-tabs{display:flex;background:#fff;border-bottom:1px solid #e8eaf0;border-top:1px solid #e8eaf0}
+.comp-tab{flex:1;padding:9px 4px;text-align:center;font-size:10px;letter-spacing:.06em;color:#9aa0b0;cursor:pointer;border-bottom:2.5px solid transparent;font-family:'JetBrains Mono',monospace;text-transform:uppercase;transition:all .15s;background:#fff}
+.comp-tab.active{color:var(--tc);border-bottom-color:var(--tc);font-weight:600}
+.info-panel{background:#fff;padding:1.1rem 1.4rem;min-height:165px;border-top:none}
+.info-panel h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px}
+.info-panel p{font-size:11.5px;line-height:1.75;color:#5a6880}
+.specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;margin-top:8px}
+.spec-row{font-size:11px;color:#5a6880;display:flex;gap:6px}
+.spec-row span:first-child{color:#aab0c0;min-width:100px;flex-shrink:0}
+.tip-text{font-size:11.5px;line-height:1.75;color:#5a6880;border-left:2.5px solid var(--tc);padding-left:10px;margin-top:6px}
+.hint{text-align:center;font-size:10px;color:#c0c8d8;padding:7px 0 2px;letter-spacing:.05em}
+.tc-content{display:none}.tc-content.active{display:block}
+.fa{stroke-dasharray:6 4;animation:da 1.1s linear infinite}
+.fg{stroke-dasharray:4 4;animation:dg .9s linear infinite}
+.fr{stroke-dasharray:8 4;animation:dr .7s linear infinite}
+.fb{stroke-dasharray:5 3;animation:db 1.4s linear infinite}
+.fd{stroke-dasharray:4 3;animation:dd 1.0s linear infinite}
+.fv{stroke-dasharray:5 4;animation:dv 1.2s linear infinite}
+@keyframes da{to{stroke-dashoffset:-20}}
+@keyframes dg{to{stroke-dashoffset:-16}}
+@keyframes dr{to{stroke-dashoffset:-24}}
+@keyframes db{to{stroke-dashoffset:-16}}
+@keyframes dd{to{stroke-dashoffset:-14}}
+@keyframes dv{to{stroke-dashoffset:-18}}
+.node{cursor:pointer}.node rect,.node circle{transition:filter .2s}.node:hover rect,.node:hover circle{filter:brightness(.93)}
+.lp{animation:lp 2s ease-in-out infinite}.lr{animation:lp 2s ease-in-out infinite .3s}.lg{animation:lp 2s ease-in-out infinite .6s}.lb{animation:lp 2s ease-in-out infinite .9s}
+@keyframes lp{0%,100%{opacity:.5}50%{opacity:1}}
+</style>
+
+<div class="wrap" id="root">
+<div class="sys-tabs" id="sys-tabs">
+  <div class="sys-tab active" style="--tc:#0e9e6e" onclick="switchSys('rgbw')" id="st-rgbw">RGBW</div>
+  <div class="sys-tab" style="--tc:#c03030" onclick="switchSys('rgb')" id="st-rgb">RGB</div>
+  <div class="sys-tab" style="--tc:#606060" onclick="switchSys('mono')" id="st-mono">Монохром</div>
+  <div class="sys-tab" style="--tc:#1878c0" onclick="switchSys('dali')" id="st-dali">DALI</div>
+  <div class="sys-tab" style="--tc:#c08010" onclick="switchSys('v10')" id="st-v10">0–10В</div>
+</div>
+
+<div class="hint" id="hint-text">Нажмите на компонент для изучения · RGBW система</div>
+<div class="diagram-area" id="diagram-area"></div>
+<div class="flow-legend" id="flow-legend"></div>
+<div class="comp-tabs" style="--tc:#0e9e6e" id="comp-tabs">
+  <div class="comp-tab active" onclick="switchCT('desc')" id="ct-desc">Описание</div>
+  <div class="comp-tab" onclick="switchCT('spec')" id="ct-spec">Характеристики</div>
+  <div class="comp-tab" onclick="switchCT('tips')" id="ct-tips">Советы</div>
+</div>
+<div class="info-panel" style="--tc:#0e9e6e" id="info-panel">
+  <div id="tc-desc" class="tc-content active">
+    <h3 style="color:#0e9e6e">← Выберите компонент</h3>
+    <p>Нажмите на любой блок схемы для детального изучения его роли, характеристик и практических рекомендаций.</p>
+  </div>
+  <div id="tc-spec" class="tc-content"><p style="color:#c0c8d8">Выберите компонент</p></div>
+  <div id="tc-tips" class="tc-content"><p style="color:#c0c8d8">Выберите компонент</p></div>
+</div>
+</div>
+
+<script>
+const sysData = {
+  rgbw:{name:'RGBW',color:'#0e9e6e',
+    legend:[{c:'#d03030',l:'220В AC'},{c:'#d08010',l:'DC питание'},{c:'#0e9e6e',l:'ШИМ сигнал'},{c:'#1878c0',l:'Выход 4 канала'}],
+    nodes:{
+      ac:{title:'Сеть 220В / 50Гц',tag:'AC ИСТОЧНИК',desc:'Стандартная бытовая сеть подаётся на два отдельных блока питания. Вся система работает на постоянном токе (DC). Никогда не подавайте 220В напрямую на контроллер или ленту.',specs:[['Напряжение','220–240В AC'],['Частота','50 Гц'],['Подключение','к обоим БП'],['Защита','УЗО + автомат']],tips:'Используйте УЗО и дифавтомат. Суммируйте нагрузку обоих БП при выборе автомата. Кабель ВВГнг 3×1.5 мм². Разводите AC-проводку отдельно от DC.'},
+      bp1:{title:'БП №1 — питание контроллера',tag:'БП МАЛЫЙ',desc:'Маломощный блок питания для контроллера. Контроллер потребляет немного — достаточно 12–24В / 1–2А. Mean Well EPS-15 или HDR-15.',specs:[['Напряжение','12В или 24В DC'],['Ток','1–2А'],['Мощность','15–30 Вт'],['Тип','импульсный SMPS'],['Пульсации','<120 мВ']],tips:'Напряжение должно совпадать с напряжением ленты. Можно запитать контроллер от основного БП если у него нет отдельного входа. Выбирайте БП с малыми пульсациями для стабильной ШИМ.'},
+      bp2:{title:'БП №2 — силовое питание',tag:'БП СИЛОВОЙ',desc:'Основной БП питает усилитель и через него всю ленту. Мощность: Pленты × 1.25. Mean Well LRS или HLG-серия.',specs:[['Напряжение','12В или 24В DC'],['Расчёт','Вт/м × метры × 1.25'],['Пример','10м × 20Вт × 1.25 = 250Вт'],['КПД','>88%'],['Серия','Mean Well LRS/HLG']],tips:'Не нагружайте более 80% от номинала. При >5м ленты на 12В — переходите на 24В. Заземляйте корпус БП.'},
+      ctrl:{title:'Контроллер RGBW',tag:'КОНТРОЛЛЕР',desc:'Формирует 4 независимых ШИМ-канала (R, G, B, W). Скважность ШИМ определяет яркость. Не является силовым устройством — управляет усилителем.',specs:[['Каналов','4 (R+G+B+W)'],['Ток на канал','до 2А'],['ШИМ','500–2000 Гц'],['Интерфейс','Wi-Fi/BT/RF/DMX512'],['Питание','12–24В DC']],tips:'Высокая частота ШИМ (>1000Гц) важна для видеосъёмки. При DMX — правильно адресуйте контроллер. Для каскадирования зон используйте несколько усилителей.'},
+      amp:{title:'Усилитель RGBW',tag:'УСИЛИТЕЛЬ',desc:'Принимает слабый ШИМ от контроллера и воспроизводит его с большой мощностью. Форма сигнала от контроллера, ток — от своего БП.',specs:[['Каналов','4 (R+G+B+W)'],['Ток на канал','до 6А'],['Макс. мощность','576 Вт'],['Вход','ШИМ малый ток'],['Охлаждение','пассивное, алюминий']],tips:'1 усилитель = 1 зона. Каскадируйте: выход → вход следующего. Следите за температурой — при >60°C деградирует.'},
+      led:{title:'Лента RGBW',tag:'СВЕТОВОЙ ПРИБОР',desc:'4-кристальные светодиоды: R+G+B + белый кристалл. Белый канал даёт натуральный белый без смешения трёх цветов — ключевое отличие от RGB.',specs:[['Чип','5050 RGBW, 60 LED/м'],['Мощность','14–20 Вт/м'],['CRI белого','>80 Ra (стандарт)'],['Белый','2700/4000/6500K'],['Защита','IP20/IP65/IP68']],tips:'CRI >90 для магазинов, музеев, студий. 24В лента — меньше потерь. Алюминиевый профиль обязателен. Макс. без усилителя: 5м (12В) / 10м (24В).'}
+    },svgFn:svgRGBW},
+  rgb:{name:'RGB',color:'#c03030',
+    legend:[{c:'#d03030',l:'220В AC'},{c:'#d08010',l:'DC питание'},{c:'#c03030',l:'ШИМ 3 канала'}],
+    nodes:{
+      ac:{title:'Сеть 220В / 50Гц',tag:'AC ИСТОЧНИК',desc:'В RGB-системе обычно достаточно одного БП. Контроллер RGB часто запитывается от того же источника, что и лента.',specs:[['Напряжение','220–240В AC'],['Частота','50 Гц'],['Защита','УЗО + автомат'],['Кабель','ВВГнг 3×1.5 мм²']],tips:'В бюджетных инсталляциях контроллер и лента питаются от одного БП. Для профессиональных — разделяйте цепи.'},
+      bp:{title:'Блок питания — единый',tag:'БП',desc:'В RGB-системе один БП питает и контроллер, и ленту. При полном белом (R+G+B=100%) потребление максимально.',specs:[['Напряжение','12В или 24В DC'],['Расчёт','Вт/м × длина × 1.25'],['Белый','= R+G+B одновременно']],tips:'Белый в RGB = микс трёх каналов — мощность равна сумме трёх каналов. Это выше, чем отдельный W-кристалл в RGBW.'},
+      ctrl:{title:'Контроллер RGB',tag:'КОНТРОЛЛЕР',desc:'3-канальный ШИМ: R, G, B. Смешением трёх цветов получается любой оттенок. Белый = R+G+B=100%, но он менее эффективен, чем настоящий W-кристалл.',specs:[['Каналов','3 (R+G+B)'],['ШИМ','500–2000 Гц'],['Цветовой охват','~16 млн оттенков'],['Интерфейс','RF/IR/Wi-Fi/DMX']],tips:'Для насыщенного белого RGB не подходит — используйте RGBW. RGB идеален для декоративной подсветки, акцентов, иллюминации.'},
+      amp:{title:'Усилитель RGB',tag:'УСИЛИТЕЛЬ',desc:'3-канальный усилитель. Применяется при длинных прогонах. Принцип тот же: усиливает ШИМ-сигнал, питается от своего БП.',specs:[['Каналов','3 (R+G+B)'],['Ток на канал','до 6А'],['Макс. мощность','432Вт']],tips:'Если длина ≤5м (12В) или ≤10м (24В) — усилитель не нужен, контроллер справляется напрямую.'},
+      led:{title:'Лента RGB',tag:'СВЕТОВОЙ ПРИБОР',desc:'3-кристальные светодиоды R+G+B. Нет белого кристалла. Широко применяется в декоративной и архитектурной подсветке.',specs:[['Чип','5050 RGB, 30/60/120 LED/м'],['Мощность','7–15 Вт/м'],['Белый','= R+G+B, CRI<75'],['Защита','IP20/IP65/IP68']],tips:'Низкий CRI белого — ограничение RGB. Не используйте там, где важна цветопередача. Лучший выбор для цветной атмосферы и фасадов.'}
+    },svgFn:svgRGB},
+  mono:{name:'Монохром',color:'#505060',
+    legend:[{c:'#d03030',l:'220В AC'},{c:'#d08010',l:'DC питание'},{c:'#505060',l:'ШИМ 1 канал'}],
+    nodes:{
+      ac:{title:'Сеть 220В / 50Гц',tag:'AC ИСТОЧНИК',desc:'Однофазная сеть. Монохромная система — самая простая и надёжная. Один БП, один диммер.',specs:[['Напряжение','220–240В AC'],['Защита','автомат C6–C16'],['Кабель','ВВГнг 3×1.5 мм²']],tips:'Монохром — самая распространённая схема. При нагрузках >2кВт используйте трёхфазное распределение.'},
+      bp:{title:'Блок питания',tag:'БП',desc:'Один БП питает весь канал. Расчёт прост: суммируйте мощность всех светильников + 20% запас.',specs:[['Напряжение','12В или 24В DC'],['Расчёт','Вт/м × длина × 1.2'],['Серия','Mean Well LRS/HLG'],['КПД','>88%']],tips:'24В предпочтительнее для прогонов >5м. HLG-серия с IP67 для уличного монтажа. Dimming-версии HLG поддерживают встроенное диммирование.'},
+      dimmer:{title:'Диммер / ШИМ-контроллер',tag:'ДИММЕР',desc:'Однокнальный диммер на ШИМ. Управляет яркостью 0–100% изменением скважности импульсов.',specs:[['Каналов','1'],['Ток','до 8–15А'],['ШИМ-частота','500–2000 Гц'],['Управление','кнопка/потенциометр/RF']],tips:'Частота ШИМ >1000Гц устраняет мерцание для видеосъёмки. Диммеры с плавным стартом продлевают срок ленты.'},
+      led:{title:'Монохромная лента',tag:'ЛЕНТА',desc:'Одноцветная лента: тёплый (2700–3000К), нейтральный (4000К) или холодный (5000–6500К) белый. Самый высокий КПД среди лент.',specs:[['Чипы','2835 / 3528 / 5630'],['LED/м','60 / 120 / 240'],['Мощность','4–25 Вт/м'],['CRI','>80 Ra / >90 Ra Hi-CRI']],tips:'Hi-CRI (>95 Ra) для торговли, музеев, медицины. Для равномерности: ≥120 LED/м или матовый рассеиватель в профиле.'}
+    },svgFn:svgMono},
+  dali:{name:'DALI',color:'#1878c0',
+    legend:[{c:'#d03030',l:'230В AC силовая шина'},{c:'#1878c0',l:'DALI шина (16В)'},{c:'#d08010',l:'DC питание шины'}],
+    nodes:{
+      ac:{title:'Сеть 230В / 50Гц',tag:'AC СИЛОВАЯ ШИНА',desc:'DALI имеет две независимые шины: силовую (230В AC) и управляющую (DALI-шину 16В DC). Принципиальное отличие от ШИМ-систем.',specs:[['Силовая шина','230В AC'],['DALI шина','16В DC, макс 250мА'],['Кабель DALI','витая пара 2×0.75 мм²']],tips:'Используйте маркированный кабель для DALI-шины. Соблюдайте полярность — некоторые устройства полярно-чувствительны.'},
+      psu:{title:'Блок питания DALI-шины',tag:'БП DALI',desc:'Специальный источник 16В DC, макс. 250мА для питания DALI-шины. Встроен в большинство контроллеров.',specs:[['Напряжение','16В DC'],['Ток','макс. 250мА'],['Устройств','до 64 на шину'],['Потребление','~2мА / устройство']],tips:'На шине до 64 устройств. Считайте потребление: 64 × 2мА = 128мА — в норме. При >250мА шина нестабильна.'},
+      ctrl:{title:'DALI-контроллер / Мастер',tag:'DALI МАСТЕР',desc:'Центральный узел. Инициализирует шину, присваивает адреса (0–63), объединяет в группы (0–15) и сцены (0–15).',specs:[['Протокол','IEC 62386 (DALI-2)'],['Адреса','64 на шину'],['Групп','16'],['Сцен','16 на устройство'],['Интерфейс','Ethernet/KNX/BACnet']],tips:'DALI-2 — актуальный стандарт с обязательной сертификацией. Для крупных объектов используйте KNX + DALI.'},
+      ecg:{title:'ECG — электронный драйвер',tag:'ECG / DRIVER',desc:'Интеллектуальный драйвер с DALI-интерфейсом. Принимает команды по шине, регулирует мощность светодиода. Логарифмическое диммирование = линейное восприятие.',specs:[['Стандарт','IEC 62386-102'],['Адресация','0–63'],['Диммирование','0.1–100%'],['Кривая','логарифмическая'],['DT8','Tunable White CCT']],tips:'Device Type 8 (DT8) — управление цветовой температурой. Идеально для HCL (Human Centric Lighting). Для аварийного света — отдельная шина Part 202/203.'},
+      led:{title:'Светодиодный светильник',tag:'СВЕТИЛЬНИК',desc:'Светильник с DALI ECG. Питание от 230В силовой шины, управление по DALI. Может быть downlight, трековым или линейным.',specs:[['Питание','230В AC'],['Управление','DALI-шина'],['Диммирование','0.1–100%'],['DT8','Tunable White'],['Аварийный','Part 202/203']],tips:'DT8 для управления CCT (Tunable White) — имитация дневного света, биодинамическое освещение. Для аварийного — отдельная DALI-шина.'}
+    },svgFn:svgDALI},
+  v10:{name:'0–10В',color:'#c08010',
+    legend:[{c:'#d03030',l:'230В AC'},{c:'#c08010',l:'0–10В сигнал'},{c:'#d08010',l:'DC питание'}],
+    nodes:{
+      ac:{title:'Сеть 230В / 50Гц',tag:'AC ИСТОЧНИК',desc:'Силовая сеть питает драйверы напрямую. 0–10В — аналоговая система: отдельный сигнальный провод 0–10В задаёт яркость.',specs:[['Питание','230В AC'],['Сигнал','0–10В DC аналоговый'],['Кабель','2×0.5 мм² для сигнала']],tips:'0–10В — самый распространённый аналоговый интерфейс. Прост в монтаже и отладке. Совместим с большинством промышленных светильников.'},
+      ctrl:{title:'0–10В Контроллер',tag:'0–10В КОНТРОЛЛЕР',desc:'Генерирует аналоговое напряжение 0–10В. 0В = минимум, 10В = 100% яркость. Может быть ручным или интегрированным в BMS.',specs:[['Выход','0–10В DC'],['Нагрузка','до 10 драйверов'],['Ток выхода','до 50мА'],['Интерфейс','Modbus/KNX/BMS'],['Точность','10мВ (1000 шагов)']],tips:'Один канал — параллельно до 10 драйверов. При >10 устройств — усилитель сигнала. Длина кабеля до 300м.'},
+      driver:{title:'Драйвер с 0–10В входом',tag:'ДРАЙВЕР CC',desc:'Силовой драйвер со встроенным 0–10В входом. Принимает аналоговый сигнал, регулирует ток через светодиод. Силовая и сигнальная части изолированы.',specs:[['Вход сигнала','0–10В или 1–10В'],['Вход питания','230В AC'],['Выход','постоянный ток CC'],['Минимум','зависит от модели (1–10%)'],['Изоляция','силовая ≠ сигнальная']],tips:'Внимание: часть драйверов — 1–10В (не 0–10В). При 0В они идут в минимум, а не выключаются. Для полного отключения нужен выключатель в силовой цепи.'},
+      led:{title:'Светодиодный светильник',tag:'СВЕТИЛЬНИК',desc:'Светильник с 0–10В драйвером. Наиболее распространён в офисном, промышленном, торговом освещении.',specs:[['Управление','аналоговое 0–10В'],['Диммирование','1–10%'],['Группировка','физические зоны'],['Применение','офис, торговля, пром.']],tips:'0–10В — зональное управление (все приборы зоны одинаково). Для индивидуального управления — переходите на DALI. 0–10В + реле = двухступенчатая система.'}
+    },svgFn:svgV10}
+};
+
+function mkA(id,color){return `<marker id="${id}" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="${color}"/></marker>`}
+
+function bgGrid(id,c1='#e8eaee',c2='#f5f6f8'){
+  return `<pattern id="${id}" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="${c2}"/><path d="M20 0L0 0 0 20" fill="none" stroke="${c1}" stroke-width=".7"/></pattern>`;
+}
+
+/* Light-theme node colors */
+// AC node: light red bg
+function nodeAC(x,y,w,h,cb){return `<g class="node" onclick="${cb}('ac')"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="#fff0f0" stroke="#d03030" stroke-width="1.5"/><text x="${x+w/2}" y="${y+20}" text-anchor="middle" fill="#c02020" font-size="10" font-family="JetBrains Mono" font-weight="600">220В</text><text x="${x+w/2}" y="${y+34}" text-anchor="middle" fill="#c02020" font-size="10" font-family="JetBrains Mono">50 Гц</text><text x="${x+w/2}" y="${y+52}" text-anchor="middle" fill="#d06060" font-size="8" font-family="JetBrains Mono">AC СЕТЬ</text></g>`}
+
+function svgRGBW(nodes,cb){
+return `<svg class="main" viewBox="0 0 820 290" xmlns="http://www.w3.org/2000/svg">
+<defs>${bgGrid('g1')}${mkA('aA','#c08010')}${mkA('aG','#0e9e6e')}${mkA('aR','#d03030')}${mkA('aB','#1878c0')}</defs>
+<rect width="820" height="290" fill="url(#g1)"/>
+${nodeAC(12,105,72,70,cb)}
+<line x1="84" y1="130" x2="135" y2="130" stroke="#d03030" stroke-width="1.5" marker-end="url(#aR)" class="fr"/>
+<polyline points="84,158 98,158 98,235 135,235" fill="none" stroke="#d03030" stroke-width="1.5" marker-end="url(#aR)" class="fr"/>
+<!-- BP1 -->
+<g class="node" onclick="${cb}('bp1')">
+  <rect x="137" y="105" width="86" height="52" rx="5" fill="#fffbf0" stroke="#c08010" stroke-width="1.5"/>
+  <text x="180" y="124" text-anchor="middle" fill="#b06010" font-size="9" font-family="JetBrains Mono" font-weight="600">БП №1</text>
+  <text x="180" y="138" text-anchor="middle" fill="#c08030" font-size="8" font-family="JetBrains Mono">24В / 2А</text>
+  <text x="180" y="151" text-anchor="middle" fill="#d0a060" font-size="7.5" font-family="JetBrains Mono">контроллер</text>
+</g>
+<line x1="223" y1="131" x2="278" y2="131" stroke="#c08010" stroke-width="2" marker-end="url(#aA)" class="fa"/>
+<!-- CTRL -->
+<g class="node" onclick="${cb}('ctrl')">
+  <rect x="280" y="78" width="108" height="116" rx="6" fill="#f0fff8" stroke="#0e9e6e" stroke-width="2"/>
+  <text x="334" y="98" text-anchor="middle" fill="#0e7e58" font-size="9.5" font-family="JetBrains Mono" font-weight="600">КОНТРОЛЛЕР</text>
+  <text x="334" y="111" text-anchor="middle" fill="#0e9e6e" font-size="9" font-family="JetBrains Mono">RGBW</text>
+  <rect x="293" y="120" width="12" height="9" rx="2" fill="#e04040" opacity=".9"/><text x="299" y="128" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">R</text>
+  <rect x="309" y="120" width="12" height="9" rx="2" fill="#20a020" opacity=".9"/><text x="315" y="128" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">G</text>
+  <rect x="325" y="120" width="12" height="9" rx="2" fill="#2060d0" opacity=".9"/><text x="331" y="128" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">B</text>
+  <rect x="341" y="120" width="12" height="9" rx="2" fill="#909090" opacity=".9"/><text x="347" y="128" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">W</text>
+  <text x="334" y="148" text-anchor="middle" fill="#3a8060" font-size="7.5" font-family="JetBrains Mono">PWM выход</text>
+  <text x="334" y="161" text-anchor="middle" fill="#3a8060" font-size="7.5" font-family="JetBrains Mono">Wi-Fi/RF/DMX</text>
+  <rect x="290" y="170" width="84" height="13" rx="3" fill="#e0f8f0" stroke="#a0dcc8" stroke-width="1"/>
+  <text x="332" y="180" text-anchor="middle" fill="#3a8060" font-size="7" font-family="JetBrains Mono">пульт / смартфон</text>
+</g>
+<line x1="388" y1="140" x2="438" y2="140" stroke="#0e9e6e" stroke-width="1.5" marker-end="url(#aG)" class="fg"/>
+<text x="413" y="133" text-anchor="middle" fill="#3a8060" font-size="7.5" font-family="JetBrains Mono">PWM сигнал</text>
+<!-- BP2 -->
+<g class="node" onclick="${cb}('bp2')">
+  <rect x="137" y="210" width="86" height="52" rx="5" fill="#fffbf0" stroke="#c08010" stroke-width="1.5"/>
+  <text x="180" y="229" text-anchor="middle" fill="#b06010" font-size="9" font-family="JetBrains Mono" font-weight="600">БП №2</text>
+  <text x="180" y="243" text-anchor="middle" fill="#c08030" font-size="8" font-family="JetBrains Mono">24В / 10А</text>
+  <text x="180" y="256" text-anchor="middle" fill="#d0a060" font-size="7.5" font-family="JetBrains Mono">силовой</text>
+</g>
+<polyline points="223,236 445,236 445,195" fill="none" stroke="#c08010" stroke-width="2" marker-end="url(#aA)" class="fa"/>
+<text x="334" y="249" text-anchor="middle" fill="#c09040" font-size="7.5" font-family="JetBrains Mono">силовое питание 24В</text>
+<!-- AMP -->
+<g class="node" onclick="${cb}('amp')">
+  <rect x="440" y="92" width="108" height="106" rx="6" fill="#f0f6ff" stroke="#1878c0" stroke-width="2"/>
+  <text x="494" y="112" text-anchor="middle" fill="#1060a0" font-size="9.5" font-family="JetBrains Mono" font-weight="600">УСИЛИТЕЛЬ</text>
+  <text x="494" y="125" text-anchor="middle" fill="#1878c0" font-size="9" font-family="JetBrains Mono">RGBW</text>
+  <rect x="453" y="134" width="12" height="9" rx="2" fill="#e04040" opacity=".9"/><text x="459" y="142" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">R</text>
+  <rect x="469" y="134" width="12" height="9" rx="2" fill="#20a020" opacity=".9"/><text x="475" y="142" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">G</text>
+  <rect x="485" y="134" width="12" height="9" rx="2" fill="#2060d0" opacity=".9"/><text x="491" y="142" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">B</text>
+  <rect x="501" y="134" width="12" height="9" rx="2" fill="#909090" opacity=".9"/><text x="507" y="142" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">W</text>
+  <text x="494" y="162" text-anchor="middle" fill="#2060a0" font-size="7.5" font-family="JetBrains Mono">повтор PWM</text>
+  <text x="494" y="175" text-anchor="middle" fill="#2060a0" font-size="7.5" font-family="JetBrains Mono">до 6А/канал</text>
+  <text x="494" y="188" text-anchor="middle" fill="#2060a0" font-size="7.5" font-family="JetBrains Mono">4 канала</text>
+</g>
+<line x1="548" y1="145" x2="600" y2="145" stroke="#1878c0" stroke-width="2.5" marker-end="url(#aB)" class="fb"/>
+<text x="574" y="138" text-anchor="middle" fill="#4080b0" font-size="7.5" font-family="JetBrains Mono">4 канала</text>
+<!-- LED -->
+<g class="node" onclick="${cb}('led')">
+  <rect x="602" y="75" width="200" height="140" rx="6" fill="#fafafa" stroke="#c8ccd8" stroke-width="1.5"/>
+  <text x="702" y="96" text-anchor="middle" fill="#404050" font-size="9.5" font-family="JetBrains Mono" font-weight="600">ЛЕНТА RGBW</text>
+  <g transform="translate(618,108)">
+    <rect x="0" y="0" width="13" height="13" rx="2" fill="#e04040" class="lp"/><rect x="17" y="0" width="13" height="13" rx="2" fill="#20a020" class="lg"/><rect x="34" y="0" width="13" height="13" rx="2" fill="#2060d0" class="lb"/><rect x="51" y="0" width="13" height="13" rx="2" fill="#c8c0a0" class="lr"/>
+    <rect x="68" y="0" width="13" height="13" rx="2" fill="#e04040" class="lp"/><rect x="85" y="0" width="13" height="13" rx="2" fill="#20a020" class="lg"/><rect x="102" y="0" width="13" height="13" rx="2" fill="#2060d0" class="lb"/><rect x="119" y="0" width="13" height="13" rx="2" fill="#c8c0a0" class="lr"/>
+    <rect x="136" y="0" width="13" height="13" rx="2" fill="#e04040" class="lp"/><rect x="153" y="0" width="13" height="13" rx="2" fill="#20a020" class="lg"/>
+    <rect x="0" y="18" width="13" height="13" rx="2" fill="#e04040" class="lp"/><rect x="17" y="18" width="13" height="13" rx="2" fill="#20a020" class="lg"/><rect x="34" y="18" width="13" height="13" rx="2" fill="#2060d0" class="lb"/><rect x="51" y="18" width="13" height="13" rx="2" fill="#c8c0a0" class="lr"/>
+    <rect x="68" y="18" width="13" height="13" rx="2" fill="#e04040" class="lp"/><rect x="85" y="18" width="13" height="13" rx="2" fill="#20a020" class="lg"/><rect x="102" y="18" width="13" height="13" rx="2" fill="#2060d0" class="lb"/><rect x="119" y="18" width="13" height="13" rx="2" fill="#c8c0a0" class="lr"/>
+    <rect x="0" y="36" width="13" height="13" rx="2" fill="#e04040" class="lp"/><rect x="17" y="36" width="13" height="13" rx="2" fill="#20a020" class="lg"/><rect x="34" y="36" width="13" height="13" rx="2" fill="#2060d0" class="lb"/><rect x="51" y="36" width="13" height="13" rx="2" fill="#c8c0a0" class="lr"/>
+    <rect x="68" y="36" width="13" height="13" rx="2" fill="#e04040" class="lp"/><rect x="85" y="36" width="13" height="13" rx="2" fill="#20a020" class="lg"/><rect x="102" y="36" width="13" height="13" rx="2" fill="#2060d0" class="lb"/><rect x="119" y="36" width="13" height="13" rx="2" fill="#c8c0a0" class="lr"/>
+  </g>
+  <text x="702" y="208" text-anchor="middle" fill="#909090" font-size="7.5" font-family="JetBrains Mono">5050 RGBW · 12/24В · до 20Вт/м</text>
+</g>
+</svg>`;
+}
+
+function svgRGB(nodes,cb){
+return `<svg class="main" viewBox="0 0 820 260" xmlns="http://www.w3.org/2000/svg">
+<defs>${bgGrid('g2','#ece8e8')}${mkA('bA','#c08010')}${mkA('bG','#c03030')}${mkA('bR','#d03030')}</defs>
+<rect width="820" height="260" fill="url(#g2)"/>
+${nodeAC(12,90,72,70,cb)}
+<line x1="84" y1="125" x2="135" y2="125" stroke="#d03030" stroke-width="1.5" marker-end="url(#bR)" class="fr"/>
+<g class="node" onclick="${cb}('bp')">
+  <rect x="137" y="97" width="90" height="56" rx="5" fill="#fffbf0" stroke="#c08010" stroke-width="1.5"/>
+  <text x="182" y="117" text-anchor="middle" fill="#b06010" font-size="9" font-family="JetBrains Mono" font-weight="600">БЛОК ПИТАНИЯ</text>
+  <text x="182" y="131" text-anchor="middle" fill="#c08030" font-size="8" font-family="JetBrains Mono">12В или 24В DC</text>
+  <text x="182" y="145" text-anchor="middle" fill="#d0a060" font-size="7.5" font-family="JetBrains Mono">расчётная мощность</text>
+</g>
+<line x1="227" y1="125" x2="278" y2="125" stroke="#c08010" stroke-width="2" marker-end="url(#bA)" class="fa"/>
+<g class="node" onclick="${cb}('ctrl')">
+  <rect x="280" y="79" width="108" height="96" rx="6" fill="#fff0f0" stroke="#c03030" stroke-width="2"/>
+  <text x="334" y="99" text-anchor="middle" fill="#a02020" font-size="9.5" font-family="JetBrains Mono" font-weight="600">КОНТРОЛЛЕР</text>
+  <text x="334" y="112" text-anchor="middle" fill="#c03030" font-size="9" font-family="JetBrains Mono">RGB</text>
+  <rect x="297" y="121" width="14" height="10" rx="2" fill="#e04040" opacity=".9"/><text x="304" y="130" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">R</text>
+  <rect x="320" y="121" width="14" height="10" rx="2" fill="#20a020" opacity=".9"/><text x="327" y="130" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">G</text>
+  <rect x="343" y="121" width="14" height="10" rx="2" fill="#2060d0" opacity=".9"/><text x="350" y="130" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">B</text>
+  <text x="334" y="149" text-anchor="middle" fill="#903030" font-size="7.5" font-family="JetBrains Mono">3 канала PWM</text>
+  <text x="334" y="162" text-anchor="middle" fill="#903030" font-size="7.5" font-family="JetBrains Mono">~16 млн цветов</text>
+  <text x="334" y="169" text-anchor="middle" fill="#c07070" font-size="7" font-family="JetBrains Mono">RF/Wi-Fi/IR/DMX</text>
+</g>
+<line x1="388" y1="127" x2="440" y2="127" stroke="#c03030" stroke-width="1.5" marker-end="url(#bG)" class="fg"/>
+<text x="414" y="120" text-anchor="middle" fill="#903030" font-size="7.5" font-family="JetBrains Mono">3 ШИМ канала</text>
+<g class="node" onclick="${cb}('amp')">
+  <rect x="442" y="87" width="108" height="92" rx="6" fill="#fff4f4" stroke="#c03030" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="496" y="107" text-anchor="middle" fill="#c03030" font-size="9" font-family="JetBrains Mono" font-weight="600">УСИЛИТЕЛЬ RGB</text>
+  <text x="496" y="120" text-anchor="middle" fill="#d06060" font-size="8" font-family="JetBrains Mono">(при длине &gt;5–10м)</text>
+  <rect x="458" y="129" width="14" height="10" rx="2" fill="#e04040" opacity=".9"/><text x="465" y="138" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">R</text>
+  <rect x="481" y="129" width="14" height="10" rx="2" fill="#20a020" opacity=".9"/><text x="488" y="138" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">G</text>
+  <rect x="504" y="129" width="14" height="10" rx="2" fill="#2060d0" opacity=".9"/><text x="511" y="138" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">B</text>
+  <text x="496" y="158" text-anchor="middle" fill="#903030" font-size="7.5" font-family="JetBrains Mono">до 6А/канал</text>
+  <text x="496" y="171" text-anchor="middle" fill="#903030" font-size="7.5" font-family="JetBrains Mono">3 канала</text>
+</g>
+<line x1="550" y1="133" x2="600" y2="133" stroke="#c03030" stroke-width="2" marker-end="url(#bG)" class="fg"/>
+<g class="node" onclick="${cb}('led')">
+  <rect x="602" y="72" width="198" height="126" rx="6" fill="#fafafa" stroke="#c8ccd8" stroke-width="1.5"/>
+  <text x="701" y="93" text-anchor="middle" fill="#404050" font-size="9.5" font-family="JetBrains Mono" font-weight="600">ЛЕНТА RGB</text>
+  <g transform="translate(616,105)">
+    <rect x="0" y="0" width="14" height="14" rx="2" fill="#e04040" class="lp"/><rect x="18" y="0" width="14" height="14" rx="2" fill="#20a020" class="lg"/><rect x="36" y="0" width="14" height="14" rx="2" fill="#2060d0" class="lb"/>
+    <rect x="54" y="0" width="14" height="14" rx="2" fill="#e04040" class="lp"/><rect x="72" y="0" width="14" height="14" rx="2" fill="#20a020" class="lg"/><rect x="90" y="0" width="14" height="14" rx="2" fill="#2060d0" class="lb"/>
+    <rect x="108" y="0" width="14" height="14" rx="2" fill="#e04040" class="lp"/><rect x="126" y="0" width="14" height="14" rx="2" fill="#20a020" class="lg"/><rect x="144" y="0" width="14" height="14" rx="2" fill="#2060d0" class="lb"/><rect x="162" y="0" width="14" height="14" rx="2" fill="#e04040" class="lp"/>
+    <rect x="0" y="20" width="14" height="14" rx="2" fill="#e04040" class="lp"/><rect x="18" y="20" width="14" height="14" rx="2" fill="#20a020" class="lg"/><rect x="36" y="20" width="14" height="14" rx="2" fill="#2060d0" class="lb"/>
+    <rect x="54" y="20" width="14" height="14" rx="2" fill="#e04040" class="lp"/><rect x="72" y="20" width="14" height="14" rx="2" fill="#20a020" class="lg"/><rect x="90" y="20" width="14" height="14" rx="2" fill="#2060d0" class="lb"/>
+    <rect x="108" y="20" width="14" height="14" rx="2" fill="#e04040" class="lp"/><rect x="126" y="20" width="14" height="14" rx="2" fill="#20a020" class="lg"/><rect x="144" y="20" width="14" height="14" rx="2" fill="#2060d0" class="lb"/>
+  </g>
+  <text x="701" y="192" text-anchor="middle" fill="#909090" font-size="7.5" font-family="JetBrains Mono">5050 RGB · 12/24В · 7–15Вт/м</text>
+</g>
+<text x="412" y="208" text-anchor="middle" fill="#c0a0a0" font-size="8" font-family="JetBrains Mono">* усилитель нужен при длине &gt;5м (12В) или &gt;10м (24В)</text>
+</svg>`;
+}
+
+function svgMono(nodes,cb){
+return `<svg class="main" viewBox="0 0 820 240" xmlns="http://www.w3.org/2000/svg">
+<defs>${bgGrid('g3','#e4e4e8')}${mkA('cA','#c08010')}${mkA('cW','#505060')}${mkA('cR','#d03030')}</defs>
+<rect width="820" height="240" fill="url(#g3)"/>
+${nodeAC(12,80,72,70,cb)}
+<line x1="84" y1="115" x2="135" y2="115" stroke="#d03030" stroke-width="1.5" marker-end="url(#cR)" class="fr"/>
+<g class="node" onclick="${cb}('bp')">
+  <rect x="137" y="88" width="90" height="56" rx="5" fill="#fffbf0" stroke="#c08010" stroke-width="1.5"/>
+  <text x="182" y="108" text-anchor="middle" fill="#b06010" font-size="9" font-family="JetBrains Mono" font-weight="600">БЛОК ПИТАНИЯ</text>
+  <text x="182" y="122" text-anchor="middle" fill="#c08030" font-size="8" font-family="JetBrains Mono">12В или 24В DC</text>
+  <text x="182" y="136" text-anchor="middle" fill="#d0a060" font-size="7.5" font-family="JetBrains Mono">по расчёту</text>
+</g>
+<line x1="227" y1="116" x2="278" y2="116" stroke="#c08010" stroke-width="2" marker-end="url(#cA)" class="fa"/>
+<g class="node" onclick="${cb}('dimmer')">
+  <rect x="280" y="82" width="108" height="72" rx="6" fill="#f8f8fc" stroke="#505060" stroke-width="2"/>
+  <text x="334" y="102" text-anchor="middle" fill="#404050" font-size="9.5" font-family="JetBrains Mono" font-weight="600">ШИМ ДИММЕР</text>
+  <text x="334" y="115" text-anchor="middle" fill="#606070" font-size="9" font-family="JetBrains Mono">1 канал</text>
+  <rect x="293" y="124" width="80" height="8" rx="2" fill="#e8e8ec" stroke="#c0c0d0" stroke-width="1"/>
+  <rect x="293" y="124" width="54" height="8" rx="2" fill="#808090" opacity=".8"/>
+  <text x="334" y="148" text-anchor="middle" fill="#808090" font-size="7.5" font-family="JetBrains Mono">0–100% яркость</text>
+</g>
+<line x1="388" y1="118" x2="455" y2="118" stroke="#505060" stroke-width="2" marker-end="url(#cW)" class="fg"/>
+<text x="421" y="111" text-anchor="middle" fill="#707080" font-size="7.5" font-family="JetBrains Mono">1 канал PWM</text>
+<g class="node" onclick="${cb}('led')">
+  <rect x="457" y="58" width="340" height="136" rx="6" fill="#fafafa" stroke="#c8ccd8" stroke-width="1.5"/>
+  <text x="627" y="80" text-anchor="middle" fill="#404050" font-size="9.5" font-family="JetBrains Mono" font-weight="600">МОНОХРОМНАЯ ЛЕНТА</text>
+  <g transform="translate(470,92)">
+    <rect x="0" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lp"/><rect x="18" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lr"/><rect x="36" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lg"/><rect x="54" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lb"/><rect x="72" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lp"/><rect x="90" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lr"/><rect x="108" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lg"/><rect x="126" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lb"/><rect x="144" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lp"/><rect x="162" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lr"/><rect x="180" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lg"/><rect x="198" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lb"/><rect x="216" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lp"/><rect x="234" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lr"/><rect x="252" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lg"/><rect x="270" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lb"/><rect x="288" y="0" width="14" height="14" rx="2" fill="#e8c060" class="lp"/>
+    <rect x="0" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lp"/><rect x="18" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lr"/><rect x="36" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lg"/><rect x="54" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lb"/><rect x="72" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lp"/><rect x="90" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lr"/><rect x="108" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lg"/><rect x="126" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lb"/><rect x="144" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lp"/><rect x="162" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lr"/><rect x="180" y="20" width="14" height="14" rx="2" fill="#e8c060" class="lg"/>
+  </g>
+  <text x="627" y="175" text-anchor="middle" fill="#909090" font-size="7.5" font-family="JetBrains Mono">2835 / 5630 · 60–240 LED/м · 4–25Вт/м · Hi-CRI &gt;95Ra</text>
+  <text x="627" y="187" text-anchor="middle" fill="#909090" font-size="7.5" font-family="JetBrains Mono">2700К тёплый · 4000К нейтральный · 6500К холодный</text>
+</g>
+</svg>`;
+}
+
+function svgDALI(nodes,cb){
+return `<svg class="main" viewBox="0 0 820 310" xmlns="http://www.w3.org/2000/svg">
+<defs>${bgGrid('g4','#e0e8f0')}${mkA('dD','#1878c0')}${mkA('dR','#d03030')}${mkA('dA','#c08010')}</defs>
+<rect width="820" height="310" fill="url(#g4)"/>
+<line x1="12" y1="38" x2="808" y2="38" stroke="#d03030" stroke-width="1.5" stroke-dasharray="8 4" opacity=".5"/>
+<text x="14" y="33" fill="#c06060" font-size="8" font-family="JetBrains Mono">230В AC силовая шина →</text>
+<line x1="12" y1="268" x2="808" y2="268" stroke="#1878c0" stroke-width="1.5" stroke-dasharray="4 3" class="fd"/>
+<text x="14" y="282" fill="#6090c0" font-size="8" font-family="JetBrains Mono">← DALI шина (16В, 2-проводная) →</text>
+<g class="node" onclick="${cb}('ac')">
+  <rect x="12" y="52" width="72" height="65" rx="5" fill="#fff0f0" stroke="#d03030" stroke-width="1.5"/>
+  <text x="48" y="73" text-anchor="middle" fill="#c02020" font-size="10" font-family="JetBrains Mono" font-weight="600">230В</text>
+  <text x="48" y="87" text-anchor="middle" fill="#c02020" font-size="9" font-family="JetBrains Mono">50 Гц</text>
+  <text x="48" y="105" text-anchor="middle" fill="#d06060" font-size="7.5" font-family="JetBrains Mono">AC СЕТЬ</text>
+  <line x1="48" y1="38" x2="48" y2="52" stroke="#d03030" stroke-width="1.5"/>
+</g>
+<g class="node" onclick="${cb}('psu')">
+  <rect x="100" y="52" width="86" height="65" rx="5" fill="#fffbf0" stroke="#c08010" stroke-width="1.5"/>
+  <text x="143" y="72" text-anchor="middle" fill="#b06010" font-size="9" font-family="JetBrains Mono" font-weight="600">БП DALI</text>
+  <text x="143" y="86" text-anchor="middle" fill="#c08030" font-size="8" font-family="JetBrains Mono">16В DC</text>
+  <text x="143" y="100" text-anchor="middle" fill="#d0a060" font-size="7.5" font-family="JetBrains Mono">макс. 250мА</text>
+  <text x="143" y="111" text-anchor="middle" fill="#d0b080" font-size="7" font-family="JetBrains Mono">для шины</text>
+  <line x1="143" y1="117" x2="143" y2="268" stroke="#c08010" stroke-width="1.5" marker-end="url(#dA)"/>
+</g>
+<g class="node" onclick="${cb}('ctrl')">
+  <rect x="204" y="45" width="108" height="112" rx="6" fill="#f0f6ff" stroke="#1878c0" stroke-width="2"/>
+  <text x="258" y="65" text-anchor="middle" fill="#1060a0" font-size="9.5" font-family="JetBrains Mono" font-weight="600">DALI</text>
+  <text x="258" y="78" text-anchor="middle" fill="#1060a0" font-size="9.5" font-family="JetBrains Mono" font-weight="600">КОНТРОЛЛЕР</text>
+  <text x="258" y="91" text-anchor="middle" fill="#4080b0" font-size="8" font-family="JetBrains Mono">мастер шины</text>
+  <rect x="216" y="100" width="84" height="11" rx="2" fill="#e0ecf8" stroke="#b0cce8" stroke-width="1"/>
+  <text x="258" y="109" text-anchor="middle" fill="#4080b0" font-size="7.5" font-family="JetBrains Mono">64 адреса / 16 групп</text>
+  <rect x="216" y="115" width="84" height="11" rx="2" fill="#e0ecf8" stroke="#b0cce8" stroke-width="1"/>
+  <text x="258" y="124" text-anchor="middle" fill="#4080b0" font-size="7.5" font-family="JetBrains Mono">16 сцен / расписание</text>
+  <text x="258" y="143" text-anchor="middle" fill="#6090c0" font-size="7.5" font-family="JetBrains Mono">Ethernet/KNX</text>
+  <text x="258" y="153" text-anchor="middle" fill="#6090c0" font-size="7.5" font-family="JetBrains Mono">BACnet/Modbus</text>
+  <line x1="258" y1="157" x2="258" y2="268" stroke="#1878c0" stroke-width="1.5" marker-end="url(#dD)"/>
+</g>
+${[440,570,700].map((x,i)=>`
+<g class="node" onclick="${cb}('ecg')">
+  <rect x="${x}" y="58" width="104" height="96" rx="5" fill="#f0f6ff" stroke="#1878c0" stroke-width="1.5"/>
+  <text x="${x+52}" y="77" text-anchor="middle" fill="#1060a0" font-size="9" font-family="JetBrains Mono" font-weight="600">ECG / DRIVER</text>
+  <text x="${x+52}" y="90" text-anchor="middle" fill="#4080b0" font-size="8" font-family="JetBrains Mono">DALI адрес ${i}</text>
+  <rect x="${x+12}" y="98" width="80" height="10" rx="2" fill="#e0ecf8" stroke="#b0cce8" stroke-width="1"/>
+  <text x="${x+52}" y="107" text-anchor="middle" fill="#4080b0" font-size="7" font-family="JetBrains Mono">0.1–100% диммирование</text>
+  <text x="${x+52}" y="122" text-anchor="middle" fill="#6090c0" font-size="7.5" font-family="JetBrains Mono">лог. кривая</text>
+  <text x="${x+52}" y="134" text-anchor="middle" fill="#6090c0" font-size="7.5" font-family="JetBrains Mono">CC выход</text>
+  <text x="${x+52}" y="146" text-anchor="middle" fill="#6090c0" font-size="7.5" font-family="JetBrains Mono">230В AC вход</text>
+  <line x1="${x+52}" y1="38" x2="${x+52}" y2="58" stroke="#d03030" stroke-width="1.5"/>
+  <line x1="${x+52}" y1="154" x2="${x+52}" y2="192" stroke="#909090" stroke-width="1.5" marker-end="url(#dD)"/>
+  <line x1="${x+52}" y1="268" x2="${x+52}" y2="228" stroke="#1878c0" stroke-width="1.5" marker-end="url(#dD)"/>
+  <rect x="${x+10}" y="194" width="84" height="30" rx="3" fill="#fafafa" stroke="#dde0e8" stroke-width="1"/>
+  <rect x="${x+16}" y="200" width="10" height="10" rx="2" fill="#e8c060" class="lp"/>
+  <rect x="${x+30}" y="200" width="10" height="10" rx="2" fill="#e8c060" class="lr"/>
+  <rect x="${x+44}" y="200" width="10" height="10" rx="2" fill="#e8c060" class="lg"/>
+  <rect x="${x+58}" y="200" width="10" height="10" rx="2" fill="#e8c060" class="lb"/>
+  <rect x="${x+72}" y="200" width="10" height="10" rx="2" fill="#e8c060" class="lp"/>
+  <text x="${x+52}" y="236" text-anchor="middle" fill="#909090" font-size="7" font-family="JetBrains Mono">светильник ${i}</text>
+</g>`).join('')}
+<line x1="312" y1="268" x2="440" y2="268" stroke="#1878c0" stroke-width="1.5"/>
+<text x="376" y="260" text-anchor="middle" fill="#6090c0" font-size="8" font-family="JetBrains Mono">DALI шина — все устройства параллельно</text>
+</svg>`;
+}
+
+function svgV10(nodes,cb){
+return `<svg class="main" viewBox="0 0 820 270" xmlns="http://www.w3.org/2000/svg">
+<defs>${bgGrid('g5','#e8e4d8')}${mkA('vA','#c08010')}${mkA('vV','#c08010')}${mkA('vR','#d03030')}</defs>
+<rect width="820" height="270" fill="url(#g5)"/>
+<line x1="12" y1="35" x2="808" y2="35" stroke="#d03030" stroke-width="1.5" stroke-dasharray="8 4" opacity=".45"/>
+<text x="14" y="30" fill="#c06060" font-size="8" font-family="JetBrains Mono">230В AC силовая шина →</text>
+<line x1="12" y1="235" x2="808" y2="235" stroke="#c08010" stroke-width="1.5" stroke-dasharray="5 3" class="fv"/>
+<text x="14" y="249" fill="#b09030" font-size="8" font-family="JetBrains Mono">← 0–10В сигнальный провод (2×0.5 мм²) →</text>
+<g class="node" onclick="${cb}('ac')">
+  <rect x="12" y="50" width="72" height="65" rx="5" fill="#fff0f0" stroke="#d03030" stroke-width="1.5"/>
+  <text x="48" y="71" text-anchor="middle" fill="#c02020" font-size="10" font-family="JetBrains Mono" font-weight="600">230В</text>
+  <text x="48" y="85" text-anchor="middle" fill="#c02020" font-size="9" font-family="JetBrains Mono">50 Гц</text>
+  <text x="48" y="103" text-anchor="middle" fill="#d06060" font-size="7.5" font-family="JetBrains Mono">AC СЕТЬ</text>
+  <line x1="48" y1="35" x2="48" y2="50" stroke="#d03030" stroke-width="1.5"/>
+</g>
+<g class="node" onclick="${cb}('ctrl')">
+  <rect x="100" y="46" width="108" height="104" rx="6" fill="#fffbf0" stroke="#c08010" stroke-width="2"/>
+  <text x="154" y="66" text-anchor="middle" fill="#b06010" font-size="9" font-family="JetBrains Mono" font-weight="600">0–10В</text>
+  <text x="154" y="79" text-anchor="middle" fill="#b06010" font-size="9" font-family="JetBrains Mono" font-weight="600">КОНТРОЛЛЕР</text>
+  <rect x="112" y="90" width="84" height="12" rx="2" fill="#f0e8d0" stroke="#d0c090" stroke-width="1"/>
+  <rect x="112" y="90" width="58" height="12" rx="2" fill="#c08010" opacity=".5"/>
+  <text x="154" y="100" text-anchor="middle" fill="#b08030" font-size="7.5" font-family="JetBrains Mono">0В ——— 10В</text>
+  <text x="154" y="118" text-anchor="middle" fill="#c09040" font-size="7.5" font-family="JetBrains Mono">аналог. выход</text>
+  <text x="154" y="131" text-anchor="middle" fill="#c09040" font-size="7.5" font-family="JetBrains Mono">до 50мА/канал</text>
+  <text x="154" y="144" text-anchor="middle" fill="#d0a860" font-size="7.5" font-family="JetBrains Mono">Modbus/KNX/BMS</text>
+  <line x1="154" y1="150" x2="154" y2="235" stroke="#c08010" stroke-width="1.5" marker-end="url(#vV)"/>
+</g>
+${[320,480,640].map((x,i)=>`
+<g class="node" onclick="${cb}('driver')">
+  <rect x="${x}" y="53" width="120" height="108" rx="5" fill="#fffbf0" stroke="#c08010" stroke-width="1.5"/>
+  <text x="${x+60}" y="72" text-anchor="middle" fill="#b06010" font-size="9" font-family="JetBrains Mono" font-weight="600">ДРАЙВЕР CC</text>
+  <text x="${x+60}" y="85" text-anchor="middle" fill="#c08030" font-size="8" font-family="JetBrains Mono">0–10В вход</text>
+  <rect x="${x+14}" y="94" width="92" height="10" rx="2" fill="#f0e8d0" stroke="#d0c090" stroke-width="1"/>
+  <text x="${x+60}" y="103" text-anchor="middle" fill="#c09040" font-size="7" font-family="JetBrains Mono">силовой: 230В AC</text>
+  <text x="${x+60}" y="120" text-anchor="middle" fill="#c09040" font-size="7.5" font-family="JetBrains Mono">CC выход</text>
+  <text x="${x+60}" y="133" text-anchor="middle" fill="#c09040" font-size="7.5" font-family="JetBrains Mono">изолированный</text>
+  <text x="${x+60}" y="146" text-anchor="middle" fill="#d0b060" font-size="7.5" font-family="JetBrains Mono">зона ${i+1}</text>
+  <line x1="${x+60}" y1="35" x2="${x+60}" y2="53" stroke="#d03030" stroke-width="1.5"/>
+  <line x1="${x+60}" y1="161" x2="${x+60}" y2="193" stroke="#909090" stroke-width="1.5" marker-end="url(#vV)"/>
+  <line x1="${x+60}" y1="235" x2="${x+60}" y2="220" stroke="#c08010" stroke-width="1.5" marker-end="url(#vV)"/>
+  <rect x="${x+10}" y="195" width="100" height="26" rx="3" fill="#fafafa" stroke="#dde0e8" stroke-width="1"/>
+  <rect x="${x+16}" y="200" width="11" height="11" rx="2" fill="#e8c060" class="lp"/><rect x="${x+31}" y="200" width="11" height="11" rx="2" fill="#e8c060" class="lr"/><rect x="${x+46}" y="200" width="11" height="11" rx="2" fill="#e8c060" class="lg"/><rect x="${x+61}" y="200" width="11" height="11" rx="2" fill="#e8c060" class="lb"/><rect x="${x+76}" y="200" width="11" height="11" rx="2" fill="#e8c060" class="lp"/><rect x="${x+91}" y="200" width="11" height="11" rx="2" fill="#e8c060" class="lr"/>
+  <text x="${x+60}" y="235" text-anchor="middle" fill="#909090" font-size="7" font-family="JetBrains Mono">зона ${i+1}</text>
+</g>`).join('')}
+<line x1="208" y1="235" x2="320" y2="235" stroke="#c08010" stroke-width="1.5"/>
+</svg>`;
+}
+
+let currentSys='rgbw', currentTab='desc';
+
+function switchSys(sys){
+  currentSys=sys;
+  const sd=sysData[sys];
+  Object.keys(sysData).forEach(k=>{
+    const el=document.getElementById('st-'+k);
+    el.classList.toggle('active',k===sys);
+    el.style.setProperty('--tc',sysData[k].color);
+  });
+  document.getElementById('hint-text').textContent=`Нажмите на компонент для изучения · ${sd.name} система`;
+  document.getElementById('diagram-area').innerHTML=sd.svgFn(sd.nodes,'showNode');
+  document.getElementById('flow-legend').innerHTML=sd.legend.map(l=>`<div class="fl-item"><div class="fl-dot" style="background:${l.c}"></div>${l.l}</div>`).join('');
+  document.getElementById('comp-tabs').style.setProperty('--tc',sd.color);
+  document.getElementById('info-panel').style.setProperty('--tc',sd.color);
+  resetInfo(sd.color);
+}
+
+function resetInfo(c){
+  document.getElementById('tc-desc').innerHTML=`<h3 style="color:${c}">← Выберите компонент</h3><p>Нажмите на любой блок схемы для изучения его роли, характеристик и рекомендаций.</p>`;
+  document.getElementById('tc-spec').innerHTML=`<p style="color:#c0c8d8">Выберите компонент</p>`;
+  document.getElementById('tc-tips').innerHTML=`<p style="color:#c0c8d8">Выберите компонент</p>`;
+}
+
+function showNode(id){
+  const sd=sysData[currentSys], d=sd.nodes[id];
+  if(!d)return;
+  const c=sd.color;
+  document.getElementById('tc-desc').innerHTML=`<h3 style="color:${c};margin-bottom:6px">${d.title}</h3><span style="display:inline-block;font-size:9px;padding:2px 9px;border-radius:3px;background:#f0f2f8;color:${c};border:1px solid;border-color:${c}40;letter-spacing:.08em;margin-bottom:8px">${d.tag}</span><p>${d.desc}</p>`;
+  document.getElementById('tc-spec').innerHTML=`<h3 style="color:${c};margin-bottom:10px">${d.title}</h3><div class="specs-grid">${d.specs.map(s=>`<div class="spec-row"><span>${s[0]}</span><span style="color:#2a3040">${s[1]}</span></div>`).join('')}</div>`;
+  document.getElementById('tc-tips').innerHTML=`<h3 style="color:${c};margin-bottom:8px">Советы инженера</h3><div class="tip-text">${d.tips}</div>`;
+  switchCT(currentTab);
+}
+
+function switchCT(tab){
+  currentTab=tab;
+  ['desc','spec','tips'].forEach(t=>{
+    document.getElementById('ct-'+t).classList.toggle('active',t===tab);
+    document.getElementById('tc-'+t).classList.toggle('active',t===tab);
+  });
+}
+
+switchSys('rgbw');
+</script>
