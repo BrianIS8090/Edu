@@ -59,10 +59,10 @@
     return cats;
   }
 
-  // Получить элементы по категории
+  // Получить элементы по категории (отсортированные по алфавиту)
   function getItemsByCategory(category) {
-    if (category === 'all') return allItems;
-    return allItems.filter(item => item.category === category);
+    const items = category === 'all' ? [...allItems] : allItems.filter(item => item.category === category);
+    return items.sort((a, b) => a.title.localeCompare(b.title, 'ru'));
   }
 
   // Рендер боковой панели (sidebar)
@@ -286,8 +286,13 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  // Сворачивание/разворачивание sidebar
+  function toggleSidebar() {
+    document.body.classList.toggle('sidebar-collapsed');
+  }
+
   // Публичный API для вызова из onclick-обработчиков
-  window.app = { openItem, filterCategory, showList };
+  window.app = { openItem, filterCategory, showList, toggleSidebar };
 
   // Запуск приложения
   init();

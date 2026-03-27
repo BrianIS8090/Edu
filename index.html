@@ -36,8 +36,9 @@
 
     /* Sidebar */
     .sidebar {
-      width: 260px; background: #fff; border-right: 1px solid #e5e7eb;
+      width: 390px; background: #fff; border-right: 1px solid #e5e7eb;
       padding: 20px 0; position: fixed; top: 52px; bottom: 0; overflow-y: auto;
+      transition: width 0.25s ease, transform 0.25s ease;
     }
     .sidebar-section { margin-bottom: 20px; }
     .sidebar-title {
@@ -65,10 +66,29 @@
     }
     .sidebar-lesson i { width: 14px; height: 14px; flex-shrink: 0; }
 
+    /* Кнопка сворачивания sidebar */
+    .sidebar-toggle {
+      position: fixed; top: 64px; left: 378px; z-index: 11;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #fff; border: 1px solid #e5e7eb;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.25s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .sidebar-toggle:hover { background: #f0f0ff; border-color: #c7d2fe; }
+    .sidebar-toggle i { width: 14px; height: 14px; color: #666; transition: transform 0.25s; }
+
+    /* Свёрнутый sidebar */
+    .sidebar-collapsed .sidebar { width: 0; padding: 0; overflow: hidden; border-right: none; }
+    .sidebar-collapsed .sidebar-toggle { left: 8px; }
+    .sidebar-collapsed .sidebar-toggle i { transform: rotate(180deg); }
+    .sidebar-collapsed .content-wrapper { margin-left: 0; }
+
     /* Контент */
     .content-wrapper {
-      flex: 1; margin-left: 260px;
+      flex: 1; margin-left: 390px;
       display: flex; justify-content: center;
+      transition: margin-left 0.25s ease;
     }
     .content { width: 100%; max-width: 968px; padding: 32px 48px; }
     .content.content-wide { max-width: 1100px; }
@@ -198,6 +218,10 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
       <div class="loading">Загрузка...</div>
+    </div>
+    <!-- Кнопка сворачивания sidebar -->
+    <div class="sidebar-toggle" onclick="app.toggleSidebar()">
+      <i data-lucide="panel-left-close"></i>
     </div>
 
     <div class="content-wrapper">
