@@ -667,21 +667,10 @@
 
   // ─── БАННЕР ПОСЛЕДНЕЙ СТАТЬИ ──────────────────────────────────────────────
 
-  // Обновить баннер последней прочитанной статьи
+  // Обновить баннер — всегда виден, контент зависит от наличия lastRead
   function updateBanner() {
     var bannerEl = document.getElementById('last-read-banner');
     if (!bannerEl) return;
-
-    var raw = localStorage.getItem('lastRead');
-    if (!raw) { bannerEl.classList.remove('visible'); return; }
-
-    var lastRead;
-    try { lastRead = JSON.parse(raw); } catch (e) { bannerEl.classList.remove('visible'); return; }
-
-    if (!lastRead || lastRead.progress <= 0 || lastRead.progress >= 100) { bannerEl.classList.remove('visible'); return; }
-
-    var item = allItems.find(function(i) { return i.id === lastRead.id; });
-    if (!item) { bannerEl.classList.remove('visible'); return; }
 
     // Установить фоновое изображение из banner/bg.jpg (с fallback на CSS-градиент)
     var testImg = new Image();
@@ -690,16 +679,47 @@
     };
     testImg.src = 'banner/bg.jpg';
 
-    document.getElementById('banner-title').textContent = lastRead.title;
-    document.getElementById('banner-progress-fill').style.width = lastRead.progress + '%';
-    var remaining = 100 - lastRead.progress;
-    document.getElementById('banner-progress-label').textContent =
-      lastRead.progress > 0
-        ? '\u041f\u0440\u043e\u0447\u0438\u0442\u0430\u043d\u043e ' + lastRead.progress + '%, \u043e\u0441\u0442\u0430\u043b\u043e\u0441\u044c ' + remaining + '%'
-        : '\u0415\u0449\u0451 \u043d\u0435 \u043d\u0430\u0447\u0430\u0442\u043e';
+    var raw = localStorage.getItem('lastRead');
+    var lastRead = null;
+    if (raw) {
+      try { lastRead = JSON.parse(raw); } catch (e) { lastRead = null; }
+    }
 
+    var titleEl = document.getElementById('banner-title');
+    var progressFill = document.getElementById('banner-progress-fill');
+    var progressLabel = document.getElementById('banner-progress-label');
+    var progressTrack = progressFill && progressFill.parentElement;
     var btn = document.getElementById('banner-btn');
-    btn.onclick = function() { app.openItem(lastRead.id); };
+    var labelEl = bannerEl.querySelector('.banner-label');
+
+    var item = lastRead ? allItems.find(function(i) { return i.id === lastRead.id; }) : null;
+
+    if (item && lastRead.progress > 0 && lastRead.progress < 100) {
+      // Есть статья в процессе чтения
+      if (labelEl) labelEl.textContent = '\u041f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u044c \u0447\u0442\u0435\u043d\u0438\u0435';
+      titleEl.textContent = lastRead.title;
+      if (progressFill) progressFill.style.width = lastRead.progress + '%';
+      if (progressTrack) progressTrack.style.display = '';
+      var remaining = 100 - lastRead.progress;
+      if (progressLabel) progressLabel.textContent = '\u041f\u0440\u043e\u0447\u0438\u0442\u0430\u043d\u043e\u00a0' + lastRead.progress + '%\u00a0\u2022\u00a0\u043e\u0441\u0442\u0430\u043b\u043e\u0441\u044c\u00a0' + remaining + '%';
+      if (btn) { btn.textContent = '\u041e\u0442\u043a\u0440\u044b\u0442\u044c'; btn.style.display = ''; btn.onclick = function() { app.openItem(lastRead.id); }; }
+    } else if (item && lastRead.progress >= 100) {
+      // Последняя статья прочитана полностью
+      if (labelEl) labelEl.textContent = '\u041f\u0440\u043e\u0447\u0438\u0442\u0430\u043d\u043e';
+      titleEl.textContent = lastRead.title;
+      if (progressFill) progressFill.style.width = '100%';
+      if (progressTrack) progressTrack.style.display = '';
+      if (progressLabel) progressLabel.textContent = '\u041c\u0430\u0442\u0435\u0440\u0438\u0430\u043b \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u043d \u043f\u043e\u043b\u043d\u043e\u0441\u0442\u044c\u044e \u2713';
+      if (btn) { btn.textContent = '\u0427\u0438\u0442\u0430\u0442\u044c \u0441\u043d\u043e\u0432\u0430'; btn.style.display = ''; btn.onclick = function() { app.openItem(lastRead.id); }; }
+    } else {
+      // Нет истории чтения — welcome-состояние
+      if (labelEl) labelEl.textContent = '\u0411\u0430\u0437\u0430 \u0437\u043d\u0430\u043d\u0438\u0439';
+      titleEl.textContent = '\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u043b\u044e\u0431\u043e\u0439 \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b \u0434\u043b\u044f \u043d\u0430\u0447\u0430\u043b\u0430 \u043e\u0431\u0443\u0447\u0435\u043d\u0438\u044f';
+      if (progressFill) progressFill.style.width = '0%';
+      if (progressTrack) progressTrack.style.display = 'none';
+      if (progressLabel) progressLabel.textContent = '';
+      if (btn) btn.style.display = 'none';
+    }
 
     bannerEl.classList.add('visible');
     lucide.createIcons();
@@ -772,10 +792,6 @@
     var listEl = document.getElementById('content-list');
     var innerEl = document.getElementById('content-list-inner');
     listEl.classList.remove('content-wide');
-
-    // Скрыть баннер при поиске
-    var bannerEl = document.getElementById('last-read-banner');
-    if (bannerEl) bannerEl.classList.remove('visible');
 
     var html = '';
     html += '<div class="search-results-header">\u041d\u0430\u0439\u0434\u0435\u043d\u043e: <strong>' + results.length + '</strong> \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u043e\u0432 \u043f\u043e \u0437\u0430\u043f\u0440\u043e\u0441\u0443 \u00ab' + escapeHtml(query) + '\u00bb</div>';
