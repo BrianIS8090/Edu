@@ -12,6 +12,10 @@
   let currentSubcategory = null;
   let currentItem = null;
 
+  // Состояние поиска
+  let searchQuery = '';
+  let searchDebounceTimer = null;
+
   // Цвета для иконок категорий (8 цветов для 8 категорий)
   const categoryColors = [
     { bg: '#e0e7ff', fg: '#4f46e5' },
@@ -42,6 +46,7 @@
     if (window.innerWidth < 768) {
       document.body.classList.add('sidebar-collapsed');
     }
+    initSearch();
     try {
       const response = await fetch('build/catalog.json');
       catalog = await response.json();
@@ -51,9 +56,10 @@
       ];
       renderSidebar();
       renderList();
+      updateBanner();
       lucide.createIcons();
     } catch (err) {
-      document.getElementById('content-list').innerHTML =
+      document.getElementById('content-list-inner').innerHTML =
         '<div class="loading">Ошибка загрузки каталога. Запустите scripts/build-catalog.sh</div>';
     }
   }
@@ -180,8 +186,12 @@
   // Рендер списка материалов по подкатегории
   function renderListBySubcategory(category, subcategory) {
     const listEl = document.getElementById('content-list');
+    const innerEl = document.getElementById('content-list-inner');
     const items = getItemsBySubcategory(category, subcategory);
     const icon = categoryIcons[category] || 'folder';
+
+    teardownScrollProgress();
+    listEl.classList.remove('content-wide');
 
     let html = '';
     html += '<div class="section-header">';
@@ -192,11 +202,18 @@
     html += '<div class="lessons-grid">';
     items.forEach((item, i) => {
       const color = categoryColors[i % categoryColors.length];
+      const progress = getProgress(item.id);
+      const readTime = getReadTime(item.id);
       const typeTag = item.type === 'module'
-        ? '<span class="tag tag-type interactive">интерактив</span>'
-        : '<span class="tag tag-type">урок</span>';
+        ? '<span class="tag tag-type interactive">\u0438\u043d\u0442\u0435\u0440\u0430\u043a\u0442\u0438\u0432</span>'
+        : '<span class="tag tag-type">\u0443\u0440\u043e\u043a</span>';
+      const timeTag = (item.type === 'lesson' && readTime)
+        ? '<span class="tag tag-time">\u2248 ' + readTime + ' \u043c\u0438\u043d</span>' : '';
+      const doneBadge = progress >= 100
+        ? '<i data-lucide="check-circle" class="card-done-badge"></i>' : '';
 
       html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
+      html += doneBadge;
       html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
       html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
       html += '</div>';
@@ -205,21 +222,25 @@
       if (item.description) {
         html += '<div class="lesson-desc">' + escapeHtml(item.description) + '</div>';
       }
-      html += '<div class="lesson-tags-row">' + typeTag;
+      html += '<div class="lesson-tags-row">' + typeTag + timeTag;
       (item.tags || []).forEach(tag => {
         html += '<span class="tag">' + escapeHtml(tag) + '</span>';
       });
-      html += '</div></div></div>';
+      html += '</div>';
+      html += buildCardProgress(item.id, progress);
+      html += '</div></div>';
     });
     html += '</div>';
 
-    listEl.innerHTML = html;
+    innerEl.innerHTML = html;
     listEl.style.display = 'block';
     document.getElementById('content-page').style.display = 'none';
     currentItem = null;
 
+    updateBanner();
+
     // Делегирование событий для lesson-card
-    listEl.querySelectorAll('.lesson-card').forEach(el => {
+    innerEl.querySelectorAll('.lesson-card').forEach(el => {
       el.addEventListener('click', () => app.openItem(el.dataset.id));
     });
 
@@ -232,20 +253,25 @@
     currentCategory = category;
 
     const listEl = document.getElementById('content-list');
+    const innerEl = document.getElementById('content-list-inner');
+
+    teardownScrollProgress();
 
     if (category === 'all') {
       // Вкладка "Все" — плитки 4 колонки, группировка по категориям
       listEl.classList.add('content-wide');
-      renderTilesView(listEl);
+      renderTilesView(innerEl);
     } else {
       // Конкретная категория — список карточек
       listEl.classList.remove('content-wide');
-      renderCategoryList(listEl, category);
+      renderCategoryList(innerEl, category);
     }
 
     listEl.style.display = 'block';
     document.getElementById('content-page').style.display = 'none';
     currentItem = null;
+
+    updateBanner();
 
     // Сбросить активный элемент в sidebar
     document.querySelectorAll('.sidebar-lesson').forEach(l => l.classList.remove('active'));
@@ -276,11 +302,18 @@
       html += '<div class="tiles-grid">';
       items.forEach((item, i) => {
         const color = categoryColors[(catIndex + i) % categoryColors.length];
+        const progress = getProgress(item.id);
+        const readTime = getReadTime(item.id);
         const typeTag = item.type === 'module'
           ? '<span class="tag tag-type interactive">интерактив</span>'
           : '<span class="tag tag-type">урок</span>';
+        const timeTag = (item.type === 'lesson' && readTime)
+          ? '<span class="tag tag-time">\u2248 ' + readTime + ' \u043c\u0438\u043d</span>' : '';
+        const doneBadge = progress >= 100
+          ? '<i data-lucide="check-circle" class="card-done-badge"></i>' : '';
 
         html += '<div class="tile-card" data-id="' + escapeHtml(item.id) + '">';
+        html += doneBadge;
         html += '<div class="tile-icon" style="background:' + color.bg + ';">';
         html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
         html += '</div>';
@@ -288,11 +321,13 @@
         if (item.description) {
           html += '<div class="tile-desc">' + escapeHtml(item.description) + '</div>';
         }
-        html += '<div class="tile-tags">' + typeTag;
+        html += '<div class="tile-tags">' + typeTag + timeTag;
         (item.tags || []).forEach(tag => {
           html += '<span class="tag">' + escapeHtml(tag) + '</span>';
         });
-        html += '</div></div>';
+        html += '</div>';
+        html += buildCardProgress(item.id, progress);
+        html += '</div>';
       });
       html += '</div></div>';
     });
@@ -323,7 +358,7 @@
       const items = subs[sub].items.sort((a, b) => a.title.localeCompare(b.title, 'ru'));
 
       // Заголовок подкатегории (не выводим если подкатегория одна и называется "Без подкатегории")
-      const showSubHeader = !(subKeys.length === 1 && sub === 'Без подкатегории');
+      const showSubHeader = !(subKeys.length === 1 && sub === '\u0411\u0435\u0437 \u043f\u043e\u0434\u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u0438');
       if (showSubHeader) {
         html += '<div class="subcategory-group-header">' + escapeHtml(sub) + '</div>';
       }
@@ -331,11 +366,18 @@
       html += '<div class="lessons-grid">';
       items.forEach((item, i) => {
         const color = categoryColors[i % categoryColors.length];
+        const progress = getProgress(item.id);
+        const readTime = getReadTime(item.id);
         const typeTag = item.type === 'module'
-          ? '<span class="tag tag-type interactive">интерактив</span>'
-          : '<span class="tag tag-type">урок</span>';
+          ? '<span class="tag tag-type interactive">\u0438\u043d\u0442\u0435\u0440\u0430\u043a\u0442\u0438\u0432</span>'
+          : '<span class="tag tag-type">\u0443\u0440\u043e\u043a</span>';
+        const timeTag = (item.type === 'lesson' && readTime)
+          ? '<span class="tag tag-time">\u2248 ' + readTime + ' \u043c\u0438\u043d</span>' : '';
+        const doneBadge = progress >= 100
+          ? '<i data-lucide="check-circle" class="card-done-badge"></i>' : '';
 
         html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
+        html += doneBadge;
         html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
         html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
         html += '</div>';
@@ -344,11 +386,13 @@
         if (item.description) {
           html += '<div class="lesson-desc">' + escapeHtml(item.description) + '</div>';
         }
-        html += '<div class="lesson-tags-row">' + typeTag;
+        html += '<div class="lesson-tags-row">' + typeTag + timeTag;
         (item.tags || []).forEach(tag => {
           html += '<span class="tag">' + escapeHtml(tag) + '</span>';
         });
-        html += '</div></div></div>';
+        html += '</div>';
+        html += buildCardProgress(item.id, progress);
+        html += '</div></div>';
       });
       html += '</div>';
     });
@@ -367,12 +411,14 @@
     if (!item) return;
 
     currentItem = item;
+    teardownScrollProgress();
+
     const pageEl = document.getElementById('content-page');
     let html = '';
 
     // Навигация "назад"
     html += '<div class="breadcrumb" onclick="app.showList()">';
-    html += '<i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Все материалы';
+    html += '<i data-lucide="arrow-left" style="width:14px;height:14px;"></i> \u0412\u0441\u0435 \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b';
     html += '</div>';
 
     // Заголовок и теги
@@ -380,9 +426,13 @@
     html += '<h1>' + escapeHtml(item.title) + '</h1>';
     html += '<div class="lesson-page-tags">';
     const typeTag = item.type === 'module'
-      ? '<span class="tag tag-type interactive">интерактив</span>'
-      : '<span class="tag tag-type">урок</span>';
+      ? '<span class="tag tag-type interactive">\u0438\u043d\u0442\u0435\u0440\u0430\u043a\u0442\u0438\u0432</span>'
+      : '<span class="tag tag-type">\u0443\u0440\u043e\u043a</span>';
     html += typeTag;
+    const cachedTime = getReadTime(id);
+    if (item.type === 'lesson' && cachedTime) {
+      html += '<span class="tag tag-time">\u2248 ' + cachedTime + ' \u043c\u0438\u043d</span>';
+    }
     (item.tags || []).forEach(tag => {
       html += '<span class="tag">' + escapeHtml(tag) + '</span>';
     });
@@ -395,9 +445,12 @@
         let md = await response.text();
         // Убрать YAML frontmatter, если есть
         md = md.replace(/^---[\s\S]*?---\s*/, '');
+        // Вычислить и сохранить время чтения
+        const minutes = estimateReadingTime(md);
+        saveReadTime(id, minutes);
         html += '<div class="md-body">' + marked.parse(md) + '</div>';
       } catch (err) {
-        html += '<div class="loading">Ошибка загрузки файла</div>';
+        html += '<div class="loading">\u041e\u0448\u0438\u0431\u043a\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0438 \u0444\u0430\u0439\u043b\u0430</div>';
       }
     } else {
       // HTML-модуль отображается через iframe
@@ -417,7 +470,21 @@
     if (item.type === 'lesson') attachLightbox();
 
     lucide.createIcons();
-    
+
+    // Запустить отслеживание прогресса скролла и восстановить позицию
+    if (item.type === 'lesson') {
+      const savedScrollPos = parseInt(localStorage.getItem('scrollPos_' + id) || '0', 10);
+      setupScrollProgress(id);
+      if (savedScrollPos > 0) {
+        // Двойной rAF — ждём полного layout перед прокруткой
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            window.scrollTo({ top: savedScrollPos, behavior: 'instant' });
+          });
+        });
+      }
+    }
+
     // Автосворачивание на мобильных
     if (window.innerWidth < 768) {
       document.body.classList.add('sidebar-collapsed');
@@ -526,10 +593,276 @@
     if (e.key === 'ArrowRight') lightboxNext();
   });
 
+  // ─── УТИЛИТЫ ПРОГРЕССА И ВРЕМЕНИ ЧТЕНИЯ ──────────────────────────────────
+
+  // Получить прогресс чтения из localStorage (0-100)
+  function getProgress(id) {
+    return parseInt(localStorage.getItem('progress_' + id) || '0', 10);
+  }
+
+  // Сохранить прогресс чтения
+  function saveProgress(id, percent) {
+    localStorage.setItem('progress_' + id, Math.round(percent));
+  }
+
+  // Получить время чтения: сначала из localStorage, затем из каталога
+  function getReadTime(id) {
+    var cached = localStorage.getItem('readTime_' + id);
+    if (cached) return cached;
+    var item = allItems.find(function(i) { return i.id === id; });
+    return (item && item.readTime) ? Math.round(item.readTime) : null;
+  }
+
+  // Сохранить время чтения
+  function saveReadTime(id, minutes) {
+    localStorage.setItem('readTime_' + id, minutes);
+  }
+
+  // Оценить время чтения по тексту Markdown (≈200 слов/мин)
+  function estimateReadingTime(md) {
+    const words = md.replace(/[#*`_\[\]()!>~\-]/g, ' ').split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.round(words / 200));
+  }
+
+  // Построить HTML-блок прогресса для карточки
+  function buildCardProgress(id, progress) {
+    if (!progress || progress <= 0) return '';
+    if (progress >= 100) {
+      return '<div class="card-progress-label">\u2713 \u041f\u0440\u043e\u0447\u0438\u0442\u0430\u043d\u043e</div>';
+    }
+    return '<div class="card-progress-bar"><div class="card-progress-fill" style="width:' + progress + '%"></div></div>' +
+           '<div class="card-progress-label">' + progress + '% \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u043d\u043e</div>';
+  }
+
+  // ─── ОТСЛЕЖИВАНИЕ СКРОЛЛА ─────────────────────────────────────────────────
+
+  // Запустить отслеживание прогресса скролла для статьи
+  function setupScrollProgress(id) {
+    const fill = document.getElementById('reading-progress-fill');
+
+    // Восстановить предыдущий прогресс
+    const savedProgress = getProgress(id);
+    if (fill && savedProgress > 0) {
+      fill.style.width = savedProgress + '%';
+    }
+
+    function onScroll() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const percent = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
+      if (fill) fill.style.width = percent + '%';
+      saveProgress(id, percent);
+      // Сохранить позицию скролла в пикселях для восстановления
+      localStorage.setItem('scrollPos_' + id, Math.round(scrollTop));
+      // Обновить lastRead с новым прогрессом
+      const item = allItems.find(function(i) { return i.id === id; });
+      if (item) {
+        localStorage.setItem('lastRead', JSON.stringify({ id: id, title: item.title, progress: percent }));
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window._scrollProgressHandler = onScroll;
+    onScroll();
+  }
+
+  // Остановить отслеживание скролла и сбросить полосу
+  function teardownScrollProgress() {
+    if (window._scrollProgressHandler) {
+      window.removeEventListener('scroll', window._scrollProgressHandler);
+      window._scrollProgressHandler = null;
+    }
+    var fill = document.getElementById('reading-progress-fill');
+    if (fill) fill.style.width = '0%';
+  }
+
+  // ─── БАННЕР ПОСЛЕДНЕЙ СТАТЬИ ──────────────────────────────────────────────
+
+  // Обновить баннер — всегда виден, контент зависит от наличия lastRead
+  function updateBanner() {
+    var bannerEl = document.getElementById('last-read-banner');
+    if (!bannerEl) return;
+
+    // Установить фоновое изображение из banner/bg.jpg (с fallback на CSS-градиент)
+    var testImg = new Image();
+    testImg.onload = function() {
+      bannerEl.style.backgroundImage = "url('banner/bg.jpg')";
+    };
+    testImg.src = 'banner/bg.jpg';
+
+    var raw = localStorage.getItem('lastRead');
+    var lastRead = null;
+    if (raw) {
+      try { lastRead = JSON.parse(raw); } catch (e) { lastRead = null; }
+    }
+
+    var titleEl = document.getElementById('banner-title');
+    var progressFill = document.getElementById('banner-progress-fill');
+    var progressLabel = document.getElementById('banner-progress-label');
+    var progressTrack = progressFill && progressFill.parentElement;
+    var btn = document.getElementById('banner-btn');
+    var labelEl = bannerEl.querySelector('.banner-label');
+
+    var item = lastRead ? allItems.find(function(i) { return i.id === lastRead.id; }) : null;
+
+    if (item && lastRead.progress > 0 && lastRead.progress < 100) {
+      // Есть статья в процессе чтения
+      if (labelEl) labelEl.textContent = '\u041f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u044c \u0447\u0442\u0435\u043d\u0438\u0435';
+      titleEl.textContent = lastRead.title;
+      if (progressFill) progressFill.style.width = lastRead.progress + '%';
+      if (progressTrack) progressTrack.style.display = '';
+      var remaining = 100 - lastRead.progress;
+      if (progressLabel) progressLabel.textContent = '\u041f\u0440\u043e\u0447\u0438\u0442\u0430\u043d\u043e\u00a0' + lastRead.progress + '%\u00a0\u2022\u00a0\u043e\u0441\u0442\u0430\u043b\u043e\u0441\u044c\u00a0' + remaining + '%';
+      if (btn) { btn.textContent = '\u041e\u0442\u043a\u0440\u044b\u0442\u044c'; btn.style.display = ''; btn.onclick = function() { app.openItem(lastRead.id); }; }
+    } else if (item && lastRead.progress >= 100) {
+      // Последняя статья прочитана полностью
+      if (labelEl) labelEl.textContent = '\u041f\u0440\u043e\u0447\u0438\u0442\u0430\u043d\u043e';
+      titleEl.textContent = lastRead.title;
+      if (progressFill) progressFill.style.width = '100%';
+      if (progressTrack) progressTrack.style.display = '';
+      if (progressLabel) progressLabel.textContent = '\u041c\u0430\u0442\u0435\u0440\u0438\u0430\u043b \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u043d \u043f\u043e\u043b\u043d\u043e\u0441\u0442\u044c\u044e \u2713';
+      if (btn) { btn.textContent = '\u0427\u0438\u0442\u0430\u0442\u044c \u0441\u043d\u043e\u0432\u0430'; btn.style.display = ''; btn.onclick = function() { app.openItem(lastRead.id); }; }
+    } else {
+      // Нет истории чтения — welcome-состояние
+      if (labelEl) labelEl.textContent = '\u0411\u0430\u0437\u0430 \u0437\u043d\u0430\u043d\u0438\u0439';
+      titleEl.textContent = '\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u043b\u044e\u0431\u043e\u0439 \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b \u0434\u043b\u044f \u043d\u0430\u0447\u0430\u043b\u0430 \u043e\u0431\u0443\u0447\u0435\u043d\u0438\u044f';
+      if (progressFill) progressFill.style.width = '0%';
+      if (progressTrack) progressTrack.style.display = 'none';
+      if (progressLabel) progressLabel.textContent = '';
+      if (btn) btn.style.display = 'none';
+    }
+
+    bannerEl.classList.add('visible');
+    lucide.createIcons();
+  }
+
+  // ─── ПОИСК ────────────────────────────────────────────────────────────────
+
+  // Инициализировать поле поиска
+  function initSearch() {
+    var input = document.getElementById('search-input');
+    var wrapper = document.getElementById('header-search');
+    if (!input) return;
+
+    input.addEventListener('input', function() {
+      searchQuery = this.value.trim();
+      wrapper.classList.toggle('has-value', searchQuery.length > 0);
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(function() {
+        if (searchQuery) {
+          renderSearchResults(searchQuery);
+        } else {
+          renderList(currentCategory);
+        }
+      }, 200);
+    });
+
+    // Закрытие поиска по Escape
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') app.clearSearch();
+    });
+  }
+
+  // Очистить поиск
+  function clearSearch() {
+    searchQuery = '';
+    var input = document.getElementById('search-input');
+    var wrapper = document.getElementById('header-search');
+    if (input) input.value = '';
+    if (wrapper) wrapper.classList.remove('has-value');
+    renderList(currentCategory);
+  }
+
+  // Экранировать строку для использования в RegExp
+  function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  // Подсветить совпадение в HTML-безопасном тексте
+  function highlightMatch(text, query) {
+    if (!text || !query) return escapeHtml(text || '');
+    var escaped = escapeHtml(text);
+    var escapedQuery = escapeRegex(escapeHtml(query));
+    try {
+      return escaped.replace(new RegExp('(' + escapedQuery + ')', 'gi'),
+        '<mark class="search-highlight">$1</mark>');
+    } catch (e) {
+      return escaped;
+    }
+  }
+
+  // Рендер результатов поиска
+  function renderSearchResults(query) {
+    var q = query.toLowerCase();
+    var results = allItems.filter(function(item) {
+      return (item.title || '').toLowerCase().indexOf(q) !== -1 ||
+             (item.description || '').toLowerCase().indexOf(q) !== -1 ||
+             (item.tags || []).some(function(t) { return t.toLowerCase().indexOf(q) !== -1; });
+    });
+
+    var listEl = document.getElementById('content-list');
+    var innerEl = document.getElementById('content-list-inner');
+    listEl.classList.remove('content-wide');
+
+    var html = '';
+    html += '<div class="search-results-header">\u041d\u0430\u0439\u0434\u0435\u043d\u043e: <strong>' + results.length + '</strong> \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u043e\u0432 \u043f\u043e \u0437\u0430\u043f\u0440\u043e\u0441\u0443 \u00ab' + escapeHtml(query) + '\u00bb</div>';
+
+    if (results.length === 0) {
+      html += '<div class="search-no-results">';
+      html += '<i data-lucide="search-x"></i>';
+      html += '<p>\u041d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e</p>';
+      html += '</div>';
+    } else {
+      html += '<div class="lessons-grid">';
+      results.forEach(function(item, i) {
+        var color = categoryColors[i % categoryColors.length];
+        var progress = getProgress(item.id);
+        var readTime = getReadTime(item.id);
+        var typeTag = item.type === 'module'
+          ? '<span class="tag tag-type interactive">\u0438\u043d\u0442\u0435\u0440\u0430\u043a\u0442\u0438\u0432</span>'
+          : '<span class="tag tag-type">\u0443\u0440\u043e\u043a</span>';
+        var timeTag = (item.type === 'lesson' && readTime)
+          ? '<span class="tag tag-time">\u2248 ' + readTime + ' \u043c\u0438\u043d</span>' : '';
+        var doneBadge = progress >= 100
+          ? '<i data-lucide="check-circle" class="card-done-badge"></i>' : '';
+
+        html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
+        html += doneBadge;
+        html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
+        html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+        html += '</div>';
+        html += '<div class="lesson-info">';
+        html += '<div class="lesson-title">' + highlightMatch(item.title, query) + '</div>';
+        if (item.description) {
+          html += '<div class="lesson-desc">' + highlightMatch(item.description, query) + '</div>';
+        }
+        html += '<div class="lesson-tags-row">' + typeTag + timeTag;
+        (item.tags || []).forEach(function(tag) {
+          html += '<span class="tag">' + escapeHtml(tag) + '</span>';
+        });
+        html += '</div>';
+        html += buildCardProgress(item.id, progress);
+        html += '</div></div>';
+      });
+      html += '</div>';
+    }
+
+    innerEl.innerHTML = html;
+    listEl.style.display = 'block';
+    document.getElementById('content-page').style.display = 'none';
+    currentItem = null;
+
+    innerEl.querySelectorAll('.lesson-card').forEach(function(el) {
+      el.addEventListener('click', function() { app.openItem(el.dataset.id); });
+    });
+
+    lucide.createIcons();
+  }
+
   // Публичный API для вызова из onclick-обработчиков
   window.app = {
     openItem, filterCategory, filterSubcategory, showList, toggleSidebar,
-    closeLightbox, lightboxPrev, lightboxNext,
+    closeLightbox, lightboxPrev, lightboxNext, clearSearch,
   };
 
   // Запуск приложения
