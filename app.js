@@ -6,12 +6,11 @@
   'use strict';
 
   // Состояние приложения
-  const catalog = { lessons: [], modules: [] };
-  const allItems = [];
+  let catalog = { lessons: [], modules: [] };
+  let allItems = [];
   let currentCategory = 'all';
   let currentSubcategory = null;
   let currentItem = null;
-  const expandedCategories = new Set();
 
   // Цвета для иконок категорий (8 цветов для 8 категорий)
   const categoryColors = [
@@ -97,28 +96,26 @@
     html += '</div>';
     html += '</div>';
 
-    // Категории с подкатегориями (accordion)
+    // Категории с подкатегориями (всегда раскрыты)
     Object.keys(categories).sort().forEach((cat, catIndex) => {
       const catIcon = categoryIcons[cat] || 'folder';
       const catColor = categoryColors[catIndex % categoryColors.length];
-      const isExpanded = expandedCategories.has(cat);
       const subs = getSubcategories(cat);
       const subKeys = Object.keys(subs).sort();
       const hasSubs = subKeys.length > 0 && !(subKeys.length === 1 && subKeys[0] === 'Без подкатегории');
 
       html += '<div class="sidebar-section">';
 
-      // Заголовок категории (кликабельный для раскрытия)
-      html += '<div class="sidebar-category-header ' + (isExpanded ? 'expanded' : '') + '" onclick="app.toggleCategory(\'' + escapeJs(cat) + '\')">';
-      html += '<span class="sidebar-chevron"><i data-lucide="chevron-right"></i></span>';
+      // Заголовок категории (клик — показать все материалы категории)
+      html += '<div class="sidebar-category-header' + (currentCategory === cat && !currentSubcategory ? ' active' : '') + '" onclick="app.filterCategory(\'' + escapeJs(cat) + '\', this)">';
       html += '<span class="sidebar-category-icon" style="color:' + catColor.fg + ';">';
       html += '<i data-lucide="' + catIcon + '"></i></span>';
       html += '<span class="sidebar-category-name">' + escapeHtml(cat) + '</span>';
       html += '<span class="sidebar-count">' + categories[cat] + '</span>';
       html += '</div>';
 
-      // Подкатегории (если раскрыто)
-      if (isExpanded && hasSubs) {
+      // Подкатегории (всегда видны)
+      if (hasSubs) {
         html += '<div class="sidebar-subcategories">';
         subKeys.forEach(sub => {
           const isSubActive = currentCategory === cat && currentSubcategory === sub;
@@ -144,15 +141,6 @@
     return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
   }
 
-  // Раскрыть/свернуть категорию в sidebar
-  function toggleCategory(cat) {
-    if (expandedCategories.has(cat)) {
-      expandedCategories.delete(cat);
-    } else {
-      expandedCategories.add(cat);
-    }
-    renderSidebar();
-  }
 
   // Фильтрация по подкатегории
   function filterSubcategory(category, subcategory, el) {
@@ -165,6 +153,13 @@
 
     // Рендер списка материалов по подкатегории
     renderListBySubcategory(category, subcategory);
+  }
+
+  // Получить элементы по категории
+  function getItemsByCategory(category) {
+    return allItems
+      .filter(item => (item.category || 'Без категории') === category)
+      .sort((a, b) => a.title.localeCompare(b.title, 'ru'));
   }
 
   // Получить элементы по подкатегории
@@ -302,40 +297,53 @@
     });
   }
 
-  // Рендер списка карточек для конкретной категории
+  // Рендер списка карточек для конкретной категории, сгруппированных по подкатегориям
   function renderCategoryList(container, category) {
-    const items = getItemsByCategory(category);
     const icon = categoryIcons[category] || 'folder';
+    const subs = getSubcategories(category);
+    const subKeys = Object.keys(subs).sort();
+    const catIndex = Object.keys(getCategories()).sort().indexOf(category);
+    const catColor = categoryColors[catIndex % categoryColors.length];
 
     let html = '';
     html += '<div class="section-header">';
-    html += '<i data-lucide="' + icon + '" style="width:20px;height:20px;color:#4f46e5;"></i>';
+    html += '<i data-lucide="' + icon + '" style="width:20px;height:20px;color:' + catColor.fg + ';"></i>';
     html += escapeHtml(category);
     html += '</div>';
 
-    html += '<div class="lessons-grid">';
-    items.forEach((item, i) => {
-      const color = categoryColors[i % categoryColors.length];
-      const typeTag = item.type === 'module'
-        ? '<span class="tag tag-type interactive">интерактив</span>'
-        : '<span class="tag tag-type">урок</span>';
+    subKeys.forEach(sub => {
+      const items = subs[sub].items.sort((a, b) => a.title.localeCompare(b.title, 'ru'));
 
-      html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
-      html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
-      html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
-      html += '</div>';
-      html += '<div class="lesson-info">';
-      html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
-      if (item.description) {
-        html += '<div class="lesson-desc">' + escapeHtml(item.description) + '</div>';
+      // Заголовок подкатегории (не выводим если подкатегория одна и называется "Без подкатегории")
+      const showSubHeader = !(subKeys.length === 1 && sub === 'Без подкатегории');
+      if (showSubHeader) {
+        html += '<div class="subcategory-group-header">' + escapeHtml(sub) + '</div>';
       }
-      html += '<div class="lesson-tags-row">' + typeTag;
-      (item.tags || []).forEach(tag => {
-        html += '<span class="tag">' + escapeHtml(tag) + '</span>';
+
+      html += '<div class="lessons-grid">';
+      items.forEach((item, i) => {
+        const color = categoryColors[i % categoryColors.length];
+        const typeTag = item.type === 'module'
+          ? '<span class="tag tag-type interactive">интерактив</span>'
+          : '<span class="tag tag-type">урок</span>';
+
+        html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
+        html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
+        html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+        html += '</div>';
+        html += '<div class="lesson-info">';
+        html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
+        if (item.description) {
+          html += '<div class="lesson-desc">' + escapeHtml(item.description) + '</div>';
+        }
+        html += '<div class="lesson-tags-row">' + typeTag;
+        (item.tags || []).forEach(tag => {
+          html += '<span class="tag">' + escapeHtml(tag) + '</span>';
+        });
+        html += '</div></div></div>';
       });
-      html += '</div></div></div>';
+      html += '</div>';
     });
-    html += '</div>';
 
     container.innerHTML = html;
 
@@ -502,7 +510,7 @@
 
   // Публичный API для вызова из onclick-обработчиков
   window.app = {
-    openItem, filterCategory, filterSubcategory, showList, toggleSidebar, toggleCategory,
+    openItem, filterCategory, filterSubcategory, showList, toggleSidebar,
     closeLightbox, lightboxPrev, lightboxNext,
   };
 

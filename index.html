@@ -72,12 +72,7 @@
       font-size: 13px; color: #333; cursor: pointer; transition: all 0.15s;
     }
     .sidebar-category-header:hover { background: #f9fafb; }
-    .sidebar-category-header.expanded .sidebar-chevron i { transform: rotate(90deg); }
-    .sidebar-chevron {
-      display: flex; align-items: center; justify-content: center;
-      width: 16px; height: 16px; transition: transform 0.15s;
-    }
-    .sidebar-chevron i { width: 14px; height: 14px; color: #999; }
+    .sidebar-category-header.active { background: #eff6ff; color: #4f46e5; font-weight: 600; }
     .sidebar-category-icon { display: flex; align-items: center; justify-content: center; }
     .sidebar-category-icon i { width: 16px; height: 16px; }
     .sidebar-category-name { flex: 1; font-weight: 500; }
@@ -155,7 +150,7 @@
       margin-bottom: 12px;
     }
     .tile-title { font-size: 13px; font-weight: 600; color: #111; margin-bottom: 6px; line-height: 1.3; }
-    .tile-desc { font-size: 11px; color: #888; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .tile-desc { font-size: 11px; color: #888; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .tile-tags { display: flex; gap: 4px; flex-wrap: wrap; }
 
     /* Карточки уроков (список — для страницы категории) */
@@ -245,6 +240,11 @@
     .section-header {
       font-size: 18px; font-weight: 600; color: #111; margin-bottom: 16px;
       display: flex; align-items: center; gap: 8px;
+    }
+    .subcategory-group-header {
+      font-size: 13px; font-weight: 600; color: #6b7280; text-transform: uppercase;
+      letter-spacing: 0.05em; margin: 20px 0 8px; padding-bottom: 6px;
+      border-bottom: 1px solid #e5e7eb;
     }
 
     /* Лайтбокс-галерея */
