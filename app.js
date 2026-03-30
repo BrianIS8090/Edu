@@ -39,6 +39,9 @@
 
   // Инициализация приложения
   async function init() {
+    if (window.innerWidth < 768) {
+      document.body.classList.add('sidebar-collapsed');
+    }
     try {
       const response = await fetch('build/catalog.json');
       catalog = await response.json();
@@ -153,6 +156,11 @@
 
     // Рендер списка материалов по подкатегории
     renderListBySubcategory(category, subcategory);
+    
+    // Автосворачивание на мобильных
+    if (window.innerWidth < 768) {
+      document.body.classList.add('sidebar-collapsed');
+    }
   }
 
   // Получить элементы по категории
@@ -409,6 +417,11 @@
     if (item.type === 'lesson') attachLightbox();
 
     lucide.createIcons();
+    
+    // Автосворачивание на мобильных
+    if (window.innerWidth < 768) {
+      document.body.classList.add('sidebar-collapsed');
+    }
   }
 
   // Фильтрация по категории (клик в sidebar)
@@ -418,6 +431,11 @@
     document.querySelectorAll('.sidebar-item, .sidebar-subcategory').forEach(i => i.classList.remove('active'));
     if (el) el.classList.add('active');
     renderList(category);
+    
+    // Автосворачивание на мобильных
+    if (window.innerWidth < 768) {
+      document.body.classList.add('sidebar-collapsed');
+    }
   }
 
   // Вернуться к списку материалов
