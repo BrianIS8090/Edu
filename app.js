@@ -191,6 +191,7 @@
     const icon = categoryIcons[category] || 'folder';
 
     teardownScrollProgress();
+    listEl.classList.remove('content-wide');
 
     let html = '';
     html += '<div class="section-header">';
