@@ -677,7 +677,7 @@
     var lastRead;
     try { lastRead = JSON.parse(raw); } catch (e) { bannerEl.classList.remove('visible'); return; }
 
-    if (!lastRead || lastRead.progress >= 100) { bannerEl.classList.remove('visible'); return; }
+    if (!lastRead || lastRead.progress <= 0 || lastRead.progress >= 100) { bannerEl.classList.remove('visible'); return; }
 
     var item = allItems.find(function(i) { return i.id === lastRead.id; });
     if (!item) { bannerEl.classList.remove('visible'); return; }
