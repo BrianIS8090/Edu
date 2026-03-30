@@ -106,6 +106,22 @@ extract_frontmatter() {
   fi
 }
 
+# Оценить время чтения Markdown-файла (≈200 слов/мин)
+# Считает слова после frontmatter, без разметки
+estimate_read_time() {
+  local file="$1"
+  local content
+  # Убираем frontmatter и markdown-разметку
+  content="$(sed -n '/^---$/,/^---$/!p' "$file" | sed 's/[#*`_\[\]()!>~\-]/ /g')"
+  local words
+  words="$(printf '%s' "$content" | wc -w | tr -d ' ')"
+  local minutes=$(( (words + 199) / 200 ))
+  if [ "$minutes" -lt 1 ]; then
+    minutes=1
+  fi
+  printf '%s' "$minutes"
+}
+
 # Извлечение описания: первый непустой абзац после frontmatter,
 # который не является заголовком (не начинается с #) и не является горизонтальной линией
 extract_description() {
@@ -216,6 +232,7 @@ if [ -d "lessons" ]; then
 
     tags_json="$(parse_tags "$tags_raw")"
     description="$(extract_description "$file")"
+    read_time="$(estimate_read_time "$file")"
 
     # Формируем JSON-объект урока
     if [ "$lessons_count" -gt 0 ]; then
@@ -230,7 +247,8 @@ if [ -d "lessons" ]; then
       \"tags\": $tags_json,
       \"type\": \"lesson\",
       \"file\": \"$(json_escape "$file")\",
-      \"description\": \"$(json_escape "$description")\"
+      \"description\": \"$(json_escape "$description")\",
+      \"readTime\": $read_time
     }"
     lessons_count=$((lessons_count + 1))
   done
