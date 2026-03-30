@@ -471,9 +471,18 @@
 
     lucide.createIcons();
 
-    // Запустить отслеживание прогресса скролла (только для уроков)
+    // Запустить отслеживание прогресса скролла и восстановить позицию
     if (item.type === 'lesson') {
+      const savedScrollPos = parseInt(localStorage.getItem('scrollPos_' + id) || '0', 10);
       setupScrollProgress(id);
+      if (savedScrollPos > 0) {
+        // Двойной rAF — ждём полного layout перед прокруткой
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            window.scrollTo({ top: savedScrollPos, behavior: 'instant' });
+          });
+        });
+      }
     }
 
     // Автосворачивание на мобильных
@@ -643,6 +652,8 @@
       const percent = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
       if (fill) fill.style.width = percent + '%';
       saveProgress(id, percent);
+      // Сохранить позицию скролла в пикселях для восстановления
+      localStorage.setItem('scrollPos_' + id, Math.round(scrollTop));
       // Обновить lastRead с новым прогрессом
       const item = allItems.find(function(i) { return i.id === id; });
       if (item) {
