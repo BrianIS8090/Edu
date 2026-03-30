@@ -1,6 +1,7 @@
 ---
 title: Установка и настройка OpenClaw
-category: Обучение
+category: ИИ и агенты
+subcategory: Инструменты ИИ
 tags: [OpenClaw, AI, Telegram, автоматизация, установка]
 ---
 

@@ -9,9 +9,10 @@
   let catalog = { lessons: [], modules: [] };
   let allItems = [];
   let currentCategory = 'all';
+  let currentSubcategory = null;
   let currentItem = null;
 
-  // Цвета для иконок категорий
+  // Цвета для иконок категорий (8 цветов для 8 категорий)
   const categoryColors = [
     { bg: '#e0e7ff', fg: '#4f46e5' },
     { bg: '#d1fae5', fg: '#059669' },
@@ -19,20 +20,28 @@
     { bg: '#fce7f3', fg: '#db2777' },
     { bg: '#e0f2fe', fg: '#0284c7' },
     { bg: '#f3e8ff', fg: '#7c3aed' },
+    { bg: '#ecfdf5', fg: '#10b981' },
+    { bg: '#fff1f2', fg: '#f43f5e' },
   ];
 
-  // Иконки Lucide для категорий
+  // Иконки Lucide для 8 категорий
   const categoryIcons = {
     'Светотехника': 'lightbulb',
-    'Обучение': 'graduation-cap',
-    'Фронтенд': 'layout',
-    'CAD': 'pen-tool',
-    'Производство': 'factory',
+    'Проектирование освещения': 'drafting-compass',
+    'Конструирование светильников': 'wrench',
+    'Электроника': 'zap',
+    'Продажи': 'handshake',
+    'Маркетинг': 'megaphone',
+    'ИИ и агенты': 'bot',
+    'Онбординг': 'graduation-cap',
     'Без категории': 'folder',
   };
 
   // Инициализация приложения
   async function init() {
+    if (window.innerWidth < 768) {
+      document.body.classList.add('sidebar-collapsed');
+    }
     try {
       const response = await fetch('build/catalog.json');
       catalog = await response.json();
@@ -59,13 +68,23 @@
     return cats;
   }
 
-  // Получить элементы по категории (отсортированные по алфавиту)
-  function getItemsByCategory(category) {
-    const items = category === 'all' ? [...allItems] : allItems.filter(item => item.category === category);
-    return items.sort((a, b) => a.title.localeCompare(b.title, 'ru'));
+  // Получить уникальные подкатегории для категории с количеством элементов
+  function getSubcategories(category) {
+    const subs = {};
+    allItems
+      .filter(item => item.category === category)
+      .forEach(item => {
+        const sub = item.subcategory || 'Без подкатегории';
+        if (!subs[sub]) {
+          subs[sub] = { count: 0, items: [] };
+        }
+        subs[sub].count++;
+        subs[sub].items.push(item);
+      });
+    return subs;
   }
 
-  // Рендер боковой панели (sidebar)
+  // Рендер боковой панели (sidebar) с подкатегориями (accordion)
   function renderSidebar() {
     const sidebar = document.getElementById('sidebar');
     const categories = getCategories();
@@ -74,30 +93,137 @@
     // Раздел "Все материалы"
     html += '<div class="sidebar-section">';
     html += '<div class="sidebar-title">Все материалы</div>';
-    html += '<div class="sidebar-item active" onclick="app.filterCategory(\'all\', this)">';
+    html += '<div class="sidebar-item ' + (currentCategory === 'all' ? 'active' : '') + '" onclick="app.filterCategory(\'all\', this)">';
     html += '<i data-lucide="layers"></i> Все';
     html += '<span class="sidebar-count">' + allItems.length + '</span>';
     html += '</div>';
     html += '</div>';
 
-    // Категории с вложенными элементами (по алфавиту)
-    Object.keys(categories).sort().forEach(cat => {
-      html += '<div class="sidebar-section">';
-      html += '<div class="sidebar-title">' + escapeHtml(cat) + '</div>';
+    // Категории с подкатегориями (всегда раскрыты)
+    Object.keys(categories).sort().forEach((cat, catIndex) => {
+      const catIcon = categoryIcons[cat] || 'folder';
+      const catColor = categoryColors[catIndex % categoryColors.length];
+      const subs = getSubcategories(cat);
+      const subKeys = Object.keys(subs).sort();
+      const hasSubs = subKeys.length > 0 && !(subKeys.length === 1 && subKeys[0] === 'Без подкатегории');
 
-      const items = getItemsByCategory(cat);
-      items.forEach(item => {
-        const itemIcon = item.type === 'module' ? 'app-window' : 'file-text';
-        html += '<div class="sidebar-lesson" data-id="' + item.id + '" onclick="app.openItem(\'' + item.id + '\', this)">';
-        html += '<i data-lucide="' + itemIcon + '"></i> ';
-        html += escapeHtml(item.title);
+      html += '<div class="sidebar-section">';
+
+      // Заголовок категории (клик — показать все материалы категории)
+      html += '<div class="sidebar-category-header' + (currentCategory === cat && !currentSubcategory ? ' active' : '') + '" onclick="app.filterCategory(\'' + escapeJs(cat) + '\', this)">';
+      html += '<span class="sidebar-category-icon" style="color:' + catColor.fg + ';">';
+      html += '<i data-lucide="' + catIcon + '"></i></span>';
+      html += '<span class="sidebar-category-name">' + escapeHtml(cat) + '</span>';
+      html += '<span class="sidebar-count">' + categories[cat] + '</span>';
+      html += '</div>';
+
+      // Подкатегории (всегда видны)
+      if (hasSubs) {
+        html += '<div class="sidebar-subcategories">';
+        subKeys.forEach(sub => {
+          const isSubActive = currentCategory === cat && currentSubcategory === sub;
+          html += '<div class="sidebar-subcategory ' + (isSubActive ? 'active' : '') + '" ';
+          html += 'onclick="app.filterSubcategory(\'' + escapeJs(cat) + '\', \'' + escapeJs(sub) + '\', this)">';
+          html += '<span class="subcategory-bullet">—</span>';
+          html += '<span class="subcategory-name">' + escapeHtml(sub) + '</span>';
+          html += '<span class="sidebar-count">' + subs[sub].count + '</span>';
+          html += '</div>';
+        });
         html += '</div>';
-      });
+      }
 
       html += '</div>';
     });
 
     sidebar.innerHTML = html;
+    lucide.createIcons();
+  }
+
+  // Вспомогательная функция для экранирования строк в JS
+  function escapeJs(str) {
+    return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+  }
+
+
+  // Фильтрация по подкатегории
+  function filterSubcategory(category, subcategory, el) {
+    currentCategory = category;
+    currentSubcategory = subcategory;
+
+    // Обновить активные состояния
+    document.querySelectorAll('.sidebar-item, .sidebar-subcategory').forEach(i => i.classList.remove('active'));
+    if (el) el.classList.add('active');
+
+    // Рендер списка материалов по подкатегории
+    renderListBySubcategory(category, subcategory);
+    
+    // Автосворачивание на мобильных
+    if (window.innerWidth < 768) {
+      document.body.classList.add('sidebar-collapsed');
+    }
+  }
+
+  // Получить элементы по категории
+  function getItemsByCategory(category) {
+    return allItems
+      .filter(item => (item.category || 'Без категории') === category)
+      .sort((a, b) => a.title.localeCompare(b.title, 'ru'));
+  }
+
+  // Получить элементы по подкатегории
+  function getItemsBySubcategory(category, subcategory) {
+    return allItems
+      .filter(item => item.category === category && (item.subcategory || 'Без подкатегории') === subcategory)
+      .sort((a, b) => a.title.localeCompare(b.title, 'ru'));
+  }
+
+  // Рендер списка материалов по подкатегории
+  function renderListBySubcategory(category, subcategory) {
+    const listEl = document.getElementById('content-list');
+    const items = getItemsBySubcategory(category, subcategory);
+    const icon = categoryIcons[category] || 'folder';
+
+    let html = '';
+    html += '<div class="section-header">';
+    html += '<i data-lucide="' + icon + '" style="width:20px;height:20px;color:#4f46e5;"></i>';
+    html += escapeHtml(category) + ' / ' + escapeHtml(subcategory);
+    html += '</div>';
+
+    html += '<div class="lessons-grid">';
+    items.forEach((item, i) => {
+      const color = categoryColors[i % categoryColors.length];
+      const typeTag = item.type === 'module'
+        ? '<span class="tag tag-type interactive">интерактив</span>'
+        : '<span class="tag tag-type">урок</span>';
+
+      html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
+      html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
+      html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+      html += '</div>';
+      html += '<div class="lesson-info">';
+      html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
+      if (item.description) {
+        html += '<div class="lesson-desc">' + escapeHtml(item.description) + '</div>';
+      }
+      html += '<div class="lesson-tags-row">' + typeTag;
+      (item.tags || []).forEach(tag => {
+        html += '<span class="tag">' + escapeHtml(tag) + '</span>';
+      });
+      html += '</div></div></div>';
+    });
+    html += '</div>';
+
+    listEl.innerHTML = html;
+    listEl.style.display = 'block';
+    document.getElementById('content-page').style.display = 'none';
+    currentItem = null;
+
+    // Делегирование событий для lesson-card
+    listEl.querySelectorAll('.lesson-card').forEach(el => {
+      el.addEventListener('click', () => app.openItem(el.dataset.id));
+    });
+
+    lucide.createIcons();
   }
 
   // Рендер списка карточек материалов
@@ -154,7 +280,7 @@
           ? '<span class="tag tag-type interactive">интерактив</span>'
           : '<span class="tag tag-type">урок</span>';
 
-        html += '<div class="tile-card" onclick="app.openItem(\'' + item.id + '\')">';
+        html += '<div class="tile-card" data-id="' + escapeHtml(item.id) + '">';
         html += '<div class="tile-icon" style="background:' + color.bg + ';">';
         html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
         html += '</div>';
@@ -172,44 +298,67 @@
     });
 
     container.innerHTML = html;
+
+    // Делегирование событий для tile-card
+    container.querySelectorAll('.tile-card').forEach(el => {
+      el.addEventListener('click', () => app.openItem(el.dataset.id));
+    });
   }
 
-  // Рендер списка карточек для конкретной категории
+  // Рендер списка карточек для конкретной категории, сгруппированных по подкатегориям
   function renderCategoryList(container, category) {
-    const items = getItemsByCategory(category);
     const icon = categoryIcons[category] || 'folder';
+    const subs = getSubcategories(category);
+    const subKeys = Object.keys(subs).sort();
+    const catIndex = Object.keys(getCategories()).sort().indexOf(category);
+    const catColor = categoryColors[catIndex % categoryColors.length];
 
     let html = '';
     html += '<div class="section-header">';
-    html += '<i data-lucide="' + icon + '" style="width:20px;height:20px;color:#4f46e5;"></i>';
+    html += '<i data-lucide="' + icon + '" style="width:20px;height:20px;color:' + catColor.fg + ';"></i>';
     html += escapeHtml(category);
     html += '</div>';
 
-    html += '<div class="lessons-grid">';
-    items.forEach((item, i) => {
-      const color = categoryColors[i % categoryColors.length];
-      const typeTag = item.type === 'module'
-        ? '<span class="tag tag-type interactive">интерактив</span>'
-        : '<span class="tag tag-type">урок</span>';
+    subKeys.forEach(sub => {
+      const items = subs[sub].items.sort((a, b) => a.title.localeCompare(b.title, 'ru'));
 
-      html += '<div class="lesson-card" onclick="app.openItem(\'' + item.id + '\')">';
-      html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
-      html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
-      html += '</div>';
-      html += '<div class="lesson-info">';
-      html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
-      if (item.description) {
-        html += '<div class="lesson-desc">' + escapeHtml(item.description) + '</div>';
+      // Заголовок подкатегории (не выводим если подкатегория одна и называется "Без подкатегории")
+      const showSubHeader = !(subKeys.length === 1 && sub === 'Без подкатегории');
+      if (showSubHeader) {
+        html += '<div class="subcategory-group-header">' + escapeHtml(sub) + '</div>';
       }
-      html += '<div class="lesson-tags-row">' + typeTag;
-      (item.tags || []).forEach(tag => {
-        html += '<span class="tag">' + escapeHtml(tag) + '</span>';
+
+      html += '<div class="lessons-grid">';
+      items.forEach((item, i) => {
+        const color = categoryColors[i % categoryColors.length];
+        const typeTag = item.type === 'module'
+          ? '<span class="tag tag-type interactive">интерактив</span>'
+          : '<span class="tag tag-type">урок</span>';
+
+        html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
+        html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
+        html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+        html += '</div>';
+        html += '<div class="lesson-info">';
+        html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
+        if (item.description) {
+          html += '<div class="lesson-desc">' + escapeHtml(item.description) + '</div>';
+        }
+        html += '<div class="lesson-tags-row">' + typeTag;
+        (item.tags || []).forEach(tag => {
+          html += '<span class="tag">' + escapeHtml(tag) + '</span>';
+        });
+        html += '</div></div></div>';
       });
-      html += '</div></div></div>';
+      html += '</div>';
     });
-    html += '</div>';
 
     container.innerHTML = html;
+
+    // Делегирование событий для lesson-card
+    container.querySelectorAll('.lesson-card').forEach(el => {
+      el.addEventListener('click', () => app.openItem(el.dataset.id));
+    });
   }
 
   // Открыть урок (Markdown) или модуль (iframe)
@@ -268,13 +417,25 @@
     if (item.type === 'lesson') attachLightbox();
 
     lucide.createIcons();
+    
+    // Автосворачивание на мобильных
+    if (window.innerWidth < 768) {
+      document.body.classList.add('sidebar-collapsed');
+    }
   }
 
   // Фильтрация по категории (клик в sidebar)
   function filterCategory(category, el) {
-    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    currentCategory = category;
+    currentSubcategory = null;
+    document.querySelectorAll('.sidebar-item, .sidebar-subcategory').forEach(i => i.classList.remove('active'));
     if (el) el.classList.add('active');
     renderList(category);
+    
+    // Автосворачивание на мобильных
+    if (window.innerWidth < 768) {
+      document.body.classList.add('sidebar-collapsed');
+    }
   }
 
   // Вернуться к списку материалов
@@ -321,7 +482,7 @@
     document.querySelector('.lightbox-nav.next').disabled = (index === lightboxImages.length - 1);
 
     // Показать/скрыть навигацию если одна картинка
-    var navVisible = lightboxImages.length > 1 ? '' : 'none';
+    const navVisible = lightboxImages.length > 1 ? '' : 'none';
     document.querySelector('.lightbox-nav.prev').style.display = navVisible;
     document.querySelector('.lightbox-nav.next').style.display = navVisible;
 
@@ -345,7 +506,7 @@
 
   // Привязать лайтбокс к картинкам внутри .md-body
   function attachLightbox() {
-    var imgs = document.querySelectorAll('.md-body img');
+    const imgs = document.querySelectorAll('.md-body img');
     lightboxImages = Array.from(imgs);
     imgs.forEach(function(img, i) {
       img.addEventListener('click', function() {
@@ -367,7 +528,7 @@
 
   // Публичный API для вызова из onclick-обработчиков
   window.app = {
-    openItem, filterCategory, showList, toggleSidebar,
+    openItem, filterCategory, filterSubcategory, showList, toggleSidebar,
     closeLightbox, lightboxPrev, lightboxNext,
   };
 

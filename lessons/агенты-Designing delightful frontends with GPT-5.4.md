@@ -1,6 +1,7 @@
 ---
 title: Создание потрясающих интерфейсов с помощью GPT-5.4
-category: Агенты
+category: ИИ и агенты
+subcategory: Инструменты ИИ
 tags: [frontend, GPT, дизайн, UI]
 ---
 ***

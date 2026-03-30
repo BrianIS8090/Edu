@@ -1,6 +1,7 @@
 ---
 title: Схемы систем освещения
-category: Электроника и управление
+category: Электроника
+subcategory: Системы управления
 tags: [системы, DALI, RGBW, RGB]
 ---
 

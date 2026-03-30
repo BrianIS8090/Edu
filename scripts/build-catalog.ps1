@@ -90,6 +90,7 @@ if (Test-Path $lessonsDir) {
     $fm = Get-Frontmatter -FilePath $_.FullName
     $title = if ($fm["title"]) { $fm["title"] } else { $_.BaseName }
     $category = if ($fm["category"]) { $fm["category"] } else { "Без категории" }
+    $subcategory = if ($fm["subcategory"]) { $fm["subcategory"] } else { "" }
     $tags = Get-Tags -Raw $fm["tags"]
     $desc = Get-Description -FilePath $_.FullName
     $id = Make-Id -Name $_.Name
@@ -98,6 +99,7 @@ if (Test-Path $lessonsDir) {
       id = $id
       title = $title
       category = $category
+      subcategory = $subcategory
       tags = $tags
       type = "lesson"
       file = "lessons/$($_.Name)"
@@ -119,11 +121,13 @@ if (Test-Path $modulesDir) {
       $fm = Get-Frontmatter -FilePath $metaFile
       $title = if ($fm["title"]) { $fm["title"] } else { $dirName }
       $category = if ($fm["category"]) { $fm["category"] } else { "Без категории" }
+      $subcategory = if ($fm["subcategory"]) { $fm["subcategory"] } else { "" }
       $tags = Get-Tags -Raw $fm["tags"]
       $desc = Get-Description -FilePath $metaFile
     } else {
       $title = $dirName
       $category = "Без категории"
+      $subcategory = ""
       $tags = @()
       $desc = ""
     }
@@ -132,6 +136,7 @@ if (Test-Path $modulesDir) {
       id = $id
       title = $title
       category = $category
+      subcategory = $subcategory
       tags = $tags
       type = "module"
       path = "modules/$dirName/"
@@ -147,6 +152,8 @@ $catalog = @{
 }
 
 $json = $catalog | ConvertTo-Json -Depth 4
+# Исправление экранирования Unicode для PowerShell 5.1
+$json = [regex]::Unescape($json)
 [System.IO.File]::WriteAllText($OutputFile, $json, [System.Text.Encoding]::UTF8)
 
 Write-Host "catalog.json собран: $($lessons.Count) уроков, $($modules.Count) модулей"

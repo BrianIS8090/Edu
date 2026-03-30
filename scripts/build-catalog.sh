@@ -197,10 +197,12 @@ if [ -d "lessons" ]; then
     if [ -n "$frontmatter" ]; then
       title="$(get_field "title" "$frontmatter")"
       category="$(get_field "category" "$frontmatter")"
+      subcategory="$(get_field "subcategory" "$frontmatter")"
       tags_raw="$(get_field "tags" "$frontmatter")"
     else
       title=""
       category=""
+      subcategory=""
       tags_raw=""
     fi
 
@@ -224,6 +226,7 @@ if [ -d "lessons" ]; then
       \"id\": \"$(json_escape "$id")\",
       \"title\": \"$(json_escape "$title")\",
       \"category\": \"$(json_escape "$category")\",
+      \"subcategory\": \"$(json_escape "$subcategory")\",
       \"tags\": $tags_json,
       \"type\": \"lesson\",
       \"file\": \"$(json_escape "$file")\",
@@ -252,10 +255,12 @@ if [ -d "modules" ]; then
       if [ -n "$frontmatter" ]; then
         title="$(get_field "title" "$frontmatter")"
         category="$(get_field "category" "$frontmatter")"
+        subcategory="$(get_field "subcategory" "$frontmatter")"
         tags_raw="$(get_field "tags" "$frontmatter")"
       else
         title=""
         category=""
+        subcategory=""
         tags_raw=""
       fi
 
@@ -264,6 +269,7 @@ if [ -d "modules" ]; then
       # Модуль без meta.md
       title=""
       category=""
+      subcategory=""
       tags_raw=""
       description=""
     fi
@@ -287,6 +293,7 @@ if [ -d "modules" ]; then
       \"id\": \"$(json_escape "$id")\",
       \"title\": \"$(json_escape "$title")\",
       \"category\": \"$(json_escape "$category")\",
+      \"subcategory\": \"$(json_escape "$subcategory")\",
       \"tags\": $tags_json,
       \"type\": \"module\",
       \"path\": \"$(json_escape "modules/${dirname}/")\",
