@@ -66,6 +66,41 @@
     }
     .sidebar-lesson i { width: 14px; height: 14px; flex-shrink: 0; }
 
+    /* Заголовок категории в sidebar (accordion) */
+    .sidebar-category-header {
+      display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+      font-size: 13px; color: #333; cursor: pointer; transition: all 0.15s;
+    }
+    .sidebar-category-header:hover { background: #f9fafb; }
+    .sidebar-category-header.expanded .sidebar-chevron i { transform: rotate(90deg); }
+    .sidebar-chevron {
+      display: flex; align-items: center; justify-content: center;
+      width: 16px; height: 16px; transition: transform 0.15s;
+    }
+    .sidebar-chevron i { width: 14px; height: 14px; color: #999; }
+    .sidebar-category-icon { display: flex; align-items: center; justify-content: center; }
+    .sidebar-category-icon i { width: 16px; height: 16px; }
+    .sidebar-category-name { flex: 1; font-weight: 500; }
+
+    /* Подкатегории в sidebar */
+    .sidebar-subcategories {
+      padding-left: 40px;
+    }
+    .sidebar-subcategory {
+      display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 0;
+      font-size: 12px; color: #666; cursor: pointer; transition: all 0.15s;
+      border-left: 2px solid transparent;
+    }
+    .sidebar-subcategory:hover { background: #f9fafb; color: #111; }
+    .sidebar-subcategory.active {
+      color: #4f46e5; font-weight: 500;
+      border-left-color: #4f46e5; background: #f8f7ff;
+    }
+    .subcategory-bullet {
+      font-size: 11px; color: #bbb; margin-right: 4px;
+    }
+    .subcategory-name { flex: 1; }
+
     /* Кнопка сворачивания sidebar */
     .sidebar-toggle {
       position: fixed; top: 64px; left: 378px; z-index: 11;
@@ -170,7 +205,7 @@
     .md-body li { margin-bottom: 6px; }
     .md-body a { color: #4f46e5; text-decoration: none; }
     .md-body a:hover { text-decoration: underline; }
-    .md-body img { max-width: 100%; border-radius: 8px; margin: 16px 0; border: 1px solid #e5e7eb; }
+    .md-body img { max-width: 100%; border-radius: 8px; margin: 16px 0; border: 1px solid #e5e7eb; cursor: zoom-in; }
     .md-body code {
       background: #f3f4f6; padding: 2px 6px; border-radius: 4px;
       font-size: 13px; font-family: 'JetBrains Mono', monospace;
@@ -211,9 +246,6 @@
       font-size: 18px; font-weight: 600; color: #111; margin-bottom: 16px;
       display: flex; align-items: center; gap: 8px;
     }
-
-    /* Картинки в уроках — курсор указывает на возможность увеличения */
-    .md-body img { cursor: zoom-in; }
 
     /* Лайтбокс-галерея */
     .lightbox {
