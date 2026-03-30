@@ -27,8 +27,8 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 10; height: 52px;
     }
     .header-logo {
-      font-weight: 700; font-size: 16px;
-      display: flex; align-items: center; gap: 8px; color: #111;
+      font-weight: 700; font-size: 16px; white-space: nowrap;
+      display: flex; align-items: center; gap: 8px; color: #111; flex-shrink: 0;
     }
 
     /* Основной layout */
@@ -96,21 +96,22 @@
     }
     .subcategory-name { flex: 1; }
 
-    /* Кнопка сворачивания sidebar */
+    /* Кнопка сворачивания sidebar — новый стиль таба */
     .sidebar-toggle {
-      position: fixed; top: 64px; left: 378px; z-index: 11;
-      width: 24px; height: 24px; border-radius: 50%;
-      background: #fff; border: 1px solid #e5e7eb;
+      position: fixed; top: 50%; transform: translateY(-50%);
+      left: 390px; z-index: 11;
+      width: 20px; height: 52px; border-radius: 0 6px 6px 0;
+      background: #fff; border: 1px solid #e5e7eb; border-left: none;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.25s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      cursor: pointer; transition: left 0.25s ease, background 0.15s;
+      box-shadow: 2px 0 6px rgba(0,0,0,0.06);
     }
     .sidebar-toggle:hover { background: #f0f0ff; border-color: #c7d2fe; }
-    .sidebar-toggle i { width: 14px; height: 14px; color: #666; transition: transform 0.25s; }
+    .sidebar-toggle i { width: 14px; height: 14px; color: #888; transition: transform 0.25s; }
 
     /* Свёрнутый sidebar (десктоп) */
     .sidebar-collapsed .sidebar { width: 0; padding: 0; overflow: hidden; border-right: none; }
-    .sidebar-collapsed .sidebar-toggle { left: 8px; }
+    .sidebar-collapsed .sidebar-toggle { left: 0; border-radius: 0 6px 6px 0; }
     .sidebar-collapsed .sidebar-toggle i { transform: rotate(180deg); }
     .sidebar-collapsed .content-wrapper { margin-left: 0; }
     
@@ -293,7 +294,131 @@
       color: rgba(255,255,255,0.7); font-size: 13px;
     }
 
+    /* Полоса прогресса чтения (под хедером) */
+    .reading-progress-bar {
+      position: fixed; top: 52px; left: 0; right: 0; height: 3px;
+      z-index: 9; background: transparent;
+    }
+    .reading-progress-fill {
+      height: 100%; width: 0%; background: #4f46e5;
+      transition: width 0.1s linear;
+    }
+
+    /* Поиск в хедере */
+    .header-search {
+      position: relative; display: flex; align-items: center;
+      flex: 1; max-width: 360px; margin: 0 24px;
+    }
+    .header-search input {
+      width: 100%; padding: 7px 12px 7px 34px;
+      border: 1px solid #e5e7eb; border-radius: 8px;
+      font-size: 13px; color: #111; background: #f9fafb;
+      outline: none; transition: border-color 0.15s, background 0.15s;
+    }
+    .header-search input:focus { border-color: #a5b4fc; background: #fff; }
+    .header-search input::placeholder { color: #aaa; }
+    .header-search .search-icon {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      width: 15px; height: 15px; color: #aaa; pointer-events: none;
+    }
+    .header-search .search-clear {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      width: 16px; height: 16px; color: #aaa; cursor: pointer;
+      display: none; align-items: center; justify-content: center;
+      border-radius: 50%; background: #e5e7eb;
+    }
+    .header-search .search-clear:hover { background: #c7d2fe; color: #4f46e5; }
+    .header-search.has-value .search-clear { display: flex; }
+
+    /* Результаты поиска */
+    .search-results-header {
+      font-size: 13px; color: #888; margin-bottom: 16px;
+    }
+    .search-highlight { background: #fef08a; border-radius: 2px; padding: 0 1px; }
+    .search-no-results {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 60px 20px; color: #aaa;
+    }
+    .search-no-results i { width: 48px; height: 48px; margin-bottom: 12px; color: #d1d5db; }
+    .search-no-results p { font-size: 14px; }
+
+    /* Баннер последней статьи */
+    .last-read-banner {
+      display: none; position: relative; overflow: hidden;
+      border-radius: 12px; margin-bottom: 24px;
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      background-size: cover; background-position: center;
+      min-height: 100px;
+    }
+    .last-read-banner.visible { display: flex; }
+    .banner-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.45); border-radius: 12px;
+    }
+    .banner-content {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 16px;
+      padding: 20px 24px; width: 100%;
+    }
+    .banner-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(255,255,255,0.15); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .banner-icon i { width: 22px; height: 22px; color: #fff; }
+    .banner-text { flex: 1; min-width: 0; }
+    .banner-label {
+      font-size: 11px; color: rgba(255,255,255,0.7);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;
+    }
+    .banner-title {
+      font-size: 15px; font-weight: 600; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 8px;
+    }
+    .banner-progress-track {
+      height: 4px; background: rgba(255,255,255,0.25);
+      border-radius: 2px; overflow: hidden;
+    }
+    .banner-progress-fill {
+      height: 100%; background: #fff; border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .banner-progress-label {
+      font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 4px;
+    }
+    .banner-btn {
+      flex-shrink: 0; padding: 8px 18px;
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 8px; color: #fff; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: background 0.15s; white-space: nowrap;
+    }
+    .banner-btn:hover { background: rgba(255,255,255,0.35); }
+
+    /* Прогресс на карточках */
+    .card-progress-bar {
+      height: 3px; background: #e5e7eb; border-radius: 0 0 7px 7px;
+      overflow: hidden; margin-top: 8px;
+    }
+    .card-progress-fill {
+      height: 100%; background: #4f46e5; border-radius: 0 0 7px 7px;
+      transition: width 0.3s;
+    }
+    .card-progress-label {
+      font-size: 10px; color: #6366f1; font-weight: 600; margin-top: 4px;
+    }
+    .card-done-badge {
+      position: absolute; top: 6px; right: 6px;
+      width: 18px; height: 18px; color: #10b981;
+    }
+    .tile-card { position: relative; }
+    .lesson-card { position: relative; }
+
+    /* Тег времени чтения */
+    .tag-time { background: #f0fdf4; color: #16a34a; }
+
     /* Состояние загрузки */
+
     .loading {
       display: flex; align-items: center; justify-content: center;
       min-height: 200px; color: #999; font-size: 14px;
@@ -321,16 +446,18 @@
       /* Кнопка открытия/закрытия sidebar */
       .sidebar-toggle,
       .sidebar-collapsed .sidebar-toggle {
-        left: 8px !important; 
+        left: 0 !important;
+        top: 50% !important; transform: translateY(-50%) !important;
+        width: 20px !important; height: 52px !important;
+        border-radius: 0 6px 6px 0 !important;
         z-index: 21 !important;
       }
-      .sidebar-collapsed .sidebar-toggle i { transform: rotate(0) !important; } /* Сброс поворота из десктопа */
+      .sidebar-collapsed .sidebar-toggle i { transform: rotate(180deg) !important; }
       
       body:not(.sidebar-collapsed) .sidebar-toggle {
-        left: 290px !important;
-        box-shadow: none !important;
+        left: 300px !important;
       }
-      body:not(.sidebar-collapsed) .sidebar-toggle i { transform: rotate(180deg) !important; }
+      body:not(.sidebar-collapsed) .sidebar-toggle i { transform: rotate(0deg) !important; }
       
       /* Затемнение фона при открытом меню (используем явный элемент для кликов) */
       .sidebar-overlay { display: none; }
@@ -376,11 +503,23 @@
   </style>
 </head>
 <body>
+  <!-- Полоса прогресса чтения (под хедером) -->
+  <div class="reading-progress-bar" id="reading-progress-bar">
+    <div class="reading-progress-fill" id="reading-progress-fill"></div>
+  </div>
+
   <!-- Хедер -->
   <div class="header">
     <div class="header-logo">
       <i data-lucide="book-open" style="width:20px;height:20px;color:#4f46e5;"></i>
       EduPlatform
+    </div>
+    <div class="header-search" id="header-search">
+      <i data-lucide="search" class="search-icon"></i>
+      <input type="text" id="search-input" placeholder="Поиск по материалам..." autocomplete="off">
+      <span class="search-clear" id="search-clear" onclick="app.clearSearch()">
+        <i data-lucide="x" style="width:10px;height:10px;"></i>
+      </span>
     </div>
   </div>
 
@@ -394,13 +533,34 @@
     </div>
     <!-- Кнопка сворачивания sidebar -->
     <div class="sidebar-toggle" onclick="app.toggleSidebar()">
-      <i data-lucide="panel-left-close"></i>
+      <i data-lucide="chevron-left" id="sidebar-toggle-icon"></i>
     </div>
 
     <div class="content-wrapper">
       <!-- Список материалов -->
       <div class="content" id="content-list">
-        <div class="loading">Загрузка каталога...</div>
+        <!-- Баннер последней статьи -->
+        <div class="last-read-banner" id="last-read-banner">
+          <div class="banner-overlay"></div>
+          <div class="banner-content">
+            <div class="banner-icon">
+              <i data-lucide="book-open"></i>
+            </div>
+            <div class="banner-text">
+              <div class="banner-label">Продолжить чтение</div>
+              <div class="banner-title" id="banner-title"></div>
+              <div class="banner-progress-track">
+                <div class="banner-progress-fill" id="banner-progress-fill"></div>
+              </div>
+              <div class="banner-progress-label" id="banner-progress-label"></div>
+            </div>
+            <button class="banner-btn" id="banner-btn">Открыть</button>
+          </div>
+        </div>
+        <!-- Контент списка (перезаписывается при навигации) -->
+        <div id="content-list-inner">
+          <div class="loading">Загрузка каталога...</div>
+        </div>
       </div>
 
       <!-- Страница урока/модуля (динамическая) -->
