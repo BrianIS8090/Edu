@@ -1,7 +1,7 @@
 ---
 title: Инструменты CAD Сборочная документация в Rhino
 category: Проекты
-subcategory: 3 этап - сборочная документация
+subcategory: 3 этап — Документация
 tags: [CAD, Rhino, чертежи, документация, make2d]
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Инструменты CAD Моделирование корпусов в Moi3D
 category: Проекты
-subcategory: 2 этап - моделирование
+subcategory: 2 этап — Моделирование
 tags: [CAD, Moi3D, моделирование, 3D]
 ---
 
