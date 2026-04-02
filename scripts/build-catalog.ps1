@@ -151,9 +151,13 @@ $catalog = @{
   modules = $modules
 }
 
-$json = $catalog | ConvertTo-Json -Depth 4
-# Исправление экранирования Unicode для PowerShell 5.1
-$json = [regex]::Unescape($json)
-[System.IO.File]::WriteAllText($OutputFile, $json, [System.Text.Encoding]::UTF8)
+$json = $catalog | ConvertTo-Json -Depth 4 -Compress
+# PowerShell 5.1 экранирует кириллицу как \uXXXX — исправляем
+if ($PSVersionTable.PSVersion.Major -lt 6) {
+  $json = [regex]::Unescape($json)
+}
+# Запись без BOM (новый UTF8Encoding($false))
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText($OutputFile, $json, $utf8NoBom)
 
 Write-Host "catalog.json собран: $($lessons.Count) уроков, $($modules.Count) модулей"
