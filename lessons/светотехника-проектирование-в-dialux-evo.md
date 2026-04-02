@@ -1,6 +1,6 @@
 ---
 title: Проектирование в DIALux Evo
-category: Проектирование освещения
+category: Проекты
 subcategory: DIALux
 tags: [DIALux, расчёт освещённости, проектирование, IES, LDT, отчёт]
 ---

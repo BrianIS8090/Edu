@@ -1,6 +1,6 @@
 ---
 title: Подключение LED-плат
-category: Электроника
+category: Проекты
 subcategory: Схемотехника
 tags: [монтаж, LED, схемы]
 ---

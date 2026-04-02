@@ -1,6 +1,6 @@
 ---
 title: Цветовая наука
-category: Светотехника
+category: Проекты
 subcategory: Цветовая наука
 tags: [цвет, CIE, MacAdam, спектр]
 ---

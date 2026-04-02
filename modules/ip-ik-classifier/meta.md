@@ -1,6 +1,6 @@
 ---
 title: Классификатор IP/IK
-category: Конструирование светильников
+category: Проекты
 subcategory: Защита IP/IK
 tags: [IP, IK, защита]
 ---
