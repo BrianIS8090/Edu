@@ -90,6 +90,50 @@
     return subs;
   }
 
+  // Суммарное время чтения для категории (только уроки)
+  function getCategoryReadTime(category) {
+    return allItems
+      .filter(i => i.category === category && i.type === 'lesson')
+      .reduce((sum, i) => sum + (i.readTime || 0), 0);
+  }
+
+  // Суммарное время чтения для подкатегории (только уроки)
+  function getSubcategoryReadTime(category, subcategory) {
+    return allItems
+      .filter(i => i.category === category && (i.subcategory || 'Без подкатегории') === subcategory && i.type === 'lesson')
+      .reduce((sum, i) => sum + (i.readTime || 0), 0);
+  }
+
+  // Иконка элемента: урок = file-text, модуль = blocks
+  function getItemIcon(item) {
+    return item.type === 'module' ? 'blocks' : 'file-text';
+  }
+
+  // Количество прочитанных статей в подкатегории
+  function getSubcategoryReadCount(items) {
+    return items.filter(i => getProgress(i.id) >= 100).length;
+  }
+
+  // Собрать все уникальные теги с количеством
+  function getAllTags() {
+    const tags = {};
+    allItems.forEach(item => {
+      (item.tags || []).forEach(tag => {
+        tags[tag] = (tags[tag] || 0) + 1;
+      });
+    });
+    return tags;
+  }
+
+  // Форматирование времени: минуты → "X мин" или "X ч Y мин"
+  function formatTime(minutes) {
+    if (!minutes || minutes <= 0) return '';
+    if (minutes < 60) return minutes + ' мин';
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m > 0 ? h + ' ч ' + m + ' мин' : h + ' ч';
+  }
+
   // Рендер боковой панели (sidebar) с подкатегориями (accordion)
   function renderSidebar() {
     const sidebar = document.getElementById('sidebar');
@@ -123,16 +167,28 @@
       html += '<span class="sidebar-count">' + categories[cat] + '</span>';
       html += '</div>';
 
-      // Подкатегории (всегда видны)
+      // Подкатегории (всегда видны) с прогрессом и временем
       if (hasSubs) {
         html += '<div class="sidebar-subcategories">';
         subKeys.forEach(sub => {
           const isSubActive = currentCategory === cat && currentSubcategory === sub;
+          const subItems = subs[sub].items;
+          const readCount = getSubcategoryReadCount(subItems);
+          const totalCount = subs[sub].count;
+          const subTime = getSubcategoryReadTime(cat, sub);
+          const timeStr = formatTime(subTime);
+
           html += '<div class="sidebar-subcategory ' + (isSubActive ? 'active' : '') + '" ';
           html += 'onclick="app.filterSubcategory(\'' + escapeJs(cat) + '\', \'' + escapeJs(sub) + '\', this)">';
           html += '<span class="subcategory-bullet">—</span>';
           html += '<span class="subcategory-name">' + escapeHtml(sub) + '</span>';
-          html += '<span class="sidebar-count">' + subs[sub].count + '</span>';
+          html += '<span class="sidebar-count">';
+          if (readCount > 0) {
+            html += '<span style="color:#10b981;">' + readCount + '</span>/';
+          }
+          html += totalCount;
+          if (timeStr) html += ' · ' + timeStr;
+          html += '</span>';
           html += '</div>';
         });
         html += '</div>';
@@ -193,10 +249,16 @@
     teardownScrollProgress();
     listEl.classList.remove('content-wide');
 
+    const subTime = getSubcategoryReadTime(category, subcategory);
+    const subTimeStr = formatTime(subTime);
+    const subReadCount = getSubcategoryReadCount(items);
+
     let html = '';
     html += '<div class="section-header">';
     html += '<i data-lucide="' + icon + '" style="width:20px;height:20px;color:#4f46e5;"></i>';
     html += escapeHtml(category) + ' / ' + escapeHtml(subcategory);
+    if (subTimeStr) html += '<span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">≈ ' + subTimeStr + '</span>';
+    if (subReadCount > 0) html += '<span style="font-size:12px;color:#10b981;font-weight:400;margin-left:8px;">' + subReadCount + '/' + items.length + ' прочитано</span>';
     html += '</div>';
 
     html += '<div class="lessons-grid">';
@@ -215,7 +277,7 @@
       html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
       html += doneBadge;
       html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
-      html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+      html += '<i data-lucide="' + getItemIcon(item) + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
       html += '</div>';
       html += '<div class="lesson-info">';
       html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
@@ -288,6 +350,23 @@
     html += 'Все материалы';
     html += '</div>';
 
+    // Облако тегов
+    const allTags = getAllTags();
+    const tagKeys = Object.keys(allTags).sort((a, b) => allTags[b] - allTags[a]);
+    if (tagKeys.length > 0) {
+      html += '<div class="tags-cloud" style="margin-bottom:24px;">';
+      html += '<div style="font-size:12px;color:#888;margin-bottom:8px;display:flex;align-items:center;gap:6px;">';
+      html += '<i data-lucide="tags" style="width:14px;height:14px;"></i> Теги</div>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+      tagKeys.forEach(tag => {
+        html += '<span class="tag tag-cloud-item" style="cursor:pointer;padding:4px 10px;font-size:12px;" ';
+        html += 'onclick="app.filterByTag(\'' + escapeJs(tag) + '\')">';
+        html += escapeHtml(tag) + ' <span style="color:#aaa;font-size:10px;">' + allTags[tag] + '</span>';
+        html += '</span>';
+      });
+      html += '</div></div>';
+    }
+
     Object.keys(categories).sort().forEach((cat, catIndex) => {
       const catIcon = categoryIcons[cat] || 'folder';
       const catColor = categoryColors[catIndex % categoryColors.length];
@@ -315,7 +394,7 @@
         html += '<div class="tile-card" data-id="' + escapeHtml(item.id) + '">';
         html += doneBadge;
         html += '<div class="tile-icon" style="background:' + color.bg + ';">';
-        html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+        html += '<i data-lucide="' + getItemIcon(item) + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
         html += '</div>';
         html += '<div class="tile-title">' + escapeHtml(item.title) + '</div>';
         if (item.description) {
@@ -348,10 +427,14 @@
     const catIndex = Object.keys(getCategories()).sort().indexOf(category);
     const catColor = categoryColors[catIndex % categoryColors.length];
 
+    const catTime = getCategoryReadTime(category);
+    const catTimeStr = formatTime(catTime);
+
     let html = '';
     html += '<div class="section-header">';
     html += '<i data-lucide="' + icon + '" style="width:20px;height:20px;color:' + catColor.fg + ';"></i>';
     html += escapeHtml(category);
+    if (catTimeStr) html += '<span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">≈ ' + catTimeStr + '</span>';
     html += '</div>';
 
     subKeys.forEach(sub => {
@@ -379,7 +462,7 @@
         html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
         html += doneBadge;
         html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
-        html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+        html += '<i data-lucide="' + getItemIcon(item) + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
         html += '</div>';
         html += '<div class="lesson-info">';
         html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
@@ -416,9 +499,16 @@
     const pageEl = document.getElementById('content-page');
     let html = '';
 
-    // Навигация "назад"
-    html += '<div class="breadcrumb" onclick="app.showList()">';
-    html += '<i data-lucide="arrow-left" style="width:14px;height:14px;"></i> \u0412\u0441\u0435 \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b';
+    // Навигация "назад" — в подкатегорию/категорию откуда пришли
+    let backLabel = 'Все материалы';
+    let backAction = 'app.goBack()';
+    if (currentSubcategory) {
+      backLabel = currentSubcategory;
+    } else if (currentCategory && currentCategory !== 'all') {
+      backLabel = currentCategory;
+    }
+    html += '<div class="breadcrumb" onclick="' + backAction + '">';
+    html += '<i data-lucide="arrow-left" style="width:14px;height:14px;"></i> ' + escapeHtml(backLabel);
     html += '</div>';
 
     // Заголовок и теги
@@ -466,22 +556,34 @@
     const sidebarItem = document.querySelector('.sidebar-lesson[data-id="' + id + '"]');
     if (sidebarItem) sidebarItem.classList.add('active');
 
-    // Привязать лайтбокс к картинкам урока
-    if (item.type === 'lesson') attachLightbox();
+    // Привязать лайтбокс к картинкам и перехват ссылок на уроки
+    if (item.type === 'lesson') {
+      attachLightbox();
+      attachLessonLinks();
+    }
 
     lucide.createIcons();
 
     // Запустить отслеживание прогресса скролла и восстановить позицию
+    // Логика: (1) не дочитал → восстановить позицию
+    //         (2) дочитал → в начало
+    //         (3) не начинал → в начало
     if (item.type === 'lesson') {
-      const savedScrollPos = parseInt(localStorage.getItem('scrollPos_' + id) || '0', 10);
+      const progress = getProgress(id);
       setupScrollProgress(id);
-      if (savedScrollPos > 0) {
-        // Двойной rAF — ждём полного layout перед прокруткой
-        requestAnimationFrame(function() {
+      if (progress > 0 && progress < 100) {
+        // Не дочитал — восстановить позицию
+        const savedScrollPos = parseInt(localStorage.getItem('scrollPos_' + id) || '0', 10);
+        if (savedScrollPos > 0) {
           requestAnimationFrame(function() {
-            window.scrollTo({ top: savedScrollPos, behavior: 'instant' });
+            requestAnimationFrame(function() {
+              window.scrollTo({ top: savedScrollPos, behavior: 'instant' });
+            });
           });
-        });
+        }
+      } else {
+        // Дочитал или не начинал — в начало
+        window.scrollTo({ top: 0, behavior: 'instant' });
       }
     }
 
@@ -508,6 +610,19 @@
   // Вернуться к списку материалов
   function showList() {
     renderList(currentCategory);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  // Кнопка «назад» — в подкатегорию/категорию + скролл вверх
+  function goBack() {
+    if (currentSubcategory) {
+      renderListBySubcategory(currentCategory, currentSubcategory);
+    } else if (currentCategory && currentCategory !== 'all') {
+      renderList(currentCategory);
+    } else {
+      renderList('all');
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   // Экранирование HTML-символов для защиты от XSS
@@ -569,6 +684,39 @@
 
   function lightboxNext() {
     if (lightboxIndex < lightboxImages.length - 1) openLightbox(lightboxIndex + 1);
+  }
+
+  // Перехват ссылок на другие уроки внутри .md-body
+  // Поддерживает: href="lessons/имя.md", href="lesson:id", href="#lesson:id"
+  function attachLessonLinks() {
+    var links = document.querySelectorAll('.md-body a');
+    links.forEach(function(link) {
+      var href = link.getAttribute('href') || '';
+      var lessonId = null;
+
+      // Формат: lessons/имя-файла.md
+      if (href.match(/^lessons\//i)) {
+        var filename = href.replace(/^lessons\//i, '').replace(/\.md$/i, '');
+        // Нормализация: пробелы/подчёркивания → дефисы, нижний регистр
+        lessonId = filename.replace(/[_ ]/g, '-').toLowerCase();
+      }
+      // Формат: lesson:id или #lesson:id
+      else if (href.match(/^#?lesson:/i)) {
+        lessonId = href.replace(/^#?lesson:/i, '');
+      }
+
+      if (lessonId) {
+        // Проверяем, существует ли такой урок
+        var target = allItems.find(function(i) { return i.id === lessonId; });
+        if (target) {
+          link.style.cursor = 'pointer';
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            app.openItem(lessonId);
+          });
+        }
+      }
+    });
   }
 
   // Привязать лайтбокс к картинкам внутри .md-body
@@ -763,6 +911,71 @@
     });
   }
 
+  // Фильтрация по тегу (из облака тегов)
+  function filterByTag(tag) {
+    var results = allItems.filter(function(item) {
+      return (item.tags || []).some(function(t) { return t === tag; });
+    });
+
+    var listEl = document.getElementById('content-list');
+    var innerEl = document.getElementById('content-list-inner');
+    listEl.classList.remove('content-wide');
+    teardownScrollProgress();
+
+    var html = '';
+    html += '<div class="section-header">';
+    html += '<i data-lucide="tag" style="width:20px;height:20px;color:#4f46e5;"></i>';
+    html += 'Тег: ' + escapeHtml(tag);
+    html += '<span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">' + results.length + ' материалов</span>';
+    html += '</div>';
+
+    html += '<div class="lessons-grid">';
+    results.forEach(function(item, i) {
+      var color = categoryColors[i % categoryColors.length];
+      var progress = getProgress(item.id);
+      var readTime = getReadTime(item.id);
+      var typeTag = item.type === 'module'
+        ? '<span class="tag tag-type interactive">интерактив</span>'
+        : '<span class="tag tag-type">урок</span>';
+      var timeTag = (item.type === 'lesson' && readTime)
+        ? '<span class="tag tag-time">≈ ' + readTime + ' мин</span>' : '';
+      var doneBadge = progress >= 100
+        ? '<i data-lucide="check-circle" class="card-done-badge"></i>' : '';
+
+      html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
+      html += doneBadge;
+      html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
+      html += '<i data-lucide="' + getItemIcon(item) + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+      html += '</div>';
+      html += '<div class="lesson-info">';
+      html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
+      if (item.description) {
+        html += '<div class="lesson-desc">' + escapeHtml(item.description) + '</div>';
+      }
+      html += '<div class="lesson-tags-row">' + typeTag + timeTag;
+      (item.tags || []).forEach(function(t) {
+        var cls = t === tag ? 'tag' : 'tag';
+        var style = t === tag ? ' style="background:#e0e7ff;color:#4f46e5;font-weight:600;"' : '';
+        html += '<span class="' + cls + '"' + style + '>' + escapeHtml(t) + '</span>';
+      });
+      html += '</div>';
+      html += buildCardProgress(item.id, progress);
+      html += '</div></div>';
+    });
+    html += '</div>';
+
+    innerEl.innerHTML = html;
+    listEl.style.display = 'block';
+    document.getElementById('content-page').style.display = 'none';
+    currentItem = null;
+
+    innerEl.querySelectorAll('.lesson-card').forEach(function(el) {
+      el.addEventListener('click', function() { app.openItem(el.dataset.id); });
+    });
+
+    lucide.createIcons();
+  }
+
   // Очистить поиск
   function clearSearch() {
     searchQuery = '';
@@ -829,7 +1042,7 @@
         html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
         html += doneBadge;
         html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
-        html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+        html += '<i data-lucide="' + getItemIcon(item) + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
         html += '</div>';
         html += '<div class="lesson-info">';
         html += '<div class="lesson-title">' + highlightMatch(item.title, query) + '</div>';
@@ -861,8 +1074,8 @@
 
   // Публичный API для вызова из onclick-обработчиков
   window.app = {
-    openItem, filterCategory, filterSubcategory, showList, toggleSidebar,
-    closeLightbox, lightboxPrev, lightboxNext, clearSearch,
+    openItem, filterCategory, filterSubcategory, showList, goBack, toggleSidebar,
+    closeLightbox, lightboxPrev, lightboxNext, clearSearch, filterByTag,
   };
 
   // Запуск приложения
