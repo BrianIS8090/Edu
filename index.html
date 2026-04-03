@@ -428,6 +428,82 @@
     /* Тег времени чтения */
     .tag-time { background: #f0fdf4; color: #16a34a; }
 
+    /* Облако тегов — ховер */
+    .tag-cloud-item:hover { background: #e0e7ff !important; color: #4f46e5 !important; }
+
+    /* Облако тегов — анимация сворачивания */
+    .tags-cloud-body {
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+      opacity: 1;
+    }
+    .tags-cloud-body.collapsed {
+      max-height: 0 !important;
+      opacity: 0;
+    }
+    /* Кнопка переключения облака тегов */
+    .tags-toggle-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 8px;
+      font-size: 12px; font-weight: 500; color: #4f46e5;
+      background: #f0f0ff; border: 1px solid #e0e7ff;
+      cursor: pointer; transition: all 0.15s;
+      margin-bottom: 10px;
+    }
+    .tags-toggle-btn:hover { background: #e0e7ff; border-color: #c7d2fe; }
+    .tags-toggle-btn i { width: 14px; height: 14px; }
+
+    /* Геймификация — бейджи в хедере */
+    .gam-badges {
+      display: flex; align-items: center; gap: 8px;
+      margin-left: auto; flex-shrink: 0;
+    }
+    .gam-badge {
+      display: flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 8px;
+      background: #f9fafb; border: 1px solid #e5e7eb;
+      cursor: pointer; transition: all 0.15s;
+      font-size: 11px; font-weight: 600; color: #555;
+      position: relative;
+    }
+    .gam-badge:hover { background: #f0f0ff; border-color: #c7d2fe; }
+    .gam-badge i { flex-shrink: 0; }
+
+    /* Геймификация — попап */
+    .gam-popup {
+      position: absolute; top: calc(100% + 8px); right: 0;
+      width: 260px; background: #fff;
+      border: 1px solid #e5e7eb; border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      padding: 16px; z-index: 50;
+    }
+    .gam-popup-header {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; font-weight: 600; color: #111;
+      margin-bottom: 12px;
+    }
+    .gam-popup-level {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 12px;
+    }
+    .gam-level-name { font-size: 16px; font-weight: 700; color: #111; }
+    .gam-level-sub { font-size: 11px; color: #888; }
+    .gam-popup-progress { margin-bottom: 10px; }
+    .gam-progress-bar {
+      height: 6px; background: #e5e7eb; border-radius: 3px;
+      overflow: hidden; margin-bottom: 4px;
+    }
+    .gam-progress-fill {
+      height: 100%; border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+    .gam-progress-text { font-size: 11px; color: #888; }
+    .gam-popup-next {
+      font-size: 11px; color: #888;
+      display: flex; align-items: center; gap: 4px;
+      padding-top: 8px; border-top: 1px solid #f3f4f6;
+    }
+
     /* Состояние загрузки */
 
     .loading {
@@ -537,6 +613,8 @@
         <i data-lucide="x" style="width:10px;height:10px;"></i>
       </span>
     </div>
+    <!-- Бейджи геймификации -->
+    <div class="gam-badges" id="gamification-badges"></div>
   </div>
 
   <div class="main">

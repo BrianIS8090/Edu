@@ -41,6 +41,153 @@
     'Без категории': 'folder',
   };
 
+  // ─── ГЕЙМИФИКАЦИЯ ──────────────────────────────────────────────────────────
+
+  // Конфиг треков с уровнями
+  const gamificationTracks = [
+    {
+      id: 'projects',
+      category: 'Проекты',
+      icon: 'wrench',
+      color: '#4f46e5',
+      levels: [
+        { name: 'Новичок', icon: 'sprout', min: 0 },
+        { name: 'Стажёр', icon: 'star', min: 20 },
+        { name: 'Специалист', icon: 'award', min: 40 },
+        { name: 'Профессионал', icon: 'trophy', min: 60 },
+        { name: 'Мастер', icon: 'crown', min: 80 },
+      ],
+    },
+    {
+      id: 'sales',
+      category: 'Продажи',
+      icon: 'handshake',
+      color: '#059669',
+      levels: [
+        { name: 'Новичок', icon: 'sprout', min: 0 },
+        { name: 'Консультант', icon: 'star', min: 20 },
+        { name: 'Менеджер', icon: 'award', min: 40 },
+        { name: 'Эксперт', icon: 'trophy', min: 60 },
+        { name: 'Лидер продаж', icon: 'crown', min: 80 },
+      ],
+    },
+  ];
+
+  // Подсчёт прогресса по треку (только уроки)
+  function calculateTrackProgress(category) {
+    var lessons = allItems.filter(function(i) { return i.category === category && i.type === 'lesson'; });
+    var total = lessons.length;
+    var read = lessons.filter(function(i) { return getProgress(i.id) >= 100; }).length;
+    var percent = total > 0 ? Math.round((read / total) * 100) : 0;
+    return { total: total, read: read, percent: percent };
+  }
+
+  // Определить текущий уровень по проценту
+  function getLevel(track, percent) {
+    var level = track.levels[0];
+    var levelIndex = 0;
+    for (var i = track.levels.length - 1; i >= 0; i--) {
+      if (percent >= track.levels[i].min) {
+        level = track.levels[i];
+        levelIndex = i;
+        break;
+      }
+    }
+    var nextLevel = levelIndex < track.levels.length - 1 ? track.levels[levelIndex + 1] : null;
+    return { current: level, next: nextLevel, index: levelIndex };
+  }
+
+  // Рендер бейджей геймификации в хедере
+  function renderGamificationBadges() {
+    var container = document.getElementById('gamification-badges');
+    if (!container) return;
+
+    var html = '';
+    gamificationTracks.forEach(function(track) {
+      var progress = calculateTrackProgress(track.category);
+      var levelInfo = getLevel(track, progress.percent);
+
+      html += '<div class="gam-badge" onclick="event.stopPropagation();app.toggleGamPopup(\'' + track.id + '\')">';
+      html += '<i data-lucide="' + levelInfo.current.icon + '" style="width:16px;height:16px;color:' + track.color + ';"></i>';
+      html += '<span style="color:' + track.color + ';">Lv' + (levelInfo.index + 1) + '</span>';
+      html += '</div>';
+    });
+
+    container.innerHTML = html;
+    lucide.createIcons();
+  }
+
+  // Показать/скрыть попап уровня
+  function toggleGamPopup(trackId) {
+    var existing = document.getElementById('gam-popup');
+    if (existing && existing.dataset.track === trackId) {
+      existing.remove();
+      return;
+    }
+    if (existing) existing.remove();
+
+    var track = gamificationTracks.find(function(t) { return t.id === trackId; });
+    if (!track) return;
+
+    var progress = calculateTrackProgress(track.category);
+    var levelInfo = getLevel(track, progress.percent);
+
+    var html = '<div class="gam-popup" id="gam-popup" data-track="' + trackId + '">';
+    html += '<div class="gam-popup-header">';
+    html += '<i data-lucide="' + track.icon + '" style="width:20px;height:20px;color:' + track.color + ';"></i>';
+    html += '<span>' + escapeHtml(track.category) + '</span>';
+    html += '</div>';
+
+    html += '<div class="gam-popup-level">';
+    html += '<i data-lucide="' + levelInfo.current.icon + '" style="width:28px;height:28px;color:' + track.color + ';"></i>';
+    html += '<div>';
+    html += '<div class="gam-level-name">' + escapeHtml(levelInfo.current.name) + '</div>';
+    html += '<div class="gam-level-sub">Уровень ' + (levelInfo.index + 1) + ' из ' + track.levels.length + '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="gam-popup-progress">';
+    html += '<div class="gam-progress-bar"><div class="gam-progress-fill" style="width:' + progress.percent + '%;background:' + track.color + ';"></div></div>';
+    html += '<div class="gam-progress-text">' + progress.read + ' / ' + progress.total + ' уроков прочитано · ' + progress.percent + '%</div>';
+    html += '</div>';
+
+    if (levelInfo.next) {
+      var remaining = levelInfo.next.min - progress.percent;
+      html += '<div class="gam-popup-next">';
+      html += '<i data-lucide="' + levelInfo.next.icon + '" style="width:14px;height:14px;color:#aaa;"></i>';
+      html += ' Следующий: <strong>' + escapeHtml(levelInfo.next.name) + '</strong> (ещё ' + remaining + '%)';
+      html += '</div>';
+    } else {
+      html += '<div class="gam-popup-next" style="color:#10b981;">';
+      html += '<i data-lucide="check-circle" style="width:14px;height:14px;"></i> Максимальный уровень!';
+      html += '</div>';
+    }
+
+    html += '</div>';
+
+    // Вставить попап внутрь бейджа
+    var badge = document.querySelector('.gam-badge[onclick*="' + trackId + '"]');
+    if (badge) {
+      badge.style.position = 'relative';
+      badge.insertAdjacentHTML('beforeend', html);
+    }
+    lucide.createIcons();
+
+    // Закрытие по клику вне попапа
+    setTimeout(function() {
+      document.addEventListener('click', closeGamPopupOutside);
+    }, 10);
+  }
+
+  // Закрыть попап при клике вне
+  function closeGamPopupOutside(e) {
+    var popup = document.getElementById('gam-popup');
+    if (popup && !popup.contains(e.target) && !e.target.closest('.gam-badge')) {
+      popup.remove();
+      document.removeEventListener('click', closeGamPopupOutside);
+    }
+  }
+
   // Инициализация приложения
   async function init() {
     if (window.innerWidth < 768) {
@@ -57,6 +204,7 @@
       renderSidebar();
       renderList();
       updateBanner();
+      renderGamificationBadges();
       lucide.createIcons();
     } catch (err) {
       document.getElementById('content-list-inner').innerHTML =
@@ -88,6 +236,55 @@
         subs[sub].items.push(item);
       });
     return subs;
+  }
+
+  // Суммарное время чтения для категории (только уроки)
+  function getCategoryReadTime(category) {
+    return allItems
+      .filter(i => i.category === category && i.type === 'lesson')
+      .reduce((sum, i) => sum + (i.readTime || 0), 0);
+  }
+
+  // Суммарное время чтения для подкатегории (только уроки)
+  function getSubcategoryReadTime(category, subcategory) {
+    return allItems
+      .filter(i => i.category === category && (i.subcategory || 'Без подкатегории') === subcategory && i.type === 'lesson')
+      .reduce((sum, i) => sum + (i.readTime || 0), 0);
+  }
+
+  // Иконка элемента: урок = file-text, модуль = blocks
+  function getItemIcon(item) {
+    return item.type === 'module' ? 'blocks' : 'file-text';
+  }
+
+  // Количество прочитанных статей в подкатегории (только уроки, не интерактивы)
+  function getSubcategoryReadCount(items) {
+    return items.filter(i => i.type === 'lesson' && getProgress(i.id) >= 100).length;
+  }
+
+  // Количество уроков (без модулей) в массиве
+  function getLessonCount(items) {
+    return items.filter(i => i.type === 'lesson').length;
+  }
+
+  // Собрать все уникальные теги с количеством
+  function getAllTags() {
+    const tags = {};
+    allItems.forEach(item => {
+      (item.tags || []).forEach(tag => {
+        tags[tag] = (tags[tag] || 0) + 1;
+      });
+    });
+    return tags;
+  }
+
+  // Форматирование времени: минуты → "X мин" или "X ч Y мин"
+  function formatTime(minutes) {
+    if (!minutes || minutes <= 0) return '';
+    if (minutes < 60) return minutes + ' мин';
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m > 0 ? h + ' ч ' + m + ' мин' : h + ' ч';
   }
 
   // Рендер боковой панели (sidebar) с подкатегориями (accordion)
@@ -123,16 +320,30 @@
       html += '<span class="sidebar-count">' + categories[cat] + '</span>';
       html += '</div>';
 
-      // Подкатегории (всегда видны)
+      // Подкатегории (всегда видны) с прогрессом и временем
       if (hasSubs) {
         html += '<div class="sidebar-subcategories">';
         subKeys.forEach(sub => {
           const isSubActive = currentCategory === cat && currentSubcategory === sub;
+          const subItems = subs[sub].items;
+          const readCount = getSubcategoryReadCount(subItems);
+          const totalCount = subs[sub].count;
+          const subTime = getSubcategoryReadTime(cat, sub);
+          const timeStr = formatTime(subTime);
+
           html += '<div class="sidebar-subcategory ' + (isSubActive ? 'active' : '') + '" ';
           html += 'onclick="app.filterSubcategory(\'' + escapeJs(cat) + '\', \'' + escapeJs(sub) + '\', this)">';
           html += '<span class="subcategory-bullet">—</span>';
           html += '<span class="subcategory-name">' + escapeHtml(sub) + '</span>';
-          html += '<span class="sidebar-count">' + subs[sub].count + '</span>';
+          const lessonTotal = getLessonCount(subItems);
+          const unreadCount = lessonTotal - readCount;
+          html += '<span class="sidebar-count">';
+          html += '<span style="color:#10b981;">' + totalCount + '</span>';
+          if (lessonTotal > 0 && unreadCount > 0) {
+            html += ' · <span style="color:#f59e0b;font-size:10px;">' + unreadCount + ' не прочит.</span>';
+          }
+          if (timeStr) html += ' · ' + timeStr;
+          html += '</span>';
           html += '</div>';
         });
         html += '</div>';
@@ -156,13 +367,11 @@
     currentCategory = category;
     currentSubcategory = subcategory;
 
-    // Обновить активные состояния
-    document.querySelectorAll('.sidebar-item, .sidebar-subcategory').forEach(i => i.classList.remove('active'));
-    if (el) el.classList.add('active');
-
     // Рендер списка материалов по подкатегории
     renderListBySubcategory(category, subcategory);
-    
+    // Обновить sidebar (счётчики прочитанного)
+    renderSidebar();
+
     // Автосворачивание на мобильных
     if (window.innerWidth < 768) {
       document.body.classList.add('sidebar-collapsed');
@@ -193,10 +402,16 @@
     teardownScrollProgress();
     listEl.classList.remove('content-wide');
 
+    const subTime = getSubcategoryReadTime(category, subcategory);
+    const subTimeStr = formatTime(subTime);
+    const subReadCount = getSubcategoryReadCount(items);
+
     let html = '';
     html += '<div class="section-header">';
     html += '<i data-lucide="' + icon + '" style="width:20px;height:20px;color:#4f46e5;"></i>';
     html += escapeHtml(category) + ' / ' + escapeHtml(subcategory);
+    if (subTimeStr) html += '<span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">≈ ' + subTimeStr + '</span>';
+    if (subReadCount > 0) html += '<span style="font-size:12px;color:#10b981;font-weight:400;margin-left:8px;">' + subReadCount + '/' + items.length + ' прочитано</span>';
     html += '</div>';
 
     html += '<div class="lessons-grid">';
@@ -215,7 +430,7 @@
       html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
       html += doneBadge;
       html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
-      html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+      html += '<i data-lucide="' + getItemIcon(item) + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
       html += '</div>';
       html += '<div class="lesson-info">';
       html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
@@ -288,6 +503,27 @@
     html += 'Все материалы';
     html += '</div>';
 
+    // Облако тегов со сворачиванием (по умолчанию свёрнуто)
+    const allTags = getAllTags();
+    const tagKeys = Object.keys(allTags).sort((a, b) => allTags[b] - allTags[a]);
+    const tagsExpanded = localStorage.getItem('tagsCloudExpanded') === '1';
+    if (tagKeys.length > 0) {
+      html += '<div class="tags-cloud" style="margin-bottom:24px;">';
+      html += '<div class="tags-toggle-btn" onclick="app.toggleTagsCloud()">';
+      html += '<i data-lucide="tags"></i>';
+      html += '<span id="tags-toggle-label">' + (tagsExpanded ? 'Скрыть теги' : 'Показать теги (' + tagKeys.length + ')') + '</span>';
+      html += '<i data-lucide="' + (tagsExpanded ? 'chevron-up' : 'chevron-down') + '" id="tags-toggle-chevron"></i>';
+      html += '</div>';
+      html += '<div id="tags-cloud-body" class="tags-cloud-body' + (tagsExpanded ? '' : ' collapsed') + '" style="display:flex;flex-wrap:wrap;gap:6px;max-height:' + (tagsExpanded ? '500px' : '0') + ';">';
+      tagKeys.forEach(tag => {
+        html += '<span class="tag tag-cloud-item" style="cursor:pointer;padding:4px 10px;font-size:12px;" ';
+        html += 'onclick="event.stopPropagation();app.filterByTag(\'' + escapeJs(tag) + '\')">';
+        html += escapeHtml(tag) + ' <span style="color:#aaa;font-size:10px;">' + allTags[tag] + '</span>';
+        html += '</span>';
+      });
+      html += '</div></div>';
+    }
+
     Object.keys(categories).sort().forEach((cat, catIndex) => {
       const catIcon = categoryIcons[cat] || 'folder';
       const catColor = categoryColors[catIndex % categoryColors.length];
@@ -315,7 +551,7 @@
         html += '<div class="tile-card" data-id="' + escapeHtml(item.id) + '">';
         html += doneBadge;
         html += '<div class="tile-icon" style="background:' + color.bg + ';">';
-        html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+        html += '<i data-lucide="' + getItemIcon(item) + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
         html += '</div>';
         html += '<div class="tile-title">' + escapeHtml(item.title) + '</div>';
         if (item.description) {
@@ -348,10 +584,14 @@
     const catIndex = Object.keys(getCategories()).sort().indexOf(category);
     const catColor = categoryColors[catIndex % categoryColors.length];
 
+    const catTime = getCategoryReadTime(category);
+    const catTimeStr = formatTime(catTime);
+
     let html = '';
     html += '<div class="section-header">';
     html += '<i data-lucide="' + icon + '" style="width:20px;height:20px;color:' + catColor.fg + ';"></i>';
     html += escapeHtml(category);
+    if (catTimeStr) html += '<span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">≈ ' + catTimeStr + '</span>';
     html += '</div>';
 
     subKeys.forEach(sub => {
@@ -379,7 +619,7 @@
         html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
         html += doneBadge;
         html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
-        html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+        html += '<i data-lucide="' + getItemIcon(item) + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
         html += '</div>';
         html += '<div class="lesson-info">';
         html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
@@ -416,9 +656,16 @@
     const pageEl = document.getElementById('content-page');
     let html = '';
 
-    // Навигация "назад"
-    html += '<div class="breadcrumb" onclick="app.showList()">';
-    html += '<i data-lucide="arrow-left" style="width:14px;height:14px;"></i> \u0412\u0441\u0435 \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b';
+    // Навигация "назад" — в подкатегорию/категорию откуда пришли
+    let backLabel = 'Все материалы';
+    let backAction = 'app.goBack()';
+    if (currentSubcategory) {
+      backLabel = currentSubcategory;
+    } else if (currentCategory && currentCategory !== 'all') {
+      backLabel = currentCategory;
+    }
+    html += '<div class="breadcrumb" onclick="' + backAction + '">';
+    html += '<i data-lucide="arrow-left" style="width:14px;height:14px;"></i> ' + escapeHtml(backLabel);
     html += '</div>';
 
     // Заголовок и теги
@@ -466,22 +713,35 @@
     const sidebarItem = document.querySelector('.sidebar-lesson[data-id="' + id + '"]');
     if (sidebarItem) sidebarItem.classList.add('active');
 
-    // Привязать лайтбокс к картинкам урока
-    if (item.type === 'lesson') attachLightbox();
+    // Привязать лайтбокс к картинкам и перехват ссылок на уроки
+    if (item.type === 'lesson') {
+      attachLightbox();
+      attachLessonLinks();
+    }
 
     lucide.createIcons();
 
     // Запустить отслеживание прогресса скролла и восстановить позицию
+    // Логика: (1) не дочитал → восстановить позицию
+    //         (2) дочитал → в начало
+    //         (3) не начинал → в начало
     if (item.type === 'lesson') {
+      const progress = getProgress(id);
+      // ВАЖНО: читаем savedScrollPos ДО setupScrollProgress (он вызывает onScroll и обнуляет)
       const savedScrollPos = parseInt(localStorage.getItem('scrollPos_' + id) || '0', 10);
       setupScrollProgress(id);
-      if (savedScrollPos > 0) {
-        // Двойной rAF — ждём полного layout перед прокруткой
-        requestAnimationFrame(function() {
+      if (progress > 0 && progress < 100) {
+        // Не дочитал — восстановить позицию
+        if (savedScrollPos > 0) {
           requestAnimationFrame(function() {
-            window.scrollTo({ top: savedScrollPos, behavior: 'instant' });
+            requestAnimationFrame(function() {
+              window.scrollTo({ top: savedScrollPos, behavior: 'instant' });
+            });
           });
-        });
+        }
+      } else {
+        // Дочитал или не начинал — в начало
+        window.scrollTo({ top: 0, behavior: 'instant' });
       }
     }
 
@@ -495,10 +755,10 @@
   function filterCategory(category, el) {
     currentCategory = category;
     currentSubcategory = null;
-    document.querySelectorAll('.sidebar-item, .sidebar-subcategory').forEach(i => i.classList.remove('active'));
-    if (el) el.classList.add('active');
     renderList(category);
-    
+    // Обновить sidebar (счётчики прочитанного)
+    renderSidebar();
+
     // Автосворачивание на мобильных
     if (window.innerWidth < 768) {
       document.body.classList.add('sidebar-collapsed');
@@ -508,6 +768,24 @@
   // Вернуться к списку материалов
   function showList() {
     renderList(currentCategory);
+    renderSidebar();
+    renderGamificationBadges();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  // Кнопка «назад» — в подкатегорию/категорию + скролл вверх
+  function goBack() {
+    if (currentSubcategory) {
+      renderListBySubcategory(currentCategory, currentSubcategory);
+    } else if (currentCategory && currentCategory !== 'all') {
+      renderList(currentCategory);
+    } else {
+      renderList('all');
+    }
+    // Обновить sidebar и бейджи (счётчики прочитанного)
+    renderSidebar();
+    renderGamificationBadges();
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   // Экранирование HTML-символов для защиты от XSS
@@ -571,6 +849,41 @@
     if (lightboxIndex < lightboxImages.length - 1) openLightbox(lightboxIndex + 1);
   }
 
+  // Перехват ссылок на другие уроки внутри .md-body
+  // Поддерживает: href="lessons/имя.md", href="lesson:id", href="#lesson:id"
+  function attachLessonLinks() {
+    var links = document.querySelectorAll('.md-body a');
+    links.forEach(function(link) {
+      var href = link.getAttribute('href') || '';
+      var target = null;
+
+      // Формат: lessons/имя-файла.md — ищем по полю file напрямую
+      if (href.match(/^lessons\//i)) {
+        // Нормализуем пробелы/подчёркивания → дефисы в href для сравнения
+        var normalized = href.replace(/[_ ]/g, '-');
+        target = allItems.find(function(i) {
+          if (!i.file) return false;
+          // Сравниваем нормализованные пути (без toLowerCase — кириллица не теряется)
+          var itemFile = i.file.replace(/[_ ]/g, '-');
+          return itemFile === normalized || itemFile === href;
+        });
+      }
+      // Формат: lesson:id или #lesson:id — прямой поиск по id
+      else if (href.match(/^#?lesson:/i)) {
+        var lessonId = href.replace(/^#?lesson:/i, '');
+        target = allItems.find(function(i) { return i.id === lessonId; });
+      }
+
+      if (target) {
+        link.style.cursor = 'pointer';
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          app.openItem(target.id);
+        });
+      }
+    });
+  }
+
   // Привязать лайтбокс к картинкам внутри .md-body
   function attachLightbox() {
     const imgs = document.querySelectorAll('.md-body img');
@@ -600,9 +913,11 @@
     return parseInt(localStorage.getItem('progress_' + id) || '0', 10);
   }
 
-  // Сохранить прогресс чтения
+  // Сохранить прогресс чтения (никогда не понижать — прочитано = навсегда)
   function saveProgress(id, percent) {
-    localStorage.setItem('progress_' + id, Math.round(percent));
+    const current = parseInt(localStorage.getItem('progress_' + id) || '0', 10);
+    const newVal = Math.max(current, Math.round(percent));
+    localStorage.setItem('progress_' + id, newVal);
   }
 
   // Получить время чтения: сначала из localStorage, затем из каталога
@@ -763,6 +1078,96 @@
     });
   }
 
+  // Свернуть/развернуть облако тегов с анимацией
+  function toggleTagsCloud() {
+    var body = document.getElementById('tags-cloud-body');
+    var label = document.getElementById('tags-toggle-label');
+    var chevron = document.getElementById('tags-toggle-chevron');
+    if (!body) return;
+    var isCollapsed = body.classList.contains('collapsed');
+    if (isCollapsed) {
+      // Раскрыть
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.classList.remove('collapsed');
+      localStorage.setItem('tagsCloudExpanded', '1');
+      if (label) label.textContent = 'Скрыть теги';
+      if (chevron) { chevron.setAttribute('data-lucide', 'chevron-up'); lucide.createIcons(); }
+    } else {
+      // Свернуть
+      body.style.maxHeight = '0';
+      body.classList.add('collapsed');
+      localStorage.setItem('tagsCloudExpanded', '0');
+      var tagCount = body.querySelectorAll('.tag-cloud-item').length;
+      if (label) label.textContent = 'Показать теги (' + tagCount + ')';
+      if (chevron) { chevron.setAttribute('data-lucide', 'chevron-down'); lucide.createIcons(); }
+    }
+  }
+
+  // Фильтрация по тегу (из облака тегов)
+  function filterByTag(tag) {
+    var results = allItems.filter(function(item) {
+      return (item.tags || []).some(function(t) { return t === tag; });
+    });
+
+    var listEl = document.getElementById('content-list');
+    var innerEl = document.getElementById('content-list-inner');
+    listEl.classList.remove('content-wide');
+    teardownScrollProgress();
+
+    var html = '';
+    html += '<div class="section-header">';
+    html += '<i data-lucide="tag" style="width:20px;height:20px;color:#4f46e5;"></i>';
+    html += 'Тег: ' + escapeHtml(tag);
+    html += '<span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">' + results.length + ' материалов</span>';
+    html += '</div>';
+
+    html += '<div class="lessons-grid">';
+    results.forEach(function(item, i) {
+      var color = categoryColors[i % categoryColors.length];
+      var progress = getProgress(item.id);
+      var readTime = getReadTime(item.id);
+      var typeTag = item.type === 'module'
+        ? '<span class="tag tag-type interactive">интерактив</span>'
+        : '<span class="tag tag-type">урок</span>';
+      var timeTag = (item.type === 'lesson' && readTime)
+        ? '<span class="tag tag-time">≈ ' + readTime + ' мин</span>' : '';
+      var doneBadge = progress >= 100
+        ? '<i data-lucide="check-circle" class="card-done-badge"></i>' : '';
+
+      html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
+      html += doneBadge;
+      html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
+      html += '<i data-lucide="' + getItemIcon(item) + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+      html += '</div>';
+      html += '<div class="lesson-info">';
+      html += '<div class="lesson-title">' + escapeHtml(item.title) + '</div>';
+      if (item.description) {
+        html += '<div class="lesson-desc">' + escapeHtml(item.description) + '</div>';
+      }
+      html += '<div class="lesson-tags-row">' + typeTag + timeTag;
+      (item.tags || []).forEach(function(t) {
+        var cls = t === tag ? 'tag' : 'tag';
+        var style = t === tag ? ' style="background:#e0e7ff;color:#4f46e5;font-weight:600;"' : '';
+        html += '<span class="' + cls + '"' + style + '>' + escapeHtml(t) + '</span>';
+      });
+      html += '</div>';
+      html += buildCardProgress(item.id, progress);
+      html += '</div></div>';
+    });
+    html += '</div>';
+
+    innerEl.innerHTML = html;
+    listEl.style.display = 'block';
+    document.getElementById('content-page').style.display = 'none';
+    currentItem = null;
+
+    innerEl.querySelectorAll('.lesson-card').forEach(function(el) {
+      el.addEventListener('click', function() { app.openItem(el.dataset.id); });
+    });
+
+    lucide.createIcons();
+  }
+
   // Очистить поиск
   function clearSearch() {
     searchQuery = '';
@@ -829,7 +1234,7 @@
         html += '<div class="lesson-card" data-id="' + escapeHtml(item.id) + '">';
         html += doneBadge;
         html += '<div class="lesson-icon" style="background:' + color.bg + ';">';
-        html += '<i data-lucide="' + (categoryIcons[item.category] || 'file') + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
+        html += '<i data-lucide="' + getItemIcon(item) + '" style="width:20px;height:20px;color:' + color.fg + ';"></i>';
         html += '</div>';
         html += '<div class="lesson-info">';
         html += '<div class="lesson-title">' + highlightMatch(item.title, query) + '</div>';
@@ -861,8 +1266,9 @@
 
   // Публичный API для вызова из onclick-обработчиков
   window.app = {
-    openItem, filterCategory, filterSubcategory, showList, toggleSidebar,
-    closeLightbox, lightboxPrev, lightboxNext, clearSearch,
+    openItem, filterCategory, filterSubcategory, showList, goBack, toggleSidebar,
+    closeLightbox, lightboxPrev, lightboxNext, clearSearch, filterByTag, toggleTagsCloud,
+    toggleGamPopup,
   };
 
   // Запуск приложения
