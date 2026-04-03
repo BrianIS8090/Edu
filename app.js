@@ -855,29 +855,31 @@
     var links = document.querySelectorAll('.md-body a');
     links.forEach(function(link) {
       var href = link.getAttribute('href') || '';
-      var lessonId = null;
+      var target = null;
 
-      // Формат: lessons/имя-файла.md
+      // Формат: lessons/имя-файла.md — ищем по полю file напрямую
       if (href.match(/^lessons\//i)) {
-        var filename = href.replace(/^lessons\//i, '').replace(/\.md$/i, '');
-        // Нормализация: пробелы/подчёркивания → дефисы, нижний регистр
-        lessonId = filename.replace(/[_ ]/g, '-').toLowerCase();
+        // Нормализуем пробелы/подчёркивания → дефисы в href для сравнения
+        var normalized = href.replace(/[_ ]/g, '-');
+        target = allItems.find(function(i) {
+          if (!i.file) return false;
+          // Сравниваем нормализованные пути (без toLowerCase — кириллица не теряется)
+          var itemFile = i.file.replace(/[_ ]/g, '-');
+          return itemFile === normalized || itemFile === href;
+        });
       }
-      // Формат: lesson:id или #lesson:id
+      // Формат: lesson:id или #lesson:id — прямой поиск по id
       else if (href.match(/^#?lesson:/i)) {
-        lessonId = href.replace(/^#?lesson:/i, '');
+        var lessonId = href.replace(/^#?lesson:/i, '');
+        target = allItems.find(function(i) { return i.id === lessonId; });
       }
 
-      if (lessonId) {
-        // Проверяем, существует ли такой урок
-        var target = allItems.find(function(i) { return i.id === lessonId; });
-        if (target) {
-          link.style.cursor = 'pointer';
-          link.addEventListener('click', function(e) {
-            e.preventDefault();
-            app.openItem(lessonId);
-          });
-        }
+      if (target) {
+        link.style.cursor = 'pointer';
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          app.openItem(target.id);
+        });
       }
     });
   }
