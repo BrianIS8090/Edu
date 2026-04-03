@@ -41,6 +41,153 @@
     'Без категории': 'folder',
   };
 
+  // ─── ГЕЙМИФИКАЦИЯ ──────────────────────────────────────────────────────────
+
+  // Конфиг треков с уровнями
+  const gamificationTracks = [
+    {
+      id: 'projects',
+      category: 'Проекты',
+      icon: 'wrench',
+      color: '#4f46e5',
+      levels: [
+        { name: 'Новичок', icon: 'sprout', min: 0 },
+        { name: 'Стажёр', icon: 'star', min: 20 },
+        { name: 'Специалист', icon: 'award', min: 40 },
+        { name: 'Профессионал', icon: 'trophy', min: 60 },
+        { name: 'Мастер', icon: 'crown', min: 80 },
+      ],
+    },
+    {
+      id: 'sales',
+      category: 'Продажи',
+      icon: 'handshake',
+      color: '#059669',
+      levels: [
+        { name: 'Новичок', icon: 'sprout', min: 0 },
+        { name: 'Консультант', icon: 'star', min: 20 },
+        { name: 'Менеджер', icon: 'award', min: 40 },
+        { name: 'Эксперт', icon: 'trophy', min: 60 },
+        { name: 'Лидер продаж', icon: 'crown', min: 80 },
+      ],
+    },
+  ];
+
+  // Подсчёт прогресса по треку (только уроки)
+  function calculateTrackProgress(category) {
+    var lessons = allItems.filter(function(i) { return i.category === category && i.type === 'lesson'; });
+    var total = lessons.length;
+    var read = lessons.filter(function(i) { return getProgress(i.id) >= 100; }).length;
+    var percent = total > 0 ? Math.round((read / total) * 100) : 0;
+    return { total: total, read: read, percent: percent };
+  }
+
+  // Определить текущий уровень по проценту
+  function getLevel(track, percent) {
+    var level = track.levels[0];
+    var levelIndex = 0;
+    for (var i = track.levels.length - 1; i >= 0; i--) {
+      if (percent >= track.levels[i].min) {
+        level = track.levels[i];
+        levelIndex = i;
+        break;
+      }
+    }
+    var nextLevel = levelIndex < track.levels.length - 1 ? track.levels[levelIndex + 1] : null;
+    return { current: level, next: nextLevel, index: levelIndex };
+  }
+
+  // Рендер бейджей геймификации в хедере
+  function renderGamificationBadges() {
+    var container = document.getElementById('gamification-badges');
+    if (!container) return;
+
+    var html = '';
+    gamificationTracks.forEach(function(track) {
+      var progress = calculateTrackProgress(track.category);
+      var levelInfo = getLevel(track, progress.percent);
+
+      html += '<div class="gam-badge" onclick="event.stopPropagation();app.toggleGamPopup(\'' + track.id + '\')">';
+      html += '<i data-lucide="' + levelInfo.current.icon + '" style="width:16px;height:16px;color:' + track.color + ';"></i>';
+      html += '<span style="color:' + track.color + ';">Lv' + (levelInfo.index + 1) + '</span>';
+      html += '</div>';
+    });
+
+    container.innerHTML = html;
+    lucide.createIcons();
+  }
+
+  // Показать/скрыть попап уровня
+  function toggleGamPopup(trackId) {
+    var existing = document.getElementById('gam-popup');
+    if (existing && existing.dataset.track === trackId) {
+      existing.remove();
+      return;
+    }
+    if (existing) existing.remove();
+
+    var track = gamificationTracks.find(function(t) { return t.id === trackId; });
+    if (!track) return;
+
+    var progress = calculateTrackProgress(track.category);
+    var levelInfo = getLevel(track, progress.percent);
+
+    var html = '<div class="gam-popup" id="gam-popup" data-track="' + trackId + '">';
+    html += '<div class="gam-popup-header">';
+    html += '<i data-lucide="' + track.icon + '" style="width:20px;height:20px;color:' + track.color + ';"></i>';
+    html += '<span>' + escapeHtml(track.category) + '</span>';
+    html += '</div>';
+
+    html += '<div class="gam-popup-level">';
+    html += '<i data-lucide="' + levelInfo.current.icon + '" style="width:28px;height:28px;color:' + track.color + ';"></i>';
+    html += '<div>';
+    html += '<div class="gam-level-name">' + escapeHtml(levelInfo.current.name) + '</div>';
+    html += '<div class="gam-level-sub">Уровень ' + (levelInfo.index + 1) + ' из ' + track.levels.length + '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="gam-popup-progress">';
+    html += '<div class="gam-progress-bar"><div class="gam-progress-fill" style="width:' + progress.percent + '%;background:' + track.color + ';"></div></div>';
+    html += '<div class="gam-progress-text">' + progress.read + ' / ' + progress.total + ' уроков прочитано · ' + progress.percent + '%</div>';
+    html += '</div>';
+
+    if (levelInfo.next) {
+      var remaining = levelInfo.next.min - progress.percent;
+      html += '<div class="gam-popup-next">';
+      html += '<i data-lucide="' + levelInfo.next.icon + '" style="width:14px;height:14px;color:#aaa;"></i>';
+      html += ' Следующий: <strong>' + escapeHtml(levelInfo.next.name) + '</strong> (ещё ' + remaining + '%)';
+      html += '</div>';
+    } else {
+      html += '<div class="gam-popup-next" style="color:#10b981;">';
+      html += '<i data-lucide="check-circle" style="width:14px;height:14px;"></i> Максимальный уровень!';
+      html += '</div>';
+    }
+
+    html += '</div>';
+
+    // Вставить попап внутрь бейджа
+    var badge = document.querySelector('.gam-badge[onclick*="' + trackId + '"]');
+    if (badge) {
+      badge.style.position = 'relative';
+      badge.insertAdjacentHTML('beforeend', html);
+    }
+    lucide.createIcons();
+
+    // Закрытие по клику вне попапа
+    setTimeout(function() {
+      document.addEventListener('click', closeGamPopupOutside);
+    }, 10);
+  }
+
+  // Закрыть попап при клике вне
+  function closeGamPopupOutside(e) {
+    var popup = document.getElementById('gam-popup');
+    if (popup && !popup.contains(e.target) && !e.target.closest('.gam-badge')) {
+      popup.remove();
+      document.removeEventListener('click', closeGamPopupOutside);
+    }
+  }
+
   // Инициализация приложения
   async function init() {
     if (window.innerWidth < 768) {
@@ -57,6 +204,7 @@
       renderSidebar();
       renderList();
       updateBanner();
+      renderGamificationBadges();
       lucide.createIcons();
     } catch (err) {
       document.getElementById('content-list-inner').innerHTML =
@@ -621,6 +769,7 @@
   function showList() {
     renderList(currentCategory);
     renderSidebar();
+    renderGamificationBadges();
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -633,8 +782,9 @@
     } else {
       renderList('all');
     }
-    // Обновить sidebar (счётчики прочитанного)
+    // Обновить sidebar и бейджи (счётчики прочитанного)
     renderSidebar();
+    renderGamificationBadges();
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -1116,6 +1266,7 @@
   window.app = {
     openItem, filterCategory, filterSubcategory, showList, goBack, toggleSidebar,
     closeLightbox, lightboxPrev, lightboxNext, clearSearch, filterByTag, toggleTagsCloud,
+    toggleGamPopup,
   };
 
   // Запуск приложения
