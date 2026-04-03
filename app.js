@@ -182,11 +182,12 @@
           html += 'onclick="app.filterSubcategory(\'' + escapeJs(cat) + '\', \'' + escapeJs(sub) + '\', this)">';
           html += '<span class="subcategory-bullet">—</span>';
           html += '<span class="subcategory-name">' + escapeHtml(sub) + '</span>';
+          const unreadCount = totalCount - readCount;
           html += '<span class="sidebar-count">';
-          if (readCount > 0) {
-            html += '<span style="color:#10b981;">' + readCount + '</span>/';
+          html += '<span style="color:#10b981;">' + totalCount + '</span>';
+          if (unreadCount > 0) {
+            html += ' · <span style="color:#f59e0b;font-size:10px;">' + unreadCount + ' не прочит.</span>';
           }
-          html += totalCount;
           if (timeStr) html += ' · ' + timeStr;
           html += '</span>';
           html += '</div>';
@@ -350,17 +351,20 @@
     html += 'Все материалы';
     html += '</div>';
 
-    // Облако тегов
+    // Облако тегов со сворачиванием
     const allTags = getAllTags();
     const tagKeys = Object.keys(allTags).sort((a, b) => allTags[b] - allTags[a]);
+    const tagsCollapsed = localStorage.getItem('tagsCloudCollapsed') === '1';
     if (tagKeys.length > 0) {
       html += '<div class="tags-cloud" style="margin-bottom:24px;">';
-      html += '<div style="font-size:12px;color:#888;margin-bottom:8px;display:flex;align-items:center;gap:6px;">';
-      html += '<i data-lucide="tags" style="width:14px;height:14px;"></i> Теги</div>';
-      html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+      html += '<div style="font-size:12px;color:#888;margin-bottom:8px;display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="app.toggleTagsCloud()">';
+      html += '<i data-lucide="tags" style="width:14px;height:14px;"></i> Теги';
+      html += '<i data-lucide="' + (tagsCollapsed ? 'chevron-down' : 'chevron-up') + '" style="width:12px;height:12px;margin-left:auto;"></i>';
+      html += '</div>';
+      html += '<div id="tags-cloud-body" style="display:flex;flex-wrap:wrap;gap:6px;' + (tagsCollapsed ? 'display:none;' : '') + '">';
       tagKeys.forEach(tag => {
         html += '<span class="tag tag-cloud-item" style="cursor:pointer;padding:4px 10px;font-size:12px;" ';
-        html += 'onclick="app.filterByTag(\'' + escapeJs(tag) + '\')">';
+        html += 'onclick="event.stopPropagation();app.filterByTag(\'' + escapeJs(tag) + '\')">';
         html += escapeHtml(tag) + ' <span style="color:#aaa;font-size:10px;">' + allTags[tag] + '</span>';
         html += '</span>';
       });
@@ -570,10 +574,11 @@
     //         (3) не начинал → в начало
     if (item.type === 'lesson') {
       const progress = getProgress(id);
+      // ВАЖНО: читаем savedScrollPos ДО setupScrollProgress (он вызывает onScroll и обнуляет)
+      const savedScrollPos = parseInt(localStorage.getItem('scrollPos_' + id) || '0', 10);
       setupScrollProgress(id);
       if (progress > 0 && progress < 100) {
         // Не дочитал — восстановить позицию
-        const savedScrollPos = parseInt(localStorage.getItem('scrollPos_' + id) || '0', 10);
         if (savedScrollPos > 0) {
           requestAnimationFrame(function() {
             requestAnimationFrame(function() {
@@ -748,9 +753,11 @@
     return parseInt(localStorage.getItem('progress_' + id) || '0', 10);
   }
 
-  // Сохранить прогресс чтения
+  // Сохранить прогресс чтения (никогда не понижать — прочитано = навсегда)
   function saveProgress(id, percent) {
-    localStorage.setItem('progress_' + id, Math.round(percent));
+    const current = parseInt(localStorage.getItem('progress_' + id) || '0', 10);
+    const newVal = Math.max(current, Math.round(percent));
+    localStorage.setItem('progress_' + id, newVal);
   }
 
   // Получить время чтения: сначала из localStorage, затем из каталога
@@ -909,6 +916,24 @@
     input.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') app.clearSearch();
     });
+  }
+
+  // Свернуть/развернуть облако тегов
+  function toggleTagsCloud() {
+    var body = document.getElementById('tags-cloud-body');
+    if (!body) return;
+    var collapsed = body.style.display === 'none';
+    body.style.display = collapsed ? 'flex' : 'none';
+    localStorage.setItem('tagsCloudCollapsed', collapsed ? '0' : '1');
+    // Обновить иконку chevron
+    var header = body.previousElementSibling;
+    if (header) {
+      var icon = header.querySelector('[data-lucide]');
+      if (icon && icon !== header.querySelector('[data-lucide="tags"]')) {
+        icon.setAttribute('data-lucide', collapsed ? 'chevron-up' : 'chevron-down');
+        lucide.createIcons();
+      }
+    }
   }
 
   // Фильтрация по тегу (из облака тегов)
@@ -1075,7 +1100,7 @@
   // Публичный API для вызова из onclick-обработчиков
   window.app = {
     openItem, filterCategory, filterSubcategory, showList, goBack, toggleSidebar,
-    closeLightbox, lightboxPrev, lightboxNext, clearSearch, filterByTag,
+    closeLightbox, lightboxPrev, lightboxNext, clearSearch, filterByTag, toggleTagsCloud,
   };
 
   // Запуск приложения
