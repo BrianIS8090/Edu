@@ -591,6 +591,21 @@
 
       /* Перенос длинных ссылок */
       .md-body a { word-break: break-word !important; overflow-wrap: break-word !important; display: inline !important; }
+
+      /* Плавающая кнопка возврата — fixed внизу экрана */
+      .breadcrumb {
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 50% !important;
+        top: auto !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        z-index: 12 !important;
+        padding: 10px 20px !important;
+        font-size: 14px !important;
+        border-radius: 24px !important;
+        box-shadow: 0 4px 20px rgba(79,70,229,0.25) !important;
+      }
     }
   </style>
 </head>
