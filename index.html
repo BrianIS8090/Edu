@@ -431,6 +431,28 @@
     /* Облако тегов — ховер */
     .tag-cloud-item:hover { background: #e0e7ff !important; color: #4f46e5 !important; }
 
+    /* Облако тегов — анимация сворачивания */
+    .tags-cloud-body {
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+      opacity: 1;
+    }
+    .tags-cloud-body.collapsed {
+      max-height: 0 !important;
+      opacity: 0;
+    }
+    /* Кнопка переключения облака тегов */
+    .tags-toggle-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 8px;
+      font-size: 12px; font-weight: 500; color: #4f46e5;
+      background: #f0f0ff; border: 1px solid #e0e7ff;
+      cursor: pointer; transition: all 0.15s;
+      margin-bottom: 10px;
+    }
+    .tags-toggle-btn:hover { background: #e0e7ff; border-color: #c7d2fe; }
+    .tags-toggle-btn i { width: 14px; height: 14px; }
+
     /* Состояние загрузки */
 
     .loading {

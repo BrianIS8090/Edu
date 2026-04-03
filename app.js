@@ -109,9 +109,14 @@
     return item.type === 'module' ? 'blocks' : 'file-text';
   }
 
-  // Количество прочитанных статей в подкатегории
+  // Количество прочитанных статей в подкатегории (только уроки, не интерактивы)
   function getSubcategoryReadCount(items) {
-    return items.filter(i => getProgress(i.id) >= 100).length;
+    return items.filter(i => i.type === 'lesson' && getProgress(i.id) >= 100).length;
+  }
+
+  // Количество уроков (без модулей) в массиве
+  function getLessonCount(items) {
+    return items.filter(i => i.type === 'lesson').length;
   }
 
   // Собрать все уникальные теги с количеством
@@ -182,10 +187,11 @@
           html += 'onclick="app.filterSubcategory(\'' + escapeJs(cat) + '\', \'' + escapeJs(sub) + '\', this)">';
           html += '<span class="subcategory-bullet">—</span>';
           html += '<span class="subcategory-name">' + escapeHtml(sub) + '</span>';
-          const unreadCount = totalCount - readCount;
+          const lessonTotal = getLessonCount(subItems);
+          const unreadCount = lessonTotal - readCount;
           html += '<span class="sidebar-count">';
           html += '<span style="color:#10b981;">' + totalCount + '</span>';
-          if (unreadCount > 0) {
+          if (lessonTotal > 0 && unreadCount > 0) {
             html += ' · <span style="color:#f59e0b;font-size:10px;">' + unreadCount + ' не прочит.</span>';
           }
           if (timeStr) html += ' · ' + timeStr;
@@ -213,13 +219,11 @@
     currentCategory = category;
     currentSubcategory = subcategory;
 
-    // Обновить активные состояния
-    document.querySelectorAll('.sidebar-item, .sidebar-subcategory').forEach(i => i.classList.remove('active'));
-    if (el) el.classList.add('active');
-
     // Рендер списка материалов по подкатегории
     renderListBySubcategory(category, subcategory);
-    
+    // Обновить sidebar (счётчики прочитанного)
+    renderSidebar();
+
     // Автосворачивание на мобильных
     if (window.innerWidth < 768) {
       document.body.classList.add('sidebar-collapsed');
@@ -351,17 +355,18 @@
     html += 'Все материалы';
     html += '</div>';
 
-    // Облако тегов со сворачиванием
+    // Облако тегов со сворачиванием (по умолчанию свёрнуто)
     const allTags = getAllTags();
     const tagKeys = Object.keys(allTags).sort((a, b) => allTags[b] - allTags[a]);
-    const tagsCollapsed = localStorage.getItem('tagsCloudCollapsed') === '1';
+    const tagsExpanded = localStorage.getItem('tagsCloudExpanded') === '1';
     if (tagKeys.length > 0) {
       html += '<div class="tags-cloud" style="margin-bottom:24px;">';
-      html += '<div style="font-size:12px;color:#888;margin-bottom:8px;display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="app.toggleTagsCloud()">';
-      html += '<i data-lucide="tags" style="width:14px;height:14px;"></i> Теги';
-      html += '<i data-lucide="' + (tagsCollapsed ? 'chevron-down' : 'chevron-up') + '" style="width:12px;height:12px;margin-left:auto;"></i>';
+      html += '<div class="tags-toggle-btn" onclick="app.toggleTagsCloud()">';
+      html += '<i data-lucide="tags"></i>';
+      html += '<span id="tags-toggle-label">' + (tagsExpanded ? 'Скрыть теги' : 'Показать теги (' + tagKeys.length + ')') + '</span>';
+      html += '<i data-lucide="' + (tagsExpanded ? 'chevron-up' : 'chevron-down') + '" id="tags-toggle-chevron"></i>';
       html += '</div>';
-      html += '<div id="tags-cloud-body" style="display:flex;flex-wrap:wrap;gap:6px;' + (tagsCollapsed ? 'display:none;' : '') + '">';
+      html += '<div id="tags-cloud-body" class="tags-cloud-body' + (tagsExpanded ? '' : ' collapsed') + '" style="display:flex;flex-wrap:wrap;gap:6px;max-height:' + (tagsExpanded ? '500px' : '0') + ';">';
       tagKeys.forEach(tag => {
         html += '<span class="tag tag-cloud-item" style="cursor:pointer;padding:4px 10px;font-size:12px;" ';
         html += 'onclick="event.stopPropagation();app.filterByTag(\'' + escapeJs(tag) + '\')">';
@@ -602,10 +607,10 @@
   function filterCategory(category, el) {
     currentCategory = category;
     currentSubcategory = null;
-    document.querySelectorAll('.sidebar-item, .sidebar-subcategory').forEach(i => i.classList.remove('active'));
-    if (el) el.classList.add('active');
     renderList(category);
-    
+    // Обновить sidebar (счётчики прочитанного)
+    renderSidebar();
+
     // Автосворачивание на мобильных
     if (window.innerWidth < 768) {
       document.body.classList.add('sidebar-collapsed');
@@ -615,6 +620,7 @@
   // Вернуться к списку материалов
   function showList() {
     renderList(currentCategory);
+    renderSidebar();
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -627,6 +633,8 @@
     } else {
       renderList('all');
     }
+    // Обновить sidebar (счётчики прочитанного)
+    renderSidebar();
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -918,21 +926,28 @@
     });
   }
 
-  // Свернуть/развернуть облако тегов
+  // Свернуть/развернуть облако тегов с анимацией
   function toggleTagsCloud() {
     var body = document.getElementById('tags-cloud-body');
+    var label = document.getElementById('tags-toggle-label');
+    var chevron = document.getElementById('tags-toggle-chevron');
     if (!body) return;
-    var collapsed = body.style.display === 'none';
-    body.style.display = collapsed ? 'flex' : 'none';
-    localStorage.setItem('tagsCloudCollapsed', collapsed ? '0' : '1');
-    // Обновить иконку chevron
-    var header = body.previousElementSibling;
-    if (header) {
-      var icon = header.querySelector('[data-lucide]');
-      if (icon && icon !== header.querySelector('[data-lucide="tags"]')) {
-        icon.setAttribute('data-lucide', collapsed ? 'chevron-up' : 'chevron-down');
-        lucide.createIcons();
-      }
+    var isCollapsed = body.classList.contains('collapsed');
+    if (isCollapsed) {
+      // Раскрыть
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.classList.remove('collapsed');
+      localStorage.setItem('tagsCloudExpanded', '1');
+      if (label) label.textContent = 'Скрыть теги';
+      if (chevron) { chevron.setAttribute('data-lucide', 'chevron-up'); lucide.createIcons(); }
+    } else {
+      // Свернуть
+      body.style.maxHeight = '0';
+      body.classList.add('collapsed');
+      localStorage.setItem('tagsCloudExpanded', '0');
+      var tagCount = body.querySelectorAll('.tag-cloud-item').length;
+      if (label) label.textContent = 'Показать теги (' + tagCount + ')';
+      if (chevron) { chevron.setAttribute('data-lucide', 'chevron-down'); lucide.createIcons(); }
     }
   }
 
