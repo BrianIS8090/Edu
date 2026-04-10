@@ -855,6 +855,8 @@
     var links = document.querySelectorAll('.md-body a');
     links.forEach(function(link) {
       var href = link.getAttribute('href') || '';
+      // Декодируем percent-encoded кириллицу (marked.js кодирует URL через encodeURI)
+      try { href = decodeURIComponent(href); } catch(e) {}
       var target = null;
 
       // Формат: lessons/имя-файла.md — ищем по полю file напрямую
