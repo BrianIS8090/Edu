@@ -60,7 +60,8 @@
     lightboxClose: document.getElementById('lightboxClose'),
     lightboxPrev: document.getElementById('lightboxPrev'),
     lightboxNext: document.getElementById('lightboxNext'),
-    lightboxCounter: document.getElementById('lightboxCounter')
+    lightboxCounter: document.getElementById('lightboxCounter'),
+    themeToggle: document.getElementById('themeToggle')
   };
 
   let allItems = [];
@@ -308,6 +309,26 @@
         moveLightbox(1);
       }
     });
+
+    els.themeToggle.addEventListener('click', toggleTheme);
+    updateThemeIcon();
+  }
+
+  function toggleTheme() {
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var newTheme = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon();
+  }
+
+  function updateThemeIcon() {
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var icon = els.themeToggle.querySelector('i');
+    if (icon) {
+      icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+      lucide.createIcons();
+    }
   }
 
   async function render() {
