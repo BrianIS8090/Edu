@@ -16,6 +16,9 @@
   let searchQuery = '';
   let searchDebounceTimer = null;
 
+  // Позиция скролла списка до открытия урока
+  let savedListScrollPos = 0;
+
   // Цвета для иконок категорий (8 цветов для 8 категорий)
   const categoryColors = [
     { bg: '#e0e7ff', fg: '#4f46e5' },
@@ -650,6 +653,9 @@
     const item = allItems.find(i => i.id === id);
     if (!item) return;
 
+    // Запомнить позицию скролла списка перед переходом в урок
+    savedListScrollPos = window.scrollY || 0;
+
     currentItem = item;
     teardownScrollProgress();
 
@@ -773,7 +779,7 @@
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // Кнопка «назад» — в подкатегорию/категорию + скролл вверх
+  // Кнопка «назад» — в подкатегорию/категорию и восстановить позицию скролла
   function goBack() {
     if (currentSubcategory) {
       renderListBySubcategory(currentCategory, currentSubcategory);
@@ -785,7 +791,11 @@
     // Обновить sidebar и бейджи (счётчики прочитанного)
     renderSidebar();
     renderGamificationBadges();
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    // Восстановить позицию скролла в списке
+    var pos = savedListScrollPos;
+    requestAnimationFrame(function() {
+      window.scrollTo({ top: pos, behavior: 'instant' });
+    });
   }
 
   // Экранирование HTML-символов для защиты от XSS
