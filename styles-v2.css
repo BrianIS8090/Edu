@@ -401,6 +401,7 @@ body.has-query .clear-btn {
 
 .main-shell {
   width: 100%;
+  min-width: 0;
   margin-left: var(--sidebar-width);
   transition: margin-left 0.2s ease;
 }
@@ -491,6 +492,16 @@ body.sidebar-collapsed .main-shell {
   background: transparent;
   color: var(--text-secondary);
   transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.view-btn i {
+  display: none;
+  width: 16px;
+  height: 16px;
 }
 
 .view-btn.is-active {
@@ -521,7 +532,9 @@ body.sidebar-collapsed .main-shell {
 .view-root {
   height: calc(100vh - var(--topbar-height) - 3px);
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 28px;
+  min-width: 0;
 }
 
 .page-frame,
@@ -856,6 +869,9 @@ body.sidebar-collapsed .main-shell {
   margin: 0;
   font-size: clamp(30px, 3vw, 44px);
   line-height: 1.06;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .detail-meta {
@@ -911,6 +927,9 @@ body.sidebar-collapsed .main-shell {
   color: var(--text-secondary);
   font-size: 16px;
   line-height: 1.8;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .md-body h1,
@@ -1168,11 +1187,11 @@ mark {
   }
 
   .topbar {
-    gap: 10px;
+    gap: 8px;
+    padding: 0 12px;
     position: relative;
   }
 
-  /* На мобильных поиск по умолчанию свёрнут в иконку */
   .topbar-search {
     display: none;
   }
@@ -1199,7 +1218,6 @@ mark {
     width: auto;
   }
 
-  /* Скрываем остальные элементы топбара, пока открыт поиск */
   body.search-open .topbar-left,
   body.search-open .view-switch,
   body.search-open .topbar-user,
@@ -1211,18 +1229,38 @@ mark {
     flex-shrink: 0;
   }
 
-  .breadcrumb {
-    font-size: 12px;
+  /* Touch-target минимум 36px для пальца */
+  .icon-btn,
+  .clear-btn {
+    width: 36px;
+    height: 36px;
   }
 
   .view-switch {
-    padding: 3px;
+    padding: 2px;
+    gap: 2px;
   }
 
   .view-btn {
-    min-width: 62px;
-    padding: 7px 10px;
-    font-size: 13px;
+    min-width: 32px;
+    padding: 6px 8px;
+  }
+
+  .view-btn span {
+    display: none;
+  }
+
+  .view-btn i {
+    display: inline-block;
+  }
+
+  /* Разносим аватар и кнопку выхода чтобы не слипались */
+  .topbar-user {
+    gap: 6px;
+  }
+
+  .user-avatar {
+    flex-shrink: 0;
   }
 
   .view-root {
@@ -1237,6 +1275,8 @@ mark {
   .list-row {
     flex-wrap: wrap;
     align-items: flex-start;
+    padding: 14px 14px;
+    gap: 10px;
   }
 
   .item-meta,
@@ -1245,12 +1285,27 @@ mark {
     justify-content: flex-start;
   }
 
+  .item-title {
+    font-size: 15px;
+  }
+
+  .item-subtitle {
+    font-size: 12px;
+  }
+
+  /* Действие "Открыть" в continue-strip растягиваем, чтобы лучше тапалось */
+  .continue-action {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
   .board-grid {
     grid-template-columns: 1fr;
   }
 
   .article-frame {
-    padding: 22px 18px;
+    padding: 20px 16px;
     border-radius: 20px;
   }
 
@@ -1261,6 +1316,74 @@ mark {
 
   .topbar-user .user-name {
     display: none;
+  }
+
+  .md-body {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .md-body h1 {
+    font-size: 24px;
+    margin: 0 0 14px;
+  }
+
+  .md-body h2 {
+    font-size: 20px;
+    margin: 24px 0 12px;
+  }
+
+  .md-body h3 {
+    font-size: 17px;
+    margin: 20px 0 10px;
+  }
+
+  .md-body ul,
+  .md-body ol {
+    padding-left: 20px;
+  }
+
+  .md-body pre {
+    padding: 14px 16px;
+    border-radius: 14px;
+  }
+
+  .md-body table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .md-body img,
+  .md-body video,
+  .md-body iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .detail-header {
+    gap: 10px;
+  }
+
+  .chip-row {
+    gap: 5px;
+  }
+
+  .chip {
+    font-size: 11px;
+    padding: 4px 9px;
+  }
+
+  /* Интерактивный модуль на мобиле — не растягиваем на весь экран */
+  .module-frame {
+    min-height: 60vh;
+  }
+
+  .breadcrumb {
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

@@ -185,19 +185,17 @@
       setMobileSidebar(false);
     });
 
-    // Мобильный поиск — раскрытие по иконке и закрытие по крестику
     els.mobileSearchToggle.addEventListener('click', function() {
-      document.body.classList.add('search-open');
-      setTimeout(function() { els.sidebarSearch.focus(); }, 0);
+      setSearchOpen(true);
     });
 
     els.mobileSearchClose.addEventListener('click', function() {
-      document.body.classList.remove('search-open');
+      setSearchOpen(false);
     });
 
     els.sidebarSearch.addEventListener('keydown', function(event) {
       if (event.key === 'Escape') {
-        document.body.classList.remove('search-open');
+        setSearchOpen(false);
         els.sidebarSearch.blur();
       }
     });
@@ -1138,6 +1136,14 @@
   function setMobileSidebar(isOpen) {
     state.mobileSidebarOpen = isOpen;
     document.body.classList.toggle('mobile-sidebar-open', isOpen);
+  }
+
+  function setSearchOpen(isOpen) {
+    document.body.classList.toggle('search-open', isOpen);
+    if (isOpen) {
+      // Ждём один кадр, чтобы display:flex применился до focus
+      requestAnimationFrame(function() { els.sidebarSearch.focus(); });
+    }
   }
 
   function highlightMatch(text, query) {
