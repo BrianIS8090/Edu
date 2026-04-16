@@ -498,7 +498,7 @@ body.sidebar-collapsed .main-shell {
   gap: 6px;
 }
 
-.view-btn-icon {
+.view-btn i {
   display: none;
   width: 16px;
   height: 16px;
@@ -929,17 +929,6 @@ body.sidebar-collapsed .main-shell {
   line-height: 1.8;
   overflow-wrap: break-word;
   word-break: break-word;
-}
-
-.md-body h1,
-.md-body h2,
-.md-body h3,
-.md-body h4,
-.md-body p,
-.md-body li,
-.md-body blockquote {
-  overflow-wrap: break-word;
-  word-break: break-word;
   hyphens: auto;
 }
 
@@ -1203,7 +1192,6 @@ mark {
     position: relative;
   }
 
-  /* На мобильных поиск по умолчанию свёрнут в иконку */
   .topbar-search {
     display: none;
   }
@@ -1230,7 +1218,6 @@ mark {
     width: auto;
   }
 
-  /* Скрываем остальные элементы топбара, пока открыт поиск */
   body.search-open .topbar-left,
   body.search-open .view-switch,
   body.search-open .topbar-user,
@@ -1242,18 +1229,13 @@ mark {
     flex-shrink: 0;
   }
 
-  .breadcrumb {
-    font-size: 12px;
-  }
-
-  /* Touch-target: 36px по минимальному требованию мобильной UX */
+  /* Touch-target минимум 36px для пальца */
   .icon-btn,
   .clear-btn {
     width: 36px;
     height: 36px;
   }
 
-  /* View-switch на мобильных — только иконки, компактно */
   .view-switch {
     padding: 2px;
     gap: 2px;
@@ -1264,15 +1246,15 @@ mark {
     padding: 6px 8px;
   }
 
-  .view-btn-label {
+  .view-btn span {
     display: none;
   }
 
-  .view-btn-icon {
+  .view-btn i {
     display: inline-block;
   }
 
-  /* Разнесём аватар и кнопку выхода чтобы не слипались */
+  /* Разносим аватар и кнопку выхода чтобы не слипались */
   .topbar-user {
     gap: 6px;
   }
@@ -1336,7 +1318,6 @@ mark {
     display: none;
   }
 
-  /* Типографика уроков на мобильных */
   .md-body {
     font-size: 15px;
     line-height: 1.7;
@@ -1362,7 +1343,6 @@ mark {
     padding-left: 20px;
   }
 
-  /* Горизонтальный скролл для таблиц и блоков кода */
   .md-body pre {
     padding: 14px 16px;
     border-radius: 14px;
@@ -1399,8 +1379,8 @@ mark {
     min-height: 60vh;
   }
 
-  /* Хлебные крошки не должны вылезать за пределы топбара */
   .breadcrumb {
+    font-size: 12px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
