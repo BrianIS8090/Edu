@@ -401,6 +401,7 @@ body.has-query .clear-btn {
 
 .main-shell {
   width: 100%;
+  min-width: 0;
   margin-left: var(--sidebar-width);
   transition: margin-left 0.2s ease;
 }
@@ -521,7 +522,9 @@ body.sidebar-collapsed .main-shell {
 .view-root {
   height: calc(100vh - var(--topbar-height) - 3px);
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 28px;
+  min-width: 0;
 }
 
 .page-frame,
@@ -856,6 +859,9 @@ body.sidebar-collapsed .main-shell {
   margin: 0;
   font-size: clamp(30px, 3vw, 44px);
   line-height: 1.06;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .detail-meta {
@@ -911,6 +917,20 @@ body.sidebar-collapsed .main-shell {
   color: var(--text-secondary);
   font-size: 16px;
   line-height: 1.8;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.md-body h1,
+.md-body h2,
+.md-body h3,
+.md-body h4,
+.md-body p,
+.md-body li,
+.md-body blockquote {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .md-body h1,
@@ -1250,7 +1270,7 @@ mark {
   }
 
   .article-frame {
-    padding: 22px 18px;
+    padding: 20px 16px;
     border-radius: 20px;
   }
 
@@ -1261,6 +1281,71 @@ mark {
 
   .topbar-user .user-name {
     display: none;
+  }
+
+  /* Типографика уроков на мобильных */
+  .md-body {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .md-body h1 {
+    font-size: 24px;
+    margin: 0 0 14px;
+  }
+
+  .md-body h2 {
+    font-size: 20px;
+    margin: 24px 0 12px;
+  }
+
+  .md-body h3 {
+    font-size: 17px;
+    margin: 20px 0 10px;
+  }
+
+  .md-body ul,
+  .md-body ol {
+    padding-left: 20px;
+  }
+
+  /* Горизонтальный скролл для таблиц и блоков кода */
+  .md-body pre {
+    padding: 14px 16px;
+    border-radius: 14px;
+  }
+
+  .md-body table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .md-body img,
+  .md-body video,
+  .md-body iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .detail-header {
+    gap: 10px;
+  }
+
+  .chip-row {
+    gap: 5px;
+  }
+
+  .chip {
+    font-size: 10px;
+    padding: 3px 7px;
+  }
+
+  /* Хлебные крошки не должны вылезать за пределы топбара */
+  .breadcrumb {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
