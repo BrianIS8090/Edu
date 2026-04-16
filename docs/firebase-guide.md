@@ -110,6 +110,7 @@ Firebase Auth требует, чтобы домены, с которых идё�
 - `localhost` (локальная разработка)
 - `edu7lamp.firebaseapp.com`
 - `edu7lamp.web.app`
+- `brianis8090.github.io` (GitHub Pages)
 
 **Если добавляешь новый домен** (например, домен Pi5):
 1. Открой [Firebase Console → Authentication → Settings](https://console.firebase.google.com/project/edu7lamp/authentication/settings)
