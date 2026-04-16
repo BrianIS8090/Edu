@@ -46,6 +46,8 @@
     sidebarToggle: document.getElementById('sidebarToggle'),
     sidebarOverlay: document.getElementById('sidebarOverlay'),
     mobileMenuToggle: document.getElementById('mobileMenuToggle'),
+    mobileSearchToggle: document.getElementById('mobileSearchToggle'),
+    mobileSearchClose: document.getElementById('mobileSearchClose'),
     breadcrumb: document.getElementById('breadcrumb'),
     listViewBtn: document.getElementById('listViewBtn'),
     boardViewBtn: document.getElementById('boardViewBtn'),
@@ -181,6 +183,23 @@
 
     els.sidebarOverlay.addEventListener('click', function() {
       setMobileSidebar(false);
+    });
+
+    // Мобильный поиск — раскрытие по иконке и закрытие по крестику
+    els.mobileSearchToggle.addEventListener('click', function() {
+      document.body.classList.add('search-open');
+      setTimeout(function() { els.sidebarSearch.focus(); }, 0);
+    });
+
+    els.mobileSearchClose.addEventListener('click', function() {
+      document.body.classList.remove('search-open');
+    });
+
+    els.sidebarSearch.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        document.body.classList.remove('search-open');
+        els.sidebarSearch.blur();
+      }
     });
 
     els.listViewBtn.addEventListener('click', function() {

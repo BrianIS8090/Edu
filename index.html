@@ -67,7 +67,14 @@
           <div class="breadcrumb" id="breadcrumb"></div>
         </div>
 
-        <div class="topbar-search">
+        <button class="icon-btn mobile-only" id="mobileSearchToggle" type="button" aria-label="Открыть поиск">
+          <i data-lucide="search"></i>
+        </button>
+
+        <div class="topbar-search" id="topbarSearch">
+          <button class="icon-btn mobile-only search-close-btn" id="mobileSearchClose" type="button" aria-label="Закрыть поиск">
+            <i data-lucide="arrow-left"></i>
+          </button>
           <label class="search-field" for="sidebarSearch">
             <i data-lucide="search"></i>
             <input id="sidebarSearch" type="search" placeholder="Поиск по материалам" autocomplete="off">

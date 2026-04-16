@@ -1169,13 +1169,46 @@ mark {
 
   .topbar {
     gap: 10px;
+    position: relative;
   }
 
+  /* На мобильных поиск по умолчанию свёрнут в иконку */
   .topbar-search {
-    position: static;
-    transform: none;
-    width: 150px;
+    display: none;
+  }
+
+  body.search-open .topbar-search {
+    display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
     min-width: 0;
+    transform: none;
+    padding: 0 12px;
+    background: rgba(252, 252, 251, 0.98);
+    z-index: 20;
+    align-items: center;
+    gap: 6px;
+  }
+
+  body.search-open .topbar-search .search-field {
+    flex: 1;
+    width: auto;
+  }
+
+  /* Скрываем остальные элементы топбара, пока открыт поиск */
+  body.search-open .topbar-left,
+  body.search-open .view-switch,
+  body.search-open .topbar-user,
+  body.search-open #mobileSearchToggle {
+    visibility: hidden;
+  }
+
+  .search-close-btn {
+    flex-shrink: 0;
   }
 
   .breadcrumb {
