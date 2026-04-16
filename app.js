@@ -791,10 +791,12 @@
     // Обновить sidebar и бейджи (счётчики прочитанного)
     renderSidebar();
     renderGamificationBadges();
-    // Восстановить позицию скролла в списке
+    // Восстановить позицию скролла в списке (двойной rAF — ждём layout на мобильных)
     var pos = savedListScrollPos;
     requestAnimationFrame(function() {
-      window.scrollTo({ top: pos, behavior: 'instant' });
+      requestAnimationFrame(function() {
+        window.scrollTo({ top: pos, behavior: 'instant' });
+      });
     });
   }
 
