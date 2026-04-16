@@ -1,7 +1,20 @@
 // Firebase Auth — авторизация через Google для EduPlatform
 // Использует Firebase Compat SDK (подключён через CDN в index-v2.html)
+// На HTTP (кроме localhost) авторизация пропускается — Google Sign-In требует HTTPS
 (function() {
   'use strict';
+
+  // Проверяем: Google Sign-In работает только по HTTPS (и localhost)
+  var isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  var isHttps = location.protocol === 'https:';
+
+  if (!isHttps && !isLocalhost) {
+    // HTTP на сервере (Pi5 и т.п.) — пропускаем Firebase Auth, работаем через localStorage
+    var overlay = document.getElementById('authOverlay');
+    if (overlay) overlay.style.display = 'none';
+    console.info('Firebase Auth пропущен: Google Sign-In требует HTTPS. Работаем через localStorage.');
+    return;
+  }
 
   // Конфигурация Firebase (проект edu7lamp)
   var firebaseConfig = {

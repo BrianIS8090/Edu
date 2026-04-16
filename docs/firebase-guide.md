@@ -120,6 +120,20 @@ Firebase Auth требует, чтобы домены, с которых идё�
 
 ---
 
+## Raspberry Pi 5 (HTTP)
+
+Google Sign-In **требует HTTPS** на всех доменах кроме `localhost`. Pi5 обслуживает Edu по HTTP (`http://192.168.0.119/edu/`), поэтому Firebase Auth на Pi5 **автоматически пропускается**.
+
+Поведение на Pi5:
+- Auth overlay не показывается
+- Приложение работает через **localStorage** (как было до Firebase)
+- Прогресс **не синхронизируется** между устройствами
+- В консоли сообщение: `Firebase Auth пропущен: Google Sign-In требует HTTPS`
+
+Для полноценной авторизации на Pi5 нужно настроить HTTPS (например через Tailscale HTTPS или Let's Encrypt). После этого добавить домен Pi5 в Firebase authorized domains.
+
+---
+
 ## Локальная разработка
 
 ```bash
