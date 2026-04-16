@@ -1,5 +1,25 @@
 const { test, expect } = require('@playwright/test');
 
+// Блокируем Firebase — приложение работает через localStorage fallback
+test.beforeEach(async ({ page }) => {
+  await page.route('**/gstatic.com/firebasejs/**', function(route) {
+    route.fulfill({ contentType: 'application/javascript', body: '/* mocked */' });
+  });
+  await page.route('**/firebase-auth.js', function(route) {
+    route.fulfill({ contentType: 'application/javascript', body: '/* mocked */' });
+  });
+  await page.route('**/firebase-progress.js', function(route) {
+    route.fulfill({ contentType: 'application/javascript', body: '/* mocked */' });
+  });
+  // Скрываем auth overlay — без Firebase он блокирует UI
+  await page.addInitScript(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+      var overlay = document.getElementById('authOverlay');
+      if (overlay) overlay.style.display = 'none';
+    });
+  });
+});
+
 test('preview-редизайн открывает каталог и переключает режимы', async ({ page }) => {
   await page.goto('/index.html');
 
@@ -71,7 +91,7 @@ test('preview-редизайн не накладывает кнопку свор
 
   await page.getByRole('button', { name: 'Свернуть панель' }).click();
 
-  const brandBox = await page.locator('.brand-mark').boundingBox();
+  const brandBox = await page.locator('.sidebar .brand-mark').boundingBox();
   const toggleBox = await page.locator('#sidebarToggle').boundingBox();
 
   expect(brandBox).not.toBeNull();
@@ -109,7 +129,7 @@ test('preview-редизайн открывает урок и возвращае
   await page.getByText('Установка и настройка OpenClaw').click();
 
   await expect(page.getByRole('button', { name: 'Назад' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Установка и настройка OpenClaw' })).toBeVisible();
+  await expect(page.locator('.detail-title')).toContainText('Установка и настройка OpenClaw');
 
   await page.getByRole('button', { name: 'Назад' }).click();
   await expect(page.getByRole('heading', { name: 'Все материалы' })).toBeVisible();
@@ -180,8 +200,14 @@ test('preview-редизайн открывает интерактивный м�
   await expect(page.locator('iframe.module-frame')).toBeVisible();
 });
 
-test('index-v2 показывает экран авторизации Firebase', async ({ page }) => {
-  // Мокаем Firebase SDK чтобы не зависеть от реального сервиса
+test('показывает экран авторизации для неавторизованного пользователя', async ({ browser }) => {
+  var context = await browser.newContext();
+  var page = await context.newPage();
+
+  await page.route('**/gstatic.com/firebasejs/**', function(route) {
+    route.fulfill({ contentType: 'application/javascript', body: '/* mocked */' });
+  });
+
   await page.addInitScript(() => {
     window.firebase = {
       initializeApp: function() {},
@@ -195,19 +221,16 @@ test('index-v2 показывает экран авторизации Firebase',
       firestore: function() { return {}; }
     };
     window.firebase.auth.GoogleAuthProvider = function() {};
-    window.firebase.firestore = Object.assign(window.firebase.firestore, {
-      FieldValue: { serverTimestamp: function() { return new Date(); } },
-      Timestamp: { now: function() { return new Date(); } }
-    });
+    window.firebase.firestore.FieldValue = { serverTimestamp: function() { return new Date(); } };
+    window.firebase.firestore.Timestamp = { now: function() { return new Date(); } };
   });
 
-  await page.goto('/index-v2.html');
+  await page.goto('http://127.0.0.1:4173/index.html');
 
-  // Экран авторизации должен быть виден
   await expect(page.locator('#authOverlay')).toBeVisible();
   await expect(page.getByText('Войти через Google')).toBeVisible();
   await expect(page.getByText('Обучающая платформа Group 7Lamp')).toBeVisible();
-
-  // Приложение должно быть скрыто
   await expect(page.locator('.app-shell')).toBeHidden();
+
+  await context.close();
 });
