@@ -28,6 +28,7 @@ html,
 body {
   margin: 0;
   min-height: 100%;
+  overflow-x: hidden; /* предотвращает горизонтальный скролл на уровне страницы */
 }
 
 body {
@@ -50,6 +51,8 @@ button {
 .app-shell {
   display: flex;
   min-height: 100vh;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .sidebar {
@@ -1156,6 +1159,17 @@ mark {
     display: inline-flex;
   }
 
+  /* В режиме каталога хлебная крошка избыточна — скрываем */
+  body:not(.is-detail-view) .breadcrumb {
+    display: none;
+  }
+
+  /* В режиме чтения view-switch скрыт самим JS, поэтому topbar-left может расшириться */
+  body.is-detail-view .topbar-left {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
   .sidebar {
     width: min(88vw, 320px);
     transform: translateX(-100%);
@@ -1275,28 +1289,65 @@ mark {
   .list-row {
     flex-wrap: wrap;
     align-items: flex-start;
-    padding: 14px 14px;
-    gap: 10px;
+    padding: 10px 12px;
+    gap: 6px;
   }
 
-  .item-meta,
-  .item-progress {
-    width: 100%;
+  /* Мета и прогресс — в одну строку под заголовком, выровнены с текстом */
+  .item-meta {
+    flex: 1;
+    width: auto;
     justify-content: flex-start;
+    padding-left: 16px; /* компенсация ширины status-dot + gap */
+  }
+
+  .item-progress {
+    width: auto;
+    min-width: auto;
+    justify-content: flex-end;
   }
 
   .item-title {
-    font-size: 15px;
+    font-size: 14px;
+    line-height: 1.4;
   }
 
   .item-subtitle {
     font-size: 12px;
   }
 
+  .subgroup-title {
+    font-size: 15px;
+    margin: 20px 0 8px;
+    padding-bottom: 8px;
+  }
+
+  .continue-strip {
+    padding: 12px 14px;
+    gap: 12px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+
+  .continue-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .continue-title {
+    font-size: 14px;
+  }
+
+  .continue-meta {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
   /* Действие "Открыть" в continue-strip растягиваем, чтобы лучше тапалось */
   .continue-action {
     width: 100%;
-    padding: 14px 16px;
+    padding: 12px 16px;
     font-size: 15px;
   }
 
@@ -1379,11 +1430,27 @@ mark {
     min-height: 60vh;
   }
 
+  /* Хлебная крошка в режиме чтения: обрезаем, не распираем topbar */
   .breadcrumb {
     font-size: 12px;
+    min-width: 0;
+    overflow: hidden;
+    flex-wrap: nowrap;
+  }
+
+  .breadcrumb span,
+  .breadcrumb a,
+  .breadcrumb strong {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  /* Разделители "/" не сжимаем */
+  .breadcrumb > span:not([class]) {
+    flex-shrink: 0;
   }
 }
 
