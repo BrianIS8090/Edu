@@ -324,11 +324,8 @@
 
   function updateThemeIcon() {
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    var icon = els.themeToggle.querySelector('i');
-    if (icon) {
-      icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-      lucide.createIcons();
-    }
+    els.themeToggle.innerHTML = '<i data-lucide="' + (isDark ? 'sun' : 'moon') + '"></i>';
+    lucide.createIcons();
   }
 
   async function render() {
