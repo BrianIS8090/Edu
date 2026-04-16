@@ -7,3 +7,6 @@ build/catalog.json
 .claude/skills/ceo-council/README.ru.md
 .claude/skills/ceo-council/SKILL.md
 banner.pen
+node_modules/
+test-results/
+playwright-report/

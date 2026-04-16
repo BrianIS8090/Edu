@@ -74,6 +74,34 @@ function Get-Description {
   return ""
 }
 
+# Оценка времени чтения Markdown (≈200 слов в минуту)
+function Get-ReadTime {
+  param([string]$FilePath)
+
+  $content = Get-Content -Path $FilePath -Encoding UTF8 -Raw
+  $content = $content -replace "(?s)^---\r?\n.*?\r?\n---\r?\n?", ""
+  $content = $content -replace "[#*_`\[\]()!>~\-]", " "
+
+  $wordCount = ($content -split "\s+" | Where-Object { $_ -ne "" }).Count
+  $minutes = [Math]::Ceiling($wordCount / 200)
+
+  if ($minutes -lt 1) {
+    return 1
+  }
+
+  return [int]$minutes
+}
+
+# Аккуратно превращает только \uXXXX в Unicode-символы
+function Convert-UnicodeEscapes {
+  param([string]$Value)
+
+  return [regex]::Replace($Value, "\\u([0-9a-fA-F]{4})", {
+    param($match)
+    [char]([Convert]::ToInt32($match.Groups[1].Value, 16))
+  })
+}
+
 # ID из имени файла/папки
 function Make-Id {
   param([string]$Name)
@@ -93,6 +121,7 @@ if (Test-Path $lessonsDir) {
     $subcategory = if ($fm["subcategory"]) { $fm["subcategory"] } else { "" }
     $tags = Get-Tags -Raw $fm["tags"]
     $desc = Get-Description -FilePath $_.FullName
+    $readTime = Get-ReadTime -FilePath $_.FullName
     $id = Make-Id -Name $_.Name
 
     $lessons += @{
@@ -104,6 +133,7 @@ if (Test-Path $lessonsDir) {
       type = "lesson"
       file = "lessons/$($_.Name)"
       description = $desc
+      readTime = $readTime
     }
   }
 }
@@ -152,9 +182,9 @@ $catalog = @{
 }
 
 $json = $catalog | ConvertTo-Json -Depth 4 -Compress
-# PowerShell 5.1 экранирует кириллицу как \uXXXX — исправляем
+# PowerShell 5.1 экранирует кириллицу как \uXXXX — декодируем только Unicode-экраны
 if ($PSVersionTable.PSVersion.Major -lt 6) {
-  $json = [regex]::Unescape($json)
+  $json = Convert-UnicodeEscapes -Value $json
 }
 # Запись без BOM (новый UTF8Encoding($false))
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
