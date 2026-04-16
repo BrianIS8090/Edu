@@ -1156,6 +1156,17 @@ mark {
     display: inline-flex;
   }
 
+  /* В режиме каталога хлебная крошка избыточна — скрываем */
+  body:not(.is-detail-view) .breadcrumb {
+    display: none;
+  }
+
+  /* В режиме чтения view-switch скрыт самим JS, поэтому topbar-left может расшириться */
+  body.is-detail-view .topbar-left {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
   .sidebar {
     width: min(88vw, 320px);
     transform: translateX(-100%);

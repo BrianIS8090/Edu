@@ -409,9 +409,11 @@
       els.breadcrumb.innerHTML = crumbs;
       els.viewSwitch.style.display = 'none';
       els.readingProgress.classList.remove('is-hidden');
+      document.body.classList.add('is-detail-view');
       return;
     }
 
+    document.body.classList.remove('is-detail-view');
     els.breadcrumb.innerHTML = '' +
       '<span>Академия 7ЛАМП</span>' +
       '<span>/</span>' +
