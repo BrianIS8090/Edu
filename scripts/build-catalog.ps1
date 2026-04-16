@@ -102,6 +102,16 @@ function Convert-UnicodeEscapes {
   })
 }
 
+# Дата последнего изменения файла из git (ISO 8601)
+function Get-LastUpdated {
+  param([string]$FilePath)
+  try {
+    $date = git log -1 --format="%aI" -- $FilePath 2>$null
+    if ($date) { return $date.Trim() }
+  } catch {}
+  return ""
+}
+
 # ID из имени файла/папки
 function Make-Id {
   param([string]$Name)
@@ -124,6 +134,8 @@ if (Test-Path $lessonsDir) {
     $readTime = Get-ReadTime -FilePath $_.FullName
     $id = Make-Id -Name $_.Name
 
+    $lastUpdated = Get-LastUpdated -FilePath $_.FullName
+
     $lessons += @{
       id = $id
       title = $title
@@ -134,6 +146,7 @@ if (Test-Path $lessonsDir) {
       file = "lessons/$($_.Name)"
       description = $desc
       readTime = $readTime
+      lastUpdated = $lastUpdated
     }
   }
 }
@@ -162,6 +175,8 @@ if (Test-Path $modulesDir) {
       $desc = ""
     }
 
+    $lastUpdated = Get-LastUpdated -FilePath $_.FullName
+
     $modules += @{
       id = $id
       title = $title
@@ -171,6 +186,7 @@ if (Test-Path $modulesDir) {
       type = "module"
       path = "modules/$dirName/"
       description = $desc
+      lastUpdated = $lastUpdated
     }
   }
 }

@@ -179,3 +179,35 @@ test('preview-редизайн открывает интерактивный м�
   await expect(page.getByRole('heading', { name: 'Калькулятор радиатора' })).toBeVisible();
   await expect(page.locator('iframe.module-frame')).toBeVisible();
 });
+
+test('index-v2 показывает экран авторизации Firebase', async ({ page }) => {
+  // Мокаем Firebase SDK чтобы не зависеть от реального сервиса
+  await page.addInitScript(() => {
+    window.firebase = {
+      initializeApp: function() {},
+      auth: function() {
+        return {
+          onAuthStateChanged: function(cb) { cb(null); },
+          signInWithPopup: function() { return Promise.resolve(); },
+          signOut: function() { return Promise.resolve(); }
+        };
+      },
+      firestore: function() { return {}; }
+    };
+    window.firebase.auth.GoogleAuthProvider = function() {};
+    window.firebase.firestore = Object.assign(window.firebase.firestore, {
+      FieldValue: { serverTimestamp: function() { return new Date(); } },
+      Timestamp: { now: function() { return new Date(); } }
+    });
+  });
+
+  await page.goto('/index-v2.html');
+
+  // Экран авторизации должен быть виден
+  await expect(page.locator('#authOverlay')).toBeVisible();
+  await expect(page.getByText('Войти через Google')).toBeVisible();
+  await expect(page.getByText('Обучающая платформа Group 7Lamp')).toBeVisible();
+
+  // Приложение должно быть скрыто
+  await expect(page.locator('.app-shell')).toBeHidden();
+});

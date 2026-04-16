@@ -33,6 +33,19 @@ function assertCatalogShape(catalog, source) {
   if (catalog.modules.length === 0) {
     throw new Error(`${source}: modules пустой`);
   }
+
+  // Проверяем наличие lastUpdated у каждого элемента
+  for (const lesson of catalog.lessons) {
+    if (typeof lesson.lastUpdated !== 'string') {
+      throw new Error(`${source}: у урока "${lesson.id}" отсутствует поле lastUpdated`);
+    }
+  }
+
+  for (const mod of catalog.modules) {
+    if (typeof mod.lastUpdated !== 'string') {
+      throw new Error(`${source}: у модуля "${mod.id}" отсутствует поле lastUpdated`);
+    }
+  }
 }
 
 function runBashBuildIfNeeded() {

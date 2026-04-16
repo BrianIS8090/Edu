@@ -1,0 +1,26 @@
+{
+  "firestore": {
+    "database": "(default)",
+    "location": "europe-west1",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "auth": {
+    "providers": {
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "EduPlatform 7Lamp",
+        "supportEmail": "ilmir8090@gmail.com"
+      }
+    }
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/node_modules/**",
+      "test-results/**",
+      "playwright-report/**",
+      ".git/**"
+    ]
+  }
+}

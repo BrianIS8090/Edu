@@ -190,6 +190,14 @@ extract_description() {
   printf '%s' "$description"
 }
 
+# Дата последнего изменения файла из git (ISO 8601)
+get_last_updated() {
+  local file="$1"
+  local date
+  date="$(git log -1 --format="%aI" -- "$file" 2>/dev/null || true)"
+  printf '%s' "$date"
+}
+
 # --- Основная логика ---
 
 # Переходим в корень проекта
@@ -233,6 +241,7 @@ if [ -d "lessons" ]; then
     tags_json="$(parse_tags "$tags_raw")"
     description="$(extract_description "$file")"
     read_time="$(estimate_read_time "$file")"
+    last_updated="$(get_last_updated "$file")"
 
     # Формируем JSON-объект урока
     if [ "$lessons_count" -gt 0 ]; then
@@ -248,7 +257,8 @@ if [ -d "lessons" ]; then
       \"type\": \"lesson\",
       \"file\": \"$(json_escape "$file")\",
       \"description\": \"$(json_escape "$description")\",
-      \"readTime\": $read_time
+      \"readTime\": $read_time,
+      \"lastUpdated\": \"$(json_escape "$last_updated")\"
     }"
     lessons_count=$((lessons_count + 1))
   done
@@ -301,6 +311,7 @@ if [ -d "modules" ]; then
     fi
 
     tags_json="$(parse_tags "$tags_raw")"
+    last_updated="$(get_last_updated "$dir")"
 
     # Формируем JSON-объект модуля
     if [ "$modules_count" -gt 0 ]; then
@@ -315,7 +326,8 @@ if [ -d "modules" ]; then
       \"tags\": $tags_json,
       \"type\": \"module\",
       \"path\": \"$(json_escape "modules/${dirname}/")\",
-      \"description\": \"$(json_escape "$description")\"
+      \"description\": \"$(json_escape "$description")\",
+      \"lastUpdated\": \"$(json_escape "$last_updated")\"
     }"
     modules_count=$((modules_count + 1))
   done

@@ -66,6 +66,60 @@
   let lightboxImages = [];
   let lightboxIndex = 0;
   let scrollProgressHandler = null;
+  let userLastVisit = null;
+
+  // Провайдер прогресса — по умолчанию localStorage, заменяется Firebase-модулем
+  let progressProvider = {
+    getProgress: function(id) {
+      return parseInt(localStorage.getItem('progress_' + id) || '0', 10);
+    },
+    saveProgress: function(id, percent) {
+      var current = this.getProgress(id);
+      var nextValue = Math.max(current, Math.round(percent));
+      localStorage.setItem('progress_' + id, String(nextValue));
+    },
+    getReadTime: function(id) {
+      var cached = localStorage.getItem('readTime_' + id);
+      if (cached) return parseInt(cached, 10);
+      var item = allItems.find(function(entry) { return entry.id === id; });
+      return item && item.readTime ? Math.round(item.readTime) : null;
+    },
+    saveReadTime: function(id, minutes) {
+      localStorage.setItem('readTime_' + id, String(minutes));
+    },
+    getLastRead: function() {
+      var raw = localStorage.getItem('lastRead');
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch (e) { return null; }
+    },
+    saveLastRead: function(data) {
+      localStorage.setItem('lastRead', JSON.stringify(data));
+    },
+    getUserLastVisit: function() {
+      return null;
+    }
+  };
+
+  // Публичный интерфейс для Firebase-модулей
+  window.EduApp = {
+    // Вызывается firebase-auth.js после успешной авторизации
+    onAuthReady: function(user) {
+      init();
+    },
+    // Вызывается firebase-progress.js для замены localStorage-провайдера
+    setProgressProvider: function(provider) {
+      progressProvider = provider;
+      render();
+    },
+    // Устанавливает дату последнего визита (для бейджа "Новое")
+    setUserLastVisit: function(timestamp) {
+      userLastVisit = timestamp;
+    },
+    // Доступ к текущим элементам каталога
+    getAllItems: function() {
+      return allItems;
+    }
+  };
 
   bindStaticEvents();
   init();
@@ -447,6 +501,14 @@
     }
   }
 
+  // Проверяет, является ли материал "новым" для текущего пользователя
+  function isNewItem(item) {
+    if (!item.lastUpdated || !userLastVisit) return false;
+    var itemDate = new Date(item.lastUpdated);
+    var visitDate = userLastVisit instanceof Date ? userLastVisit : new Date(userLastVisit);
+    return itemDate > visitDate && getProgress(item.id) === 0;
+  }
+
   function renderList(items) {
     const groups = groupItemsForList(items);
     let html = '<div data-testid="catalog-list">';
@@ -466,11 +528,13 @@
           const isRead = progress >= 100;
           const isStarted = progress > 0 && progress < 100;
 
+          var itemIsNew = isNewItem(item);
+
           html += '' +
             '<button class="list-row" type="button" data-open-id="' + escapeAttribute(item.id) + '" aria-label="' + escapeAttribute('Открыть материал ' + item.title) + '">' +
             '<span class="status-dot' + (isRead || isStarted ? ' is-cleared' : '') + '"></span>' +
             '<div class="item-main">' +
-            '<div class="item-title' + (isRead ? ' is-read' : '') + '">' + highlightMatch(item.title, state.searchQuery) + '</div>' +
+            '<div class="item-title' + (isRead ? ' is-read' : '') + '">' + highlightMatch(item.title, state.searchQuery) + (itemIsNew ? ' <span class="badge-new">Новое</span>' : '') + '</div>' +
             '</div>' +
             '<div class="item-meta">' +
             '<span class="item-type">' + escapeHtml(item.type === 'module' ? 'Интерактив' : 'Урок') + '</span>' +
@@ -496,11 +560,13 @@
       const progress = getProgress(item.id);
       const isRead = progress >= 100;
       const isStarted = progress > 0 && progress < 100;
+      var itemIsNew = isNewItem(item);
 
       html += '' +
         '<button class="board-card" type="button" data-open-id="' + escapeAttribute(item.id) + '" aria-label="' + escapeAttribute('Открыть материал ' + item.title) + '">' +
         '<div class="board-card-top">' +
         '<span class="status-dot' + (isRead || isStarted ? ' is-cleared' : '') + '"></span>' +
+        (itemIsNew ? '<span class="badge-new">Новое</span>' : '') +
         buildCompactProgress(item.id) +
         '</div>' +
         '<div class="item-title' + (isRead ? ' is-read' : '') + '">' + highlightMatch(item.title, state.searchQuery) + '</div>' +
@@ -838,13 +904,11 @@
   }
 
   function getProgress(id) {
-    return parseInt(localStorage.getItem('progress_' + id) || '0', 10);
+    return progressProvider.getProgress(id);
   }
 
   function saveProgress(id, percent) {
-    const current = getProgress(id);
-    const nextValue = Math.max(current, Math.round(percent));
-    localStorage.setItem('progress_' + id, String(nextValue));
+    progressProvider.saveProgress(id, percent);
   }
 
   function markLessonStarted(id) {
@@ -860,28 +924,19 @@
       saveProgress(id, 1);
     }
 
-    localStorage.setItem('lastRead', JSON.stringify({
+    progressProvider.saveLastRead({
       id: item.id,
       title: item.title,
       progress: Math.max(1, getProgress(id))
-    }));
+    });
   }
 
   function getReadTime(id) {
-    const cached = localStorage.getItem('readTime_' + id);
-    if (cached) {
-      return parseInt(cached, 10);
-    }
-
-    const item = allItems.find(function(entry) {
-      return entry.id === id;
-    });
-
-    return item && item.readTime ? Math.round(item.readTime) : null;
+    return progressProvider.getReadTime(id);
   }
 
   function saveReadTime(id, minutes) {
-    localStorage.setItem('readTime_' + id, String(minutes));
+    progressProvider.saveReadTime(id, minutes);
   }
 
   function estimateReadingTime(markdown) {
@@ -895,16 +950,7 @@
   }
 
   function getLastRead() {
-    const raw = localStorage.getItem('lastRead');
-    if (!raw) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(raw);
-    } catch (error) {
-      return null;
-    }
+    return progressProvider.getLastRead();
   }
 
   function setupScrollProgress(id) {
@@ -918,18 +964,18 @@
 
       els.readingProgressFill.style.width = percent + '%';
       saveProgress(id, percent);
-      localStorage.setItem('scrollPos_' + id, String(Math.round(scrollTop)));
+      sessionStorage.setItem('scrollPos_' + id, String(Math.round(scrollTop)));
 
       const item = allItems.find(function(entry) {
         return entry.id === id;
       });
 
       if (item) {
-        localStorage.setItem('lastRead', JSON.stringify({
+        progressProvider.saveLastRead({
           id: item.id,
           title: item.title,
           progress: percent
-        }));
+        });
       }
     };
 
@@ -948,7 +994,7 @@
 
   function restoreReadingPosition(id) {
     const progress = getProgress(id);
-    const storedPosition = parseInt(localStorage.getItem('scrollPos_' + id) || '0', 10);
+    const storedPosition = parseInt(sessionStorage.getItem('scrollPos_' + id) || '0', 10);
 
     if (progress > 0 && progress < 100 && storedPosition > 0) {
       requestAnimationFrame(function() {
