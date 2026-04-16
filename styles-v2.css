@@ -910,6 +910,7 @@ body.sidebar-collapsed .main-shell {
 
 .article-frame {
   padding: 36px;
+  min-width: 0; /* предотвращает расширение grid-item шире трека из-за pre/table */
 }
 
 .module-shell {
@@ -1397,6 +1398,7 @@ mark {
   .md-body pre {
     padding: 14px 16px;
     border-radius: 14px;
+    max-width: 100%;
   }
 
   .md-body table {
