@@ -115,6 +115,20 @@ test('preview-редизайн открывает урок и возвращае
   await expect(page.getByRole('heading', { name: 'Все материалы' })).toBeVisible();
 });
 
+test('preview-редизайн считает урок начатым сразу после открытия', async ({ page }) => {
+  await page.goto('/index.html');
+
+  await page.getByText('Установка и настройка OpenClaw').click();
+  await expect(page.getByRole('heading', { name: 'Установка и настройка OpenClaw' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Назад' }).click();
+
+  const row = page.locator('.list-row:has-text("Установка и настройка OpenClaw")');
+
+  await expect(row.locator('.status-dot')).toHaveCSS('opacity', '0');
+  await expect(row.locator('.item-title')).toHaveCSS('color', 'rgb(25, 25, 25)');
+});
+
 test('preview-редизайн делает кнопку назад плавающей в уроке', async ({ page }) => {
   await page.goto('/index.html');
 

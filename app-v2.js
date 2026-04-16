@@ -541,6 +541,7 @@
   }
 
   function openItem(id) {
+    markLessonStarted(id);
     state.currentItemId = id;
     state.currentView = 'detail';
     setMobileSidebar(false);
@@ -844,6 +845,26 @@
     const current = getProgress(id);
     const nextValue = Math.max(current, Math.round(percent));
     localStorage.setItem('progress_' + id, String(nextValue));
+  }
+
+  function markLessonStarted(id) {
+    const item = allItems.find(function(entry) {
+      return entry.id === id;
+    });
+
+    if (!item || item.type !== 'lesson') {
+      return;
+    }
+
+    if (getProgress(id) === 0) {
+      saveProgress(id, 1);
+    }
+
+    localStorage.setItem('lastRead', JSON.stringify({
+      id: item.id,
+      title: item.title,
+      progress: Math.max(1, getProgress(id))
+    }));
   }
 
   function getReadTime(id) {
