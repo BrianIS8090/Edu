@@ -335,3 +335,20 @@ fi
 
 # Выводим итоговый JSON
 printf '{\n  "lessons": [%s\n  ],\n  "modules": [%s\n  ]\n}\n' "$lessons_json" "$modules_json"
+
+# Генерация version.json
+pkg_version="0.0.0"
+if [ -f "$ROOT_DIR/package.json" ]; then
+  pkg_version="$(grep '"version"' "$ROOT_DIR/package.json" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')"
+fi
+commit_hash="$(git -C "$ROOT_DIR" rev-parse --short HEAD 2>/dev/null || printf 'unknown')"
+commit_date="$(git -C "$ROOT_DIR" log -1 --format='%aI' 2>/dev/null || true)"
+build_date="$(date -Iseconds 2>/dev/null || date '+%Y-%m-%dT%H:%M:%S')"
+branch="$(git -C "$ROOT_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || printf 'unknown')"
+
+mkdir -p "$ROOT_DIR/build"
+printf '{"version":"%s","commit":"%s","branch":"%s","commitDate":"%s","buildDate":"%s"}\n' \
+  "$pkg_version" "$commit_hash" "$branch" "$commit_date" "$build_date" \
+  > "$ROOT_DIR/build/version.json"
+
+printf 'version.json: v%s (%s)\n' "$pkg_version" "$commit_hash" >&2

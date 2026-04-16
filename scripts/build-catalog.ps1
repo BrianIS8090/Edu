@@ -207,3 +207,23 @@ $utf8NoBom = New-Object System.Text.UTF8Encoding $false
 [System.IO.File]::WriteAllText($OutputFile, $json, $utf8NoBom)
 
 Write-Host "catalog.json собран: $($lessons.Count) уроков, $($modules.Count) модулей"
+
+# Генерация version.json
+$pkgPath = Join-Path $Root "package.json"
+$pkgVersion = "0.0.0"
+if (Test-Path $pkgPath) {
+  $pkg = Get-Content -Path $pkgPath -Encoding UTF8 -Raw | ConvertFrom-Json
+  if ($pkg.version) { $pkgVersion = $pkg.version }
+}
+$commitHash = (git -C $Root rev-parse --short HEAD 2>$null)
+if (-not $commitHash) { $commitHash = "unknown" }
+$commitDate = (git -C $Root log -1 --format="%aI" 2>$null)
+if (-not $commitDate) { $commitDate = "" }
+$buildDate = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssK")
+$branch = (git -C $Root rev-parse --abbrev-ref HEAD 2>$null)
+if (-not $branch) { $branch = "unknown" }
+
+$versionJson = "{""version"":""$pkgVersion"",""commit"":""$commitHash"",""branch"":""$branch"",""commitDate"":""$commitDate"",""buildDate"":""$buildDate""}"
+$versionFile = Join-Path $BuildDir "version.json"
+[System.IO.File]::WriteAllText($versionFile, $versionJson, $utf8NoBom)
+Write-Host "version.json: v$pkgVersion ($commitHash)"

@@ -1,4 +1,5 @@
 build/catalog.json
+build/version.json
 .superpowers/
 .claude/skills/agent-teams/README.md
 .claude/skills/agent-teams/README.ru.md

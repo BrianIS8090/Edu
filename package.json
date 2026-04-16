@@ -1,5 +1,6 @@
 {
   "name": "edu-platform-preview-tests",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "test": "node scripts/test-catalog-build.js && playwright test tests/preview-redesign.spec.js"

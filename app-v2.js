@@ -67,6 +67,7 @@
   let lightboxIndex = 0;
   let scrollProgressHandler = null;
   let userLastVisit = null;
+  let appVersion = null;
 
   // Провайдер прогресса — по умолчанию localStorage, заменяется Firebase-модулем
   let progressProvider = {
@@ -140,6 +141,12 @@
           return Object.assign({ type: 'module' }, item);
         })
       ].sort(compareItems);
+
+      // Загружаем версию
+      try {
+        var vRes = await fetch('build/version.json');
+        if (vRes.ok) appVersion = await vRes.json();
+      } catch (e) {}
 
       await render();
     } catch (error) {
@@ -234,6 +241,25 @@
       }
     });
 
+    els.breadcrumb.addEventListener('click', function(event) {
+      var link = event.target.closest('[data-bc-action]');
+      if (!link) return;
+      var action = link.getAttribute('data-bc-action');
+      if (action === 'all') {
+        state.activeCategory = 'all';
+        state.activeSubcategory = null;
+      } else if (action === 'category') {
+        state.activeCategory = link.getAttribute('data-bc-category');
+        state.activeSubcategory = null;
+      } else if (action === 'subcategory') {
+        state.activeCategory = link.getAttribute('data-bc-category');
+        state.activeSubcategory = link.getAttribute('data-bc-subcategory');
+      }
+      state.currentView = 'catalog';
+      state.currentItemId = null;
+      render();
+    });
+
     els.lightbox.addEventListener('click', function(event) {
       if (event.target === els.lightbox) {
         closeLightbox();
@@ -325,7 +351,7 @@
   }
 
   function renderSidebarProgress() {
-    const html = gamificationTracks.map(function(track) {
+    let html = gamificationTracks.map(function(track) {
       const progress = calculateTrackProgress(track.category);
       return '' +
         '<div class="track-card">' +
@@ -340,6 +366,10 @@
         '</div>';
     }).join('');
 
+    if (appVersion) {
+      html += '<div class="version-badge" title="Коммит: ' + escapeAttribute(appVersion.commit || '') + '\nВетка: ' + escapeAttribute(appVersion.branch || '') + '\nСборка: ' + escapeAttribute(appVersion.buildDate || '') + '">v' + escapeHtml(appVersion.version || '?') + ' · ' + escapeHtml(appVersion.commit || '?') + '</div>';
+    }
+
     els.sidebarProgress.innerHTML = html;
   }
 
@@ -349,20 +379,24 @@
 
     if (state.currentView === 'detail' && state.currentItemId) {
       const item = getCurrentItem();
-      const scopeLabel = state.activeSubcategory || (state.activeCategory !== 'all' ? state.activeCategory : 'Все материалы');
-      els.breadcrumb.innerHTML = '' +
-        '<span>Каталог</span>' +
-        '<span>/</span>' +
-        '<span>' + escapeHtml(scopeLabel) + '</span>' +
-        '<span>/</span>' +
-        '<strong>' + escapeHtml(item ? item.title : 'Материал') + '</strong>';
+      var crumbs = '<a class="breadcrumb-link" data-bc-action="all">Все материалы</a>';
+      if (item) {
+        if (item.category) {
+          crumbs += '<span>/</span><a class="breadcrumb-link" data-bc-action="category" data-bc-category="' + escapeAttribute(item.category) + '">' + escapeHtml(item.category) + '</a>';
+        }
+        if (item.subcategory) {
+          crumbs += '<span>/</span><a class="breadcrumb-link" data-bc-action="subcategory" data-bc-category="' + escapeAttribute(item.category) + '" data-bc-subcategory="' + escapeAttribute(item.subcategory) + '">' + escapeHtml(item.subcategory) + '</a>';
+        }
+        crumbs += '<span>/</span><strong>' + escapeHtml(item.title) + '</strong>';
+      }
+      els.breadcrumb.innerHTML = crumbs;
       els.viewSwitch.style.display = 'none';
       els.readingProgress.classList.remove('is-hidden');
       return;
     }
 
     els.breadcrumb.innerHTML = '' +
-      '<span>EduPlatform</span>' +
+      '<span>Академия 7ЛАМП</span>' +
       '<span>/</span>' +
       '<strong>' + escapeHtml(getScopeTitle()) + '</strong>';
     els.viewSwitch.style.display = '';
@@ -540,7 +574,7 @@
             '<span class="item-type">' + escapeHtml(item.type === 'module' ? 'Интерактив' : 'Урок') + '</span>' +
             buildTimeLabel(item) +
             '</div>' +
-            '<div class="item-progress">' + buildCompactProgress(item.id) + '</div>' +
+            '<div class="item-progress">' + buildCompactProgress(item) + '</div>' +
             '</button>';
         });
         html += '</div>';
@@ -567,7 +601,7 @@
         '<div class="board-card-top">' +
         '<span class="status-dot' + (isRead || isStarted ? ' is-cleared' : '') + '"></span>' +
         (itemIsNew ? '<span class="badge-new">Новое</span>' : '') +
-        buildCompactProgress(item.id) +
+        buildCompactProgress(item) +
         '</div>' +
         '<div class="item-title' + (isRead ? ' is-read' : '') + '">' + highlightMatch(item.title, state.searchQuery) + '</div>' +
         '<div class="chip-row">' + buildChips(item) + '</div>' +
@@ -806,10 +840,10 @@
       meta.push('<span class="detail-meta-item"><i data-lucide="clock"></i>' + escapeHtml(String(readTime)) + ' мин</span>');
     }
 
-    meta.push('<span class="detail-meta-item"><i data-lucide="' + (progress >= 100 ? 'check-circle' : 'circle') + '"></i>' + (progress >= 100 ? 'Прочитано' : 'В процессе') + '</span>');
-
     if (item.type === 'module') {
       meta.push('<span class="detail-meta-item"><i data-lucide="blocks"></i>Интерактив</span>');
+    } else {
+      meta.push('<span class="detail-meta-item"><i data-lucide="' + (progress >= 100 ? 'check-circle' : 'circle') + '"></i>' + (progress >= 100 ? 'Прочитано' : 'В процессе') + '</span>');
     }
 
     return meta.join('');
@@ -829,7 +863,13 @@
     return chips;
   }
 
-  function buildCompactProgress(id) {
+  function buildCompactProgress(item) {
+    // Для интерактивов (модулей) прогресс не показываем
+    if (item.type === 'module') {
+      return '';
+    }
+
+    var id = typeof item === 'string' ? item : item.id;
     const progress = getProgress(id);
 
     if (!progress) {
@@ -916,7 +956,7 @@
       return entry.id === id;
     });
 
-    if (!item || item.type !== 'lesson') {
+    if (!item) {
       return;
     }
 
