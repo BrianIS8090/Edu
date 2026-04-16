@@ -1605,3 +1605,171 @@ mark {
   vertical-align: middle;
   letter-spacing: 0.02em;
 }
+
+/* ================================================
+   Тёмная тема
+   ================================================ */
+
+[data-theme="dark"] {
+  --surface: #1c1c1e;
+  --surface-muted: #2a2a2c;
+  --surface-soft: #1a1a1c;
+  --border: #3a3a3c;
+  --border-strong: #4a4a4c;
+  --text-primary: #f2f2f0;
+  --text-secondary: #9a9a9e;
+  --text-muted: #6a6a6e;
+  --accent: #4f8de8;
+  --accent-soft: rgba(79, 141, 232, 0.15);
+  --success: #30d98a;
+  --warning: #f0a83a;
+  --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at top left, rgba(79, 141, 232, 0.07), transparent 28%),
+    linear-gradient(180deg, #1a1a1c 0%, #111113 100%);
+}
+
+[data-theme="dark"] .sidebar {
+  background: rgba(28, 28, 30, 0.96);
+}
+
+[data-theme="dark"] .topbar {
+  background: rgba(26, 26, 28, 0.92);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .search-field {
+  background: rgba(58, 58, 60, 0.9);
+}
+
+[data-theme="dark"] .icon-btn:hover,
+[data-theme="dark"] .clear-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .nav-item:hover,
+[data-theme="dark"] .subnav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .view-switch {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .view-btn.is-active {
+  background: #3a3a3c;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .track-card {
+  background: rgba(44, 44, 46, 0.88);
+}
+
+[data-theme="dark"] .sidebar-footer {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .track-meter {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .continue-strip {
+  background: linear-gradient(135deg, rgba(79, 141, 232, 0.1), rgba(44, 44, 46, 0.95));
+  border-color: rgba(79, 141, 232, 0.22);
+}
+
+[data-theme="dark"] .list-row:hover,
+[data-theme="dark"] .board-card:hover {
+  background: rgba(58, 58, 60, 0.9);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .board-card {
+  background: rgba(44, 44, 46, 0.85);
+}
+
+[data-theme="dark"] .chip {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .chip.is-type {
+  background: rgba(79, 141, 232, 0.14);
+}
+
+[data-theme="dark"] .chip.is-time {
+  background: rgba(48, 217, 138, 0.12);
+  color: var(--success);
+}
+
+[data-theme="dark"] .progress-pill {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .empty-state,
+[data-theme="dark"] .loading-state,
+[data-theme="dark"] .error-state {
+  background: rgba(44, 44, 46, 0.72);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .detail-meta-item {
+  background: rgba(44, 44, 46, 0.88);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .article-frame,
+[data-theme="dark"] .module-shell {
+  background: rgba(28, 28, 30, 0.92);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .module-frame {
+  background: #1c1c1e;
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .back-btn {
+  background: rgba(44, 44, 46, 0.94);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .md-body code {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .md-body table {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .md-body th,
+[data-theme="dark"] .md-body td {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .md-body th {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .md-body blockquote {
+  background: rgba(79, 141, 232, 0.08);
+}
+
+[data-theme="dark"] mark {
+  background: rgba(255, 224, 61, 0.22);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .auth-overlay {
+  background:
+    radial-gradient(circle at top left, rgba(79, 141, 232, 0.12), transparent 40%),
+    linear-gradient(180deg, #1a1a1c 0%, #111113 100%);
+}
+
+[data-theme="dark"] body.search-open .topbar-search {
+  background: rgba(26, 26, 28, 0.98);
+}
