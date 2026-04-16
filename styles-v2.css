@@ -492,6 +492,16 @@ body.sidebar-collapsed .main-shell {
   background: transparent;
   color: var(--text-secondary);
   transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.view-btn-icon {
+  display: none;
+  width: 16px;
+  height: 16px;
 }
 
 .view-btn.is-active {
@@ -1188,7 +1198,8 @@ mark {
   }
 
   .topbar {
-    gap: 10px;
+    gap: 8px;
+    padding: 0 12px;
     position: relative;
   }
 
@@ -1235,14 +1246,39 @@ mark {
     font-size: 12px;
   }
 
+  /* Touch-target: 36px по минимальному требованию мобильной UX */
+  .icon-btn,
+  .clear-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* View-switch на мобильных — только иконки, компактно */
   .view-switch {
-    padding: 3px;
+    padding: 2px;
+    gap: 2px;
   }
 
   .view-btn {
-    min-width: 62px;
-    padding: 7px 10px;
-    font-size: 13px;
+    min-width: 32px;
+    padding: 6px 8px;
+  }
+
+  .view-btn-label {
+    display: none;
+  }
+
+  .view-btn-icon {
+    display: inline-block;
+  }
+
+  /* Разнесём аватар и кнопку выхода чтобы не слипались */
+  .topbar-user {
+    gap: 6px;
+  }
+
+  .user-avatar {
+    flex-shrink: 0;
   }
 
   .view-root {
@@ -1257,12 +1293,29 @@ mark {
   .list-row {
     flex-wrap: wrap;
     align-items: flex-start;
+    padding: 14px 14px;
+    gap: 10px;
   }
 
   .item-meta,
   .item-progress {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .item-title {
+    font-size: 15px;
+  }
+
+  .item-subtitle {
+    font-size: 12px;
+  }
+
+  /* Действие "Открыть" в continue-strip растягиваем, чтобы лучше тапалось */
+  .continue-action {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
   }
 
   .board-grid {
@@ -1337,8 +1390,13 @@ mark {
   }
 
   .chip {
-    font-size: 10px;
-    padding: 3px 7px;
+    font-size: 11px;
+    padding: 4px 9px;
+  }
+
+  /* Интерактивный модуль на мобиле — не растягиваем на весь экран */
+  .module-frame {
+    min-height: 60vh;
   }
 
   /* Хлебные крошки не должны вылезать за пределы топбара */
