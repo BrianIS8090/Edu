@@ -66,39 +66,26 @@ git push (main) → GitHub Actions запускает 3 workflow:
 
 ---
 
-## Настройка секрета для Firebase CI/CD
+## CI/CD секрет (уже настроен)
 
-Для автоматического деплоя на Firebase нужно создать сервисный аккаунт и добавить его ключ в GitHub Secrets.
+Автоматический деплой на Firebase полностью настроен:
 
-### Шаг 1: Создать сервисный аккаунт
+| Параметр | Значение |
+|----------|----------|
+| **Сервисный аккаунт** | `github-actions-deploy@edu7lamp.iam.gserviceaccount.com` |
+| **Роль** | `Firebase Admin` |
+| **GitHub Secret** | `FIREBASE_SERVICE_ACCOUNT_EDU7LAMP` |
+| **Статус** | работает, проверен |
 
-1. Открой [Google Cloud Console → IAM](https://console.cloud.google.com/iam-admin/serviceaccounts?project=edu7lamp)
-2. Нажми **"Create Service Account"**
-3. Имя: `github-actions-deploy`
-4. Нажми **"Create and Continue"**
-5. Добавь роли:
-   - `Firebase Hosting Admin`
-   - `Cloud Datastore User` (для Firestore Rules)
-   - `Service Account User`
-6. Нажми **"Done"**
+При push в `main` workflow `deploy-firebase.yml` автоматически:
+1. Собирает `catalog.json`
+2. Деплоит Firestore Security Rules
+3. Деплоит Firebase Hosting
 
-### Шаг 2: Создать JSON-ключ
-
-1. Кликни на созданный аккаунт `github-actions-deploy`
-2. Вкладка **"Keys"** → **"Add Key"** → **"Create new key"**
-3. Формат: **JSON**
-4. Скачается файл `edu7lamp-xxxx.json`
-
-### Шаг 3: Добавить секрет в GitHub
-
-1. Открой репозиторий на GitHub → **Settings** → **Secrets and variables** → **Actions**
-2. Нажми **"New repository secret"**
-3. Имя: `FIREBASE_SERVICE_ACCOUNT_EDU7LAMP`
-4. Значение: вставь **всё содержимое** скачанного JSON-файла
-5. Нажми **"Add secret"**
-6. **Удали** скачанный JSON-файл с диска (он больше не нужен)
-
-После этого каждый push в `main` автоматически задеплоит на Firebase.
+Если потребуется пересоздать секрет:
+1. [Google Cloud Console → IAM → Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts?project=edu7lamp) → `github-actions-deploy` → Keys → Add Key → JSON
+2. GitHub → Settings → Secrets → `FIREBASE_SERVICE_ACCOUNT_EDU7LAMP` → Update → вставить JSON
+3. Удалить скачанный JSON с диска
 
 ---
 
