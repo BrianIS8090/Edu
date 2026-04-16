@@ -1275,28 +1275,65 @@ mark {
   .list-row {
     flex-wrap: wrap;
     align-items: flex-start;
-    padding: 14px 14px;
-    gap: 10px;
+    padding: 10px 12px;
+    gap: 6px;
   }
 
-  .item-meta,
-  .item-progress {
-    width: 100%;
+  /* Мета и прогресс — в одну строку под заголовком, выровнены с текстом */
+  .item-meta {
+    flex: 1;
+    width: auto;
     justify-content: flex-start;
+    padding-left: 16px; /* компенсация ширины status-dot + gap */
+  }
+
+  .item-progress {
+    width: auto;
+    min-width: auto;
+    justify-content: flex-end;
   }
 
   .item-title {
-    font-size: 15px;
+    font-size: 14px;
+    line-height: 1.4;
   }
 
   .item-subtitle {
     font-size: 12px;
   }
 
+  .subgroup-title {
+    font-size: 15px;
+    margin: 20px 0 8px;
+    padding-bottom: 8px;
+  }
+
+  .continue-strip {
+    padding: 12px 14px;
+    gap: 12px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+
+  .continue-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .continue-title {
+    font-size: 14px;
+  }
+
+  .continue-meta {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
   /* Действие "Открыть" в continue-strip растягиваем, чтобы лучше тапалось */
   .continue-action {
     width: 100%;
-    padding: 14px 16px;
+    padding: 12px 16px;
     font-size: 15px;
   }
 
