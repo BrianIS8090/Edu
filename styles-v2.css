@@ -401,6 +401,7 @@ body.has-query .clear-btn {
 
 .main-shell {
   width: 100%;
+  min-width: 0;
   margin-left: var(--sidebar-width);
   transition: margin-left 0.2s ease;
 }
@@ -521,6 +522,7 @@ body.sidebar-collapsed .main-shell {
 .view-root {
   height: calc(100vh - var(--topbar-height) - 3px);
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 28px;
 }
 
@@ -540,8 +542,10 @@ body.sidebar-collapsed .main-shell {
 
 .page-title {
   margin: 0;
-  font-size: clamp(30px, 3vw, 40px);
-  line-height: 1.05;
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .page-subtitle {
@@ -813,6 +817,7 @@ body.sidebar-collapsed .main-shell {
 .detail-shell {
   display: grid;
   gap: 22px;
+  min-width: 0;
 }
 
 .back-btn {
@@ -842,6 +847,7 @@ body.sidebar-collapsed .main-shell {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
 }
 
 .detail-kicker {
@@ -854,8 +860,10 @@ body.sidebar-collapsed .main-shell {
 
 .detail-title {
   margin: 0;
-  font-size: clamp(30px, 3vw, 44px);
-  line-height: 1.06;
+  font-size: clamp(24px, 3vw, 44px);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .detail-meta {
@@ -911,6 +919,8 @@ body.sidebar-collapsed .main-shell {
   color: var(--text-secondary);
   font-size: 16px;
   line-height: 1.8;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .md-body h1,
@@ -1117,9 +1127,14 @@ mark {
     padding: 0 18px;
   }
 
+  /* на планшетах убираем абсолютное центрирование поиска — встраиваем его в flex-поток */
   .topbar-search {
-    width: min(360px, calc(100% - 420px));
-    min-width: 180px;
+    position: static;
+    transform: none;
+    width: auto;
+    min-width: 0;
+    flex: 1 1 260px;
+    max-width: 360px;
   }
 
   .continue-strip {
@@ -1168,37 +1183,33 @@ mark {
   }
 
   .topbar {
-    gap: 10px;
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  /* на мобильном скрываем хлебные крошки и переключатель вида —
+     места слишком мало, поиск занимает всю оставшуюся ширину */
+  .breadcrumb,
+  .view-switch {
+    display: none;
   }
 
   .topbar-search {
     position: static;
     transform: none;
-    width: 150px;
+    flex: 1 1 auto;
+    width: auto;
+    max-width: none;
     min-width: 0;
   }
 
-  .breadcrumb {
-    font-size: 12px;
-  }
-
-  .view-switch {
-    padding: 3px;
-  }
-
-  .view-btn {
-    min-width: 62px;
-    padding: 7px 10px;
-    font-size: 13px;
-  }
-
   .view-root {
-    padding: 18px 14px 28px;
+    padding: 16px 12px 28px;
   }
 
   .page-title,
   .detail-title {
-    font-size: 28px;
+    font-size: 24px;
   }
 
   .list-row {
@@ -1217,17 +1228,66 @@ mark {
   }
 
   .article-frame {
-    padding: 22px 18px;
-    border-radius: 20px;
+    padding: 18px 14px;
+    border-radius: 18px;
   }
 
   .module-shell {
-    padding: 14px;
-    border-radius: 20px;
+    padding: 12px;
+    border-radius: 18px;
   }
 
   .topbar-user .user-name {
     display: none;
+  }
+
+  /* ужимаем размеры заголовков внутри тела урока,
+     чтобы длинные слова не ломали верстку */
+  .md-body {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .md-body h1 {
+    font-size: 22px;
+    margin: 0 0 14px;
+  }
+
+  .md-body h2 {
+    font-size: 19px;
+    margin: 24px 0 10px;
+  }
+
+  .md-body h3 {
+    font-size: 17px;
+    margin: 20px 0 8px;
+  }
+
+  .md-body ul,
+  .md-body ol {
+    padding-left: 20px;
+  }
+
+  .md-body pre {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  /* таблицы прокручиваются горизонтально, а не ломают ширину страницы */
+  .md-body table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .detail-kicker {
+    font-size: 11px;
+  }
+
+  .back-btn {
+    top: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
   }
 }
 
