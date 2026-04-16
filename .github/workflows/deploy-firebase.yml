@@ -1,0 +1,39 @@
+name: Deploy to Firebase
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Собрать catalog.json
+        run: |
+          mkdir -p build
+          bash scripts/build-catalog.sh > build/catalog.json
+
+      - name: Установить Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Аутентификация в Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EDU7LAMP }}
+
+      - name: Деплой Firestore Rules
+        run: firebase deploy --only firestore:rules --project edu7lamp
+
+      - name: Деплой Firebase Hosting
+        run: firebase deploy --only hosting --project edu7lamp
