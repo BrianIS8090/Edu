@@ -1,6 +1,6 @@
 ---
 title: Работа с 7LAMP ERP v8.0 — руководство пользователя
-category: Проекты
+category: Онбординг
 subcategory: Внутренние инструменты
 tags: [ERP, склад, проекты, спецификации, onboarding, 7LAMP]
 ---

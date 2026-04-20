@@ -1,8 +1,7 @@
 ---
 title: Классификатор IP/IK
 category: Проекты
-subcategory: Защита IP/IK
+subcategory: 4.5 этап — Сборка
 tags: [IP, IK, защита]
 ---
-
 Интерактивный классификатор степеней защиты IP и IK.

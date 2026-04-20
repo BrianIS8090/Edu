@@ -1,7 +1,7 @@
 ---
 title: Настройка копирования геометрии из Rhino 8 в MoI3D
 category: Проекты
-subcategory: 3 этап — Документация
+subcategory: 2 этап — Моделирование
 tags: [Rhino, Moi3D, экспорт, скрипты, clipboard]
 ---
 # Настройка копирования 3D-объектов из Rhino 8 в MoI3D

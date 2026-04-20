@@ -1,10 +1,9 @@
 ---
 title: Установка и настройка OpenClaw
-category: Проекты
+category: Онбординг
 subcategory: Инструменты ИИ
 tags: [OpenClaw, AI, Telegram, автоматизация, установка]
 ---
-
 # Установка и настройка OpenClaw
 
 Пошаговое руководство по установке, настройке и первому запуску OpenClaw — платформы для создания AI-агентов с интеграцией в Telegram, Signal, Discord, WhatsApp и другие мессенджеры.

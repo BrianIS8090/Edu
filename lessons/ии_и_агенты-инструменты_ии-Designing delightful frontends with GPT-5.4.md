@@ -1,6 +1,6 @@
 ---
 title: Создание потрясающих интерфейсов с помощью GPT-5.4
-category: Проекты
+category: Онбординг
 subcategory: Инструменты ИИ
 tags: [frontend, GPT, дизайн, UI]
 ---
