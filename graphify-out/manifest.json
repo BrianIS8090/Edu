@@ -1,0 +1,717 @@
+{
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0438\u0438_\u0438_\u0430\u0433\u0435\u043d\u0442\u044b-\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b_\u0438\u0438-Designing delightful frontends with GPT-5.4.md": {
+    "mtime": 1776665476.3398416,
+    "ast_hash": "1ddf9751a1d044877bf278973edaa8d1",
+    "semantic_hash": "1ddf9751a1d044877bf278973edaa8d1"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0438\u0438_\u0438_\u0430\u0433\u0435\u043d\u0442\u044b-\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b_\u0438\u0438-\u0413\u0435\u043d\u0435\u0440\u0430\u0446\u0438\u044f_\u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u044f_\u0432_\u043d\u0430\u043d\u043e_\u0431\u0430\u043d\u0430\u043d\u043e.md": {
+    "mtime": 1776665476.341408,
+    "ast_hash": "b0e1c43261ee3dba9194cdf39343a022",
+    "semantic_hash": "b0e1c43261ee3dba9194cdf39343a022"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0438\u0438_\u0438_\u0430\u0433\u0435\u043d\u0442\u044b-\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b_\u0438\u0438-\u041epenclaw.md": {
+    "mtime": 1776665476.341926,
+    "ast_hash": "bdf7c7f26f9f363d5f70cf62ee023755",
+    "semantic_hash": "bdf7c7f26f9f363d5f70cf62ee023755"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043e\u043d\u0431\u043e\u0440\u0434\u0438\u043d\u0433-\u0432\u043d\u0443\u0442\u0440\u0435\u043d\u043d\u0438\u0435_\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b-\u0420\u0430\u0431\u043e\u0442\u0430_\u0441_7lamp_erp_v8.md": {
+    "mtime": 1776667467.1189742,
+    "ast_hash": "14d7c7ba8a3cbe783279ac20c7780ec9",
+    "semantic_hash": "14d7c7ba8a3cbe783279ac20c7780ec9"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043e\u043d\u0431\u043e\u0440\u0434\u0438\u043d\u0433-\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b_\u0438\u0438-Hermes_Agent.md": {
+    "mtime": 1776669391.378773,
+    "ast_hash": "68f499a38a301dc1e688397dad3cee3b",
+    "semantic_hash": "68f499a38a301dc1e688397dad3cee3b"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043e\u043d\u0431\u043e\u0440\u0434\u0438\u043d\u0433-\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b_\u0438\u0438-llm-\u0443\u0441\u0438\u043b\u0438\u0432\u0430\u0435\u0442-\u0438\u043d\u0436\u0435\u043d\u0435\u0440\u0430.md": {
+    "mtime": 1776672684.4931316,
+    "ast_hash": "314e59a44cf95cb42f2f2bf4879983e3",
+    "semantic_hash": "314e59a44cf95cb42f2f2bf4879983e3"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043e\u043d\u0431\u043e\u0440\u0434\u0438\u043d\u0433-\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b_\u0438\u0438-\u0433\u0435\u043d\u0435\u0440\u0430\u0446\u0438\u044f-\u0442\u0437-\u0438-\u0434\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0430\u0446\u0438\u0438.md": {
+    "mtime": 1776672882.9093068,
+    "ast_hash": "6f99f1841ffc76d0bb4329078a17ea3c",
+    "semantic_hash": "6f99f1841ffc76d0bb4329078a17ea3c"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043e\u043d\u0431\u043e\u0440\u0434\u0438\u043d\u0433-\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b_\u0438\u0438-\u043f\u043e\u0438\u0441\u043a-\u043a\u043e\u043c\u043f\u043e\u043d\u0435\u043d\u0442\u043e\u0432-\u0447\u0435\u0440\u0435\u0437-\u0438\u0438.md": {
+    "mtime": 1776672817.3355477,
+    "ast_hash": "0929b511b67349e99602a25a56bf2bc4",
+    "semantic_hash": "0929b511b67349e99602a25a56bf2bc4"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043e\u043d\u0431\u043e\u0440\u0434\u0438\u043d\u0433-\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b_\u0438\u0438-\u043f\u0440\u043e\u043c\u043f\u0442\u044b-\u0434\u043b\u044f-\u0438\u043d\u0436\u0435\u043d\u0435\u0440\u043d\u044b\u0445-\u0437\u0430\u0434\u0430\u0447.md": {
+    "mtime": 1776672751.5393822,
+    "ast_hash": "f170c3623463d808a37b5232f93b4d2a",
+    "semantic_hash": "f170c3623463d808a37b5232f93b4d2a"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043e\u043d\u0431\u043e\u0440\u0434\u0438\u043d\u0433-\u043f\u043b\u0430\u043d\u044b_\u043e\u0431\u0443\u0447\u0435\u043d\u0438\u044f-\u041f\u043b\u0430\u043d_\u043e\u0431\u0443\u0447\u0435\u043d\u0438\u044f_\u0438\u043d\u0436\u0435\u043d\u0435\u0440_\u043f\u0440\u043e\u0435\u043a\u0442\u0438\u0440\u043e\u0432\u0449\u0438\u043a.md": {
+    "mtime": 1776667911.2352183,
+    "ast_hash": "accd9e6bc8c7d3bc0c703e99dd5e6826",
+    "semantic_hash": "accd9e6bc8c7d3bc0c703e99dd5e6826"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0434\u0430\u0436\u0438-\u043f\u0435\u0440\u0435\u0434\u0430\u0447\u0430-\u043b\u0438\u0434\u0430-\u043e\u0442-\u0445\u0430\u043d\u0442\u0435\u0440\u0430-\u0444\u0435\u0440\u043c\u0435\u0440\u0443.md": {
+    "mtime": 1776770261.2320216,
+    "ast_hash": "8998785766b254d71d75b4786f8a4ae5",
+    "semantic_hash": "8998785766b254d71d75b4786f8a4ae5"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0434\u0430\u0436\u0438-\u043f\u043b\u0430\u043d-\u043e\u0431\u0443\u0447\u0435\u043d\u0438\u044f-\u043a\u043e\u043c\u043c\u0435\u0440\u0447\u0435\u0441\u043a\u043e\u0433\u043e-\u043e\u0442\u0434\u0435\u043b\u0430.md": {
+    "mtime": 1776834322.4959953,
+    "ast_hash": "68e965f944937e0726bf975033ed7c0f",
+    "semantic_hash": "68e965f944937e0726bf975033ed7c0f"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0434\u0430\u0436\u0438-\u0446\u0435\u043b\u0435\u0432\u044b\u0435-\u0430\u0443\u0434\u0438\u0442\u043e\u0440\u0438\u0438.md": {
+    "mtime": 1775118557.1745555,
+    "ast_hash": "8fee28b2ea29f98b7879b9e310ccb6eb",
+    "semantic_hash": "8fee28b2ea29f98b7879b9e310ccb6eb"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-mood-board-\u0438-\u0440\u0435\u0444\u0435\u0440\u0435\u043d\u0441\u044b.md": {
+    "mtime": 1776672947.1652155,
+    "ast_hash": "ad28e83849dd602d51f7cedac6319fb7",
+    "semantic_hash": "ad28e83849dd602d51f7cedac6319fb7"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u0430\u043d\u0430\u043b\u0438\u0437-\u0442\u0437-\u043e\u0442-\u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430.md": {
+    "mtime": 1775103178.7486792,
+    "ast_hash": "931aa7107fe7e59bd45c1d96bec4f78e",
+    "semantic_hash": "931aa7107fe7e59bd45c1d96bec4f78e"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u043a\u043e\u043d\u0446\u0435\u043f\u0446\u0438\u044f-\u043e\u0441\u0432\u0435\u0449\u0435\u043d\u0438\u044f.md": {
+    "mtime": 1775122409.0324636,
+    "ast_hash": "ae5bc7a0f404d79b4be4a9aa5281fff8",
+    "semantic_hash": "ae5bc7a0f404d79b4be4a9aa5281fff8"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u043c\u0430\u0442\u0440\u0438\u0446\u0430-\u0444\u043e\u0440\u043c\u0430-\u0442\u0435\u0445\u043d\u043e\u043b\u043e\u0433\u0438\u044f.md": {
+    "mtime": 1776673006.579577,
+    "ast_hash": "c58f413cc649cc0b67b3ea6ade43bca1",
+    "semantic_hash": "c58f413cc649cc0b67b3ea6ade43bca1"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u043e\u0431\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u0435-\u043e\u0431\u044a\u0435\u043a\u0442\u0430.md": {
+    "mtime": 1775535448.9709527,
+    "ast_hash": "1eba7a82ca661b305140f9c8c413db1b",
+    "semantic_hash": "1eba7a82ca661b305140f9c8c413db1b"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u043f\u0430\u0442\u0435\u043d\u0442\u043d\u044b\u0439-\u043f\u043e\u0438\u0441\u043a.md": {
+    "mtime": 1776673072.9652033,
+    "ast_hash": "008e0d6b5391b0fbf939b468aa24bbd1",
+    "semantic_hash": "008e0d6b5391b0fbf939b468aa24bbd1"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u043f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u043a\u0430-\u043a\u043e\u043c\u043c\u0435\u0440\u0447\u0435\u0441\u043a\u043e\u0433\u043e-\u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0435\u043d\u0438\u044f.md": {
+    "mtime": 1775535558.091463,
+    "ast_hash": "732af751551218f2e14f54359b358bad",
+    "semantic_hash": "732af751551218f2e14f54359b358bad"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u043f\u0440\u0435\u0434\u0432\u0430\u0440\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439-\u0440\u0430\u0441\u0447\u0451\u0442-\u0431\u044e\u0434\u0436\u0435\u0442\u0430.md": {
+    "mtime": 1775535206.5400429,
+    "ast_hash": "fb1336f283d085f17b87ea4de1384b0b",
+    "semantic_hash": "fb1336f283d085f17b87ea4de1384b0b"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u0440\u0430\u0431\u043e\u0442\u0430-\u0441-\u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u043e\u0440\u043e\u043c.md": {
+    "mtime": 1775122507.2410493,
+    "ast_hash": "4b95f7172509268e9008fa261cda4660",
+    "semantic_hash": "4b95f7172509268e9008fa261cda4660"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u0440\u0430\u0431\u043e\u0442\u0430-\u0441-\u0434\u0438\u0437\u0430\u0439\u043d\u0435\u0440\u043e\u043c-\u0438\u043d\u0442\u0435\u0440\u044c\u0435\u0440\u0430.md": {
+    "mtime": 1775535108.0096748,
+    "ast_hash": "a2ed9894fba989a02335fc058022dc94",
+    "semantic_hash": "a2ed9894fba989a02335fc058022dc94"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u0440\u0430\u0431\u043e\u0442\u0430-\u0441-\u0447\u0435\u043a-\u043b\u0438\u0441\u0442\u0430\u043c\u0438.md": {
+    "mtime": 1775122889.0582175,
+    "ast_hash": "570414b52828492c990b18a281f2e363",
+    "semantic_hash": "570414b52828492c990b18a281f2e363"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u0441\u0431\u043e\u0440-\u0440\u0435\u0444\u0435\u0440\u0435\u043d\u0441\u043e\u0432.md": {
+    "mtime": 1775122303.7115705,
+    "ast_hash": "d1dd4ab1e68244b5f4d31c0b2cad5f93",
+    "semantic_hash": "d1dd4ab1e68244b5f4d31c0b2cad5f93"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u0442\u0438\u043f\u043e\u0432\u044b\u0435-\u043e\u0448\u0438\u0431\u043a\u0438-\u043f\u0440\u043e\u0435\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f.md": {
+    "mtime": 1775535329.3146548,
+    "ast_hash": "5060f7323ca811986547d5e6b7553ad9",
+    "semantic_hash": "5060f7323ca811986547d5e6b7553ad9"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-1-\u044d\u0442\u0430\u043f-\u044d\u0441\u043a\u0438\u0437\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u0438-\u0441\u043a\u0435\u0442\u0447\u0438\u043d\u0433.md": {
+    "mtime": 1775103178.7492044,
+    "ast_hash": "ab2049bac70bf5347f9b096fca709a58",
+    "semantic_hash": "ab2049bac70bf5347f9b096fca709a58"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-moi3d-\u043f\u0440\u043e\u0434\u0432\u0438\u043d\u0443\u0442\u044b\u0435-\u0442\u0435\u0445\u043d\u0438\u043a\u0438.md": {
+    "mtime": 1775103178.749721,
+    "ast_hash": "417810544bc54a0ad0324a1abd9b6e7e",
+    "semantic_hash": "417810544bc54a0ad0324a1abd9b6e7e"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-top-down-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435.md": {
+    "mtime": 1776671604.266434,
+    "ast_hash": "c3c79ca9dd29e00c175f231b0d4b1001",
+    "semantic_hash": "c3c79ca9dd29e00c175f231b0d4b1001"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u0431\u0438\u0431\u043b\u0438\u043e\u0442\u0435\u043a\u0430-\u0443\u0437\u043b\u043e\u0432-moi3d.md": {
+    "mtime": 1775105002.5473928,
+    "ast_hash": "5d4ab8790476ccb57b378ad211a1aea4",
+    "semantic_hash": "5d4ab8790476ccb57b378ad211a1aea4"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u0431\u043e\u043b\u044c\u0448\u0438\u0435-\u0441\u0431\u043e\u0440\u043a\u0438-moi3d.md": {
+    "mtime": 1776672305.3354907,
+    "ast_hash": "1a3051ba9c3ba96d7b994c89e33aa2c3",
+    "semantic_hash": "1a3051ba9c3ba96d7b994c89e33aa2c3"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u0432\u0438\u0437\u0443\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f-\u0434\u043b\u044f-\u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0430.md": {
+    "mtime": 1775535262.7158415,
+    "ast_hash": "45e6e4ee59c2ea468140e3596a4731ca",
+    "semantic_hash": "45e6e4ee59c2ea468140e3596a4731ca"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u0438\u043c\u043f\u043e\u0440\u0442-\u043c\u043e\u0434\u0435\u043b\u0435\u0439-\u0437\u0430\u043a\u0430\u0437\u0447\u0438\u043a\u0430.md": {
+    "mtime": 1775535462.2082508,
+    "ast_hash": "1dc7f7bfad2626a33ebc80a3f6110fd5",
+    "semantic_hash": "1dc7f7bfad2626a33ebc80a3f6110fd5"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043c\u0438\u0444\u044b-\u043e-moi3d-\u0432\u043e\u0437\u0440\u0430\u0436\u0435\u043d\u0438\u044f-fusion-\u0438-\u043a\u043e\u043c\u043f\u0430\u0441.md": {
+    "mtime": 1775798913.55064,
+    "ast_hash": "4e513f18b6939ec8c1f6b18dc753d363",
+    "semantic_hash": "4e513f18b6939ec8c1f6b18dc753d363"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u0432-rhino.md": {
+    "mtime": 1775800820.3992734,
+    "ast_hash": "b84c9ffea15446a1ed8fac97e4a0c87e",
+    "semantic_hash": "b84c9ffea15446a1ed8fac97e4a0c87e"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0439-moi3d.md": {
+    "mtime": 1775105209.473884,
+    "ast_hash": "19c6b821cca3eba0b42f102c0971dc88",
+    "semantic_hash": "19c6b821cca3eba0b42f102c0971dc88"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u043a\u0440\u0435\u043f\u0451\u0436\u043d\u044b\u0445-\u0443\u0437\u043b\u043e\u0432.md": {
+    "mtime": 1776672367.3847013,
+    "ast_hash": "191e4e8553a98581e1084671fcbb26a3",
+    "semantic_hash": "191e4e8553a98581e1084671fcbb26a3"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u043b\u0438\u043d\u0435\u0439\u043d\u044b\u0445-light-line.md": {
+    "mtime": 1776672189.1943896,
+    "ast_hash": "9f4dfcaeef06c5212b29660da15611f1",
+    "semantic_hash": "9f4dfcaeef06c5212b29660da15611f1"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u043e\u043f\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0445-\u044d\u043b\u0435\u043c\u0435\u043d\u0442\u043e\u0432.md": {
+    "mtime": 1775535364.9018438,
+    "ast_hash": "c794a9e2d21717ee98307bb93d4df7b3",
+    "semantic_hash": "c794a9e2d21717ee98307bb93d4df7b3"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u043f\u043e\u0434-\u043f\u0440\u043e\u0438\u0437\u0432\u043e\u0434\u0441\u0442\u0432\u043e.md": {
+    "mtime": 1775107432.3600788,
+    "ast_hash": "58f45d8e231e04a6c92205f1b8980749",
+    "semantic_hash": "58f45d8e231e04a6c92205f1b8980749"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u0440\u0430\u0437\u0432\u0451\u0440\u0442\u043e\u043a-\u043f\u043e\u0434-\u0433\u0438\u0431\u043a\u0443.md": {
+    "mtime": 1776672246.0151443,
+    "ast_hash": "bb64a3d860df0168cdc7b7b63ff3aea1",
+    "semantic_hash": "bb64a3d860df0168cdc7b7b63ff3aea1"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u044f-\u043f\u0440\u043e\u0435\u043a\u0442\u0430-moi3d.md": {
+    "mtime": 1776671742.7744484,
+    "ast_hash": "068ec1665e0bcec9d899315e836ac6b1",
+    "semantic_hash": "068ec1665e0bcec9d899315e836ac6b1"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u0438\u0447\u0435\u0441\u043a\u043e\u0435-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435.md": {
+    "mtime": 1775108506.914773,
+    "ast_hash": "01b8edd51b58215e0db8f7aa1dd3e71a",
+    "semantic_hash": "01b8edd51b58215e0db8f7aa1dd3e71a"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043f\u0435\u0440\u0435\u0445\u043e\u0434-\u043d\u0430-moi3d-\u0441-fusion-\u0438-\u043a\u043e\u043c\u043f\u0430\u0441.md": {
+    "mtime": 1775796368.319394,
+    "ast_hash": "c1b7e3b88b3461e7de57c7eb7649a061",
+    "semantic_hash": "c1b7e3b88b3461e7de57c7eb7649a061"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u043f\u0440\u044f\u043c\u043e\u0435-vs-\u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u0438\u0447\u0435\u0441\u043a\u043e\u0435-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435.md": {
+    "mtime": 1776671536.91993,
+    "ast_hash": "73bb3fea28c563e1b78463ff277c81b8",
+    "semantic_hash": "73bb3fea28c563e1b78463ff277c81b8"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-2-\u044d\u0442\u0430\u043f-\u0441\u0431\u043e\u0440\u043a\u0430-\u0432-\u043f\u0440\u044f\u043c\u043e\u043c-\u043c\u043e\u0434\u0435\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0438.md": {
+    "mtime": 1776671669.0738637,
+    "ast_hash": "bef2c5e0455deb4ffd845273b5572f02",
+    "semantic_hash": "bef2c5e0455deb4ffd845273b5572f02"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-3d-pdf-\u0438-\u0438\u043d\u0442\u0435\u0440\u0430\u043a\u0442\u0438\u0432\u043d\u044b\u0435-\u043c\u043e\u0434\u0435\u043b\u0438.md": {
+    "mtime": 1775535455.2941573,
+    "ast_hash": "e998ee06be0e4e4fb5b32ff5d3a5ba75",
+    "semantic_hash": "e998ee06be0e4e4fb5b32ff5d3a5ba75"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-\u0433\u0430\u0431\u0430\u0440\u0438\u0442\u043d\u044b\u0435-\u0447\u0435\u0440\u0442\u0435\u0436\u0438-\u0434\u043b\u044f-\u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0430.md": {
+    "mtime": 1775535179.4098382,
+    "ast_hash": "fccb488428bd9280b166e2761f3cf415",
+    "semantic_hash": "fccb488428bd9280b166e2761f3cf415"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-\u0433\u043e\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0435-\u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u044b-\u0435\u0441\u043a\u0434.md": {
+    "mtime": 1776666338.719664,
+    "ast_hash": "496b84569d9428ac21ef5a0aa391b1cc",
+    "semantic_hash": "496b84569d9428ac21ef5a0aa391b1cc"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-\u0434\u0435\u0442\u0430\u043b\u0438\u0440\u043e\u0432\u043e\u0447\u043d\u044b\u0435-\u0447\u0435\u0440\u0442\u0435\u0436\u0438.md": {
+    "mtime": 1775055528.622978,
+    "ast_hash": "f60aef4f3a03faceb84f8a9e3aaac12a",
+    "semantic_hash": "f60aef4f3a03faceb84f8a9e3aaac12a"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-\u0434\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0430\u0446\u0438\u044f-\u0434\u043b\u044f-\u0442\u0435\u043d\u0434\u0435\u0440\u043e\u0432.md": {
+    "mtime": 1775535263.6987903,
+    "ast_hash": "9c441993bb30722c69a9920370168544",
+    "semantic_hash": "9c441993bb30722c69a9920370168544"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-\u043a\u0434-\u0434\u043b\u044f-\u0441\u0435\u0440\u0438\u0439\u043d\u043e\u0433\u043e-\u043f\u0440\u043e\u0438\u0437\u0432\u043e\u0434\u0441\u0442\u0432\u0430.md": {
+    "mtime": 1775103178.7523506,
+    "ast_hash": "6b609fe6ba2f84c7857b0f25034f28bb",
+    "semantic_hash": "6b609fe6ba2f84c7857b0f25034f28bb"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-rhino-moi.md": {
+    "mtime": 1776665476.3592381,
+    "ast_hash": "ff7cc390132960eebbb909a53f51646b",
+    "semantic_hash": "ff7cc390132960eebbb909a53f51646b"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-\u0440\u0435\u0433\u043b\u0430\u043c\u0435\u043d\u0442-\u043e\u0444\u043e\u0440\u043c\u043b\u0435\u043d\u0438\u044f-\u0447\u0435\u0440\u0442\u0435\u0436\u0435\u0439.md": {
+    "mtime": 1775109132.102628,
+    "ast_hash": "7e36e09d2924cda80b022372e16a2efe",
+    "semantic_hash": "7e36e09d2924cda80b022372e16a2efe"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-\u0441\u043f\u0435\u0446\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f-\u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u043e\u0432.md": {
+    "mtime": 1775055518.7336671,
+    "ast_hash": "389586e154995bf66b2af350eaa81166",
+    "semantic_hash": "389586e154995bf66b2af350eaa81166"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-\u0441\u043f\u0435\u0446\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f-\u0441\u0431\u043e\u0440\u043e\u0447\u043d\u043e\u0433\u043e-\u0447\u0435\u0440\u0442\u0435\u0436\u0430-\u0433\u043e\u0441\u0442.md": {
+    "mtime": 1775535356.4177356,
+    "ast_hash": "dabc4021bd74cd3f6ae343b63e770fad",
+    "semantic_hash": "dabc4021bd74cd3f6ae343b63e770fad"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-3-\u044d\u0442\u0430\u043f-\u044d\u043b\u0435\u043a\u0442\u0440\u043e\u0441\u0445\u0435\u043c\u044b-\u0441\u0432\u0435\u0442\u0438\u043b\u044c\u043d\u0438\u043a\u0430.md": {
+    "mtime": 1775103178.7544074,
+    "ast_hash": "83d508edd113866c268eef826a5a47f3",
+    "semantic_hash": "83d508edd113866c268eef826a5a47f3"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-5-\u044d\u0442\u0430\u043f-\u0432\u0445\u043e\u0434\u043d\u043e\u0439-\u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044c-\u043a\u043e\u043c\u043f\u043b\u0435\u043a\u0442\u0443\u044e\u0449\u0438\u0445.md": {
+    "mtime": 1775536058.1520932,
+    "ast_hash": "a50c9012afcb84e1dd1aed4df7f2da00",
+    "semantic_hash": "a50c9012afcb84e1dd1aed4df7f2da00"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-5-\u044d\u0442\u0430\u043f-\u0433\u0435\u0440\u043c\u0435\u0442\u0438\u0437\u0430\u0446\u0438\u044f-ip-\u0437\u0430\u0449\u0438\u0442\u0430.md": {
+    "mtime": 1775122962.7778711,
+    "ast_hash": "10e65d468e145d1cbd470bbc93475542",
+    "semantic_hash": "10e65d468e145d1cbd470bbc93475542"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-5-\u044d\u0442\u0430\u043f-\u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044c-\u043a\u0430\u0447\u0435\u0441\u0442\u0432\u0430-\u043e\u0431\u0440\u0430\u0437\u0446\u0430.md": {
+    "mtime": 1775055990.0239842,
+    "ast_hash": "575e5e2a87e5e2694925fdc5d994ec01",
+    "semantic_hash": "575e5e2a87e5e2694925fdc5d994ec01"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-5-\u044d\u0442\u0430\u043f-\u0441\u0431\u043e\u0440\u043a\u0430-\u0438-\u043a\u0440\u0435\u043f\u0451\u0436.md": {
+    "mtime": 1775055971.6938388,
+    "ast_hash": "041cf43b36d934a7f458ee5b85ad1b6a",
+    "semantic_hash": "041cf43b36d934a7f458ee5b85ad1b6a"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-5-\u044d\u0442\u0430\u043f-\u0441\u0431\u043e\u0440\u043a\u0430-\u043a\u043b\u0430\u0441\u0442\u0435\u0440\u043d\u044b\u0445-\u0441\u0432\u0435\u0442\u0438\u043b\u044c\u043d\u0438\u043a\u043e\u0432.md": {
+    "mtime": 1775535372.9714224,
+    "ast_hash": "4f46535ed364879b054e89294cc911c7",
+    "semantic_hash": "4f46535ed364879b054e89294cc911c7"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-5-\u044d\u0442\u0430\u043f-\u0441\u0431\u043e\u0440\u043a\u0430-\u043b\u0438\u043d\u0435\u0439\u043d\u043e\u0433\u043e-\u0441\u0432\u0435\u0442\u0438\u043b\u044c\u043d\u0438\u043a\u0430.md": {
+    "mtime": 1775535282.49582,
+    "ast_hash": "9df7d158b08c2af4b7d2cefed998e6f3",
+    "semantic_hash": "9df7d158b08c2af4b7d2cefed998e6f3"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-5-\u044d\u0442\u0430\u043f-\u0442\u0435\u0441\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u043e\u0431\u0440\u0430\u0437\u0446\u0430.md": {
+    "mtime": 1775055992.1108887,
+    "ast_hash": "63f6efd99590b8231fb0f4fc8ab13fc3",
+    "semantic_hash": "63f6efd99590b8231fb0f4fc8ab13fc3"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-5-\u044d\u0442\u0430\u043f-\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u0431\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e\u0441\u0442\u0438.md": {
+    "mtime": 1775535471.040584,
+    "ast_hash": "5f68844653af7bfd35ff81539cde8e2d",
+    "semantic_hash": "5f68844653af7bfd35ff81539cde8e2d"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-5-\u044d\u0442\u0430\u043f-\u044d\u043b\u0435\u043a\u0442\u0440\u043e\u043c\u043e\u043d\u0442\u0430\u0436-\u0441\u0432\u0435\u0442\u0438\u043b\u044c\u043d\u0438\u043a\u0430.md": {
+    "mtime": 1775103178.7549205,
+    "ast_hash": "0bc355a5a0fe4ed210dda7bc1fcedcd6",
+    "semantic_hash": "0bc355a5a0fe4ed210dda7bc1fcedcd6"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-3d-\u043f\u0435\u0447\u0430\u0442\u044c-\u043f\u0440\u043e\u0442\u043e\u0442\u0438\u043f\u043e\u0432.md": {
+    "mtime": 1775121681.4212356,
+    "ast_hash": "608fe92a9e778cc702f2af2c184dc6cc",
+    "semantic_hash": "608fe92a9e778cc702f2af2c184dc6cc"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u0430\u043d\u043e\u0434\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u0438-\u043f\u043e\u043a\u0440\u0430\u0441\u043a\u0430.md": {
+    "mtime": 1775103178.7559702,
+    "ast_hash": "e178c662f795fd3fa6243677fcf51b61",
+    "semantic_hash": "e178c662f795fd3fa6243677fcf51b61"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u0433\u0438\u0431\u043a\u0430-\u043c\u0435\u0442\u0430\u043b\u043b\u0430-\u0440\u0430\u0437\u0432\u0451\u0440\u0442\u043a\u0438.md": {
+    "mtime": 1775212934.9741945,
+    "ast_hash": "6dc4d38fa6d968a3c8a072314463ff4e",
+    "semantic_hash": "6dc4d38fa6d968a3c8a072314463ff4e"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044c-\u043a\u0430\u0447\u0435\u0441\u0442\u0432\u0430-\u043f\u043e\u0441\u0442\u0430\u0432\u043e\u043a.md": {
+    "mtime": 1775055761.4620037,
+    "ast_hash": "da8e5135f6472a9b26237c22e3786619",
+    "semantic_hash": "da8e5135f6472a9b26237c22e3786619"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u043b\u0430\u0437\u0435\u0440\u043d\u0430\u044f-\u0433\u0440\u0430\u0432\u0438\u0440\u043e\u0432\u043a\u0430.md": {
+    "mtime": 1775103178.7570167,
+    "ast_hash": "ccc9c6147ee2f553f0790c43009e9fd5",
+    "semantic_hash": "ccc9c6147ee2f553f0790c43009e9fd5"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u043b\u0430\u0437\u0435\u0440\u043d\u0430\u044f-\u0440\u0435\u0437\u043a\u0430-dxf.md": {
+    "mtime": 1775122757.2779572,
+    "ast_hash": "a1561d658abfecf14496801db44d1b67",
+    "semantic_hash": "a1561d658abfecf14496801db44d1b67"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u043b\u0438\u0442\u044c\u0451-\u043f\u043b\u0430\u0441\u0442\u0438\u043a\u0430.md": {
+    "mtime": 1775535441.6639786,
+    "ast_hash": "d05a7f6ee61975579194b733ccf3c9d0",
+    "semantic_hash": "d05a7f6ee61975579194b733ccf3c9d0"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u043b\u043e\u0433\u0438\u0441\u0442\u0438\u043a\u0430-\u043f\u043e\u0434\u0440\u044f\u0434\u0447\u0438\u043a\u043e\u0432.md": {
+    "mtime": 1775535547.952439,
+    "ast_hash": "1578dcafd5dd3d0ae18e246ea5df10bb",
+    "semantic_hash": "1578dcafd5dd3d0ae18e246ea5df10bb"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u043f\u0440\u043e\u0435\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u043f\u043e\u0434-3d-\u043f\u0435\u0447\u0430\u0442\u044c.md": {
+    "mtime": 1776671956.4398282,
+    "ast_hash": "1b0e20d7d88f75b2d34d02c5d2c8bb53",
+    "semantic_hash": "1b0e20d7d88f75b2d34d02c5d2c8bb53"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u043f\u0440\u043e\u0435\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u043f\u043e\u0434-\u0433\u0438\u0431\u043a\u0443.md": {
+    "mtime": 1776671878.6169724,
+    "ast_hash": "d23561c4afa737ee2ef2082f52938b2e",
+    "semantic_hash": "d23561c4afa737ee2ef2082f52938b2e"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u043f\u0440\u043e\u0435\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u043f\u043e\u0434-\u044d\u043a\u0441\u0442\u0440\u0443\u0437\u0438\u044e.md": {
+    "mtime": 1776671813.7742083,
+    "ast_hash": "fe6aa8a1b02cea37385e9473836c8fc1",
+    "semantic_hash": "fe6aa8a1b02cea37385e9473836c8fc1"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u0441\u043e\u0435\u0434\u0438\u043d\u0435\u043d\u0438\u044f-\u0438-\u043a\u0440\u0435\u043f\u0451\u0436.md": {
+    "mtime": 1776672128.9966564,
+    "ast_hash": "889f2971eafed3470af6ec631c59a236",
+    "semantic_hash": "889f2971eafed3470af6ec631c59a236"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u0442\u0435\u0445\u043d\u043e\u043b\u043e\u0433\u0438\u0447\u0435\u0441\u043a\u0438\u0435-\u043e\u0442\u0432\u0435\u0440\u0441\u0442\u0438\u044f.md": {
+    "mtime": 1776672030.6286356,
+    "ast_hash": "36cb4d0088d1e4654ec97ad0518c64a8",
+    "semantic_hash": "36cb4d0088d1e4654ec97ad0518c64a8"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u0442\u0438\u043f\u0438\u0447\u043d\u044b\u0435-\u043e\u0448\u0438\u0431\u043a\u0438-\u0444\u0430\u0439\u043b\u043e\u0432.md": {
+    "mtime": 1775103178.7575958,
+    "ast_hash": "77f6993a6512662f7afb5a3b72b530d8",
+    "semantic_hash": "77f6993a6512662f7afb5a3b72b530d8"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u0442\u043e\u043a\u0430\u0440\u043d\u0430\u044f-\u043e\u0431\u0440\u0430\u0431\u043e\u0442\u043a\u0430.md": {
+    "mtime": 1775535335.138857,
+    "ast_hash": "a9dc0f9d3c508198cb47ea06c32549f8",
+    "semantic_hash": "a9dc0f9d3c508198cb47ea06c32549f8"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u0444\u0440\u0435\u0437\u0435\u0440\u043e\u0432\u043a\u0430-\u043b\u0438\u0441\u0442\u043e\u0432\u044b\u0445-\u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u043e\u0432.md": {
+    "mtime": 1776666441.706821,
+    "ast_hash": "8e1411c2af81a949b38f07ef19c5e509",
+    "semantic_hash": "8e1411c2af81a949b38f07ef19c5e509"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-4-\u044d\u0442\u0430\u043f-\u044d\u043a\u0441\u0442\u0440\u0443\u0437\u0438\u044f-\u0430\u043b\u044e\u043c\u0438\u043d\u0438\u044f.md": {
+    "mtime": 1775535232.57397,
+    "ast_hash": "3d497c0099fbdd8a8e37991b5d4b6c0e",
+    "semantic_hash": "3d497c0099fbdd8a8e37991b5d4b6c0e"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-5-\u044d\u0442\u0430\u043f-\u0430\u043b\u044c\u0442\u0435\u0440\u043d\u0430\u0442\u0438\u0432\u043d\u044b\u0435-\u043a\u043e\u043c\u043f\u043e\u043d\u0435\u043d\u0442\u044b.md": {
+    "mtime": 1775536117.8809807,
+    "ast_hash": "93b0917362993ac44340579745432323",
+    "semantic_hash": "93b0917362993ac44340579745432323"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-5-\u044d\u0442\u0430\u043f-\u043a\u043e\u0434\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u043a\u043e\u043c\u043f\u043e\u043d\u0435\u043d\u0442\u043e\u0432.md": {
+    "mtime": 1775122325.676115,
+    "ast_hash": "73b33f62137e96b4d41293cc3c056427",
+    "semantic_hash": "73b33f62137e96b4d41293cc3c056427"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-5-\u044d\u0442\u0430\u043f-\u043d\u043e\u0440\u043c\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u0440\u0430\u0441\u0445\u043e\u0434\u0430-\u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u043e\u0432.md": {
+    "mtime": 1775122420.3927248,
+    "ast_hash": "5a5016f676eddb5e826ae656eb87a586",
+    "semantic_hash": "5a5016f676eddb5e826ae656eb87a586"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-5-\u044d\u0442\u0430\u043f-\u043f\u043e\u0434\u0431\u043e\u0440-led-\u043c\u043e\u0434\u0443\u043b\u0435\u0439.md": {
+    "mtime": 1775535325.6205316,
+    "ast_hash": "0560e32b32ceabecd6329a323af3a969",
+    "semantic_hash": "0560e32b32ceabecd6329a323af3a969"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-5-\u044d\u0442\u0430\u043f-\u043f\u043e\u0434\u0431\u043e\u0440-\u0434\u0440\u0430\u0439\u0432\u0435\u0440\u043e\u0432.md": {
+    "mtime": 1775535411.557752,
+    "ast_hash": "626a9685a4dc94e45a94a9ce29edf2c8",
+    "semantic_hash": "626a9685a4dc94e45a94a9ce29edf2c8"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-5-\u044d\u0442\u0430\u043f-\u0440\u0430\u0441\u0447\u0451\u0442-\u044d\u043d\u0435\u0440\u0433\u043e\u044d\u0444\u0444\u0435\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u0438.md": {
+    "mtime": 1775535490.3482046,
+    "ast_hash": "7faa17c9dcb709c35330593f3df71fe2",
+    "semantic_hash": "7faa17c9dcb709c35330593f3df71fe2"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-5-\u044d\u0442\u0430\u043f-\u0444\u043e\u0440\u043c\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-bom.md": {
+    "mtime": 1775122615.5720835,
+    "ast_hash": "e3f24ee6dd3399a360960747c3173e9d",
+    "semantic_hash": "e3f24ee6dd3399a360960747c3173e9d"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-6-\u044d\u0442\u0430\u043f-\u0438\u043d\u0441\u0442\u0440\u0443\u043a\u0446\u0438\u044f-\u043f\u043e-\u044d\u043a\u0441\u043f\u043b\u0443\u0430\u0442\u0430\u0446\u0438\u0438.md": {
+    "mtime": 1775122301.9413772,
+    "ast_hash": "056fdc4fcee1b7eded026e07fb34cf19",
+    "semantic_hash": "056fdc4fcee1b7eded026e07fb34cf19"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-6-\u044d\u0442\u0430\u043f-\u043a\u0430\u0442\u0430\u043b\u043e\u0436\u043d\u044b\u0439-\u043b\u0438\u0441\u0442.md": {
+    "mtime": 1775536181.3515193,
+    "ast_hash": "a4e62af41c8ccae26fb11e786804f3c6",
+    "semantic_hash": "a4e62af41c8ccae26fb11e786804f3c6"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-6-\u044d\u0442\u0430\u043f-\u043b\u0430\u0431\u043e\u0440\u0430\u0442\u043e\u0440\u043d\u044b\u0435-\u0438\u0441\u043f\u044b\u0442\u0430\u043d\u0438\u044f.md": {
+    "mtime": 1775535465.1386049,
+    "ast_hash": "e72c03990f9cfd1e21bf18b653f56250",
+    "semantic_hash": "e72c03990f9cfd1e21bf18b653f56250"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-6-\u044d\u0442\u0430\u043f-\u043c\u0430\u0440\u043a\u0438\u0440\u043e\u0432\u043a\u0430-\u0441\u0432\u0435\u0442\u0438\u043b\u044c\u043d\u0438\u043a\u043e\u0432.md": {
+    "mtime": 1775535554.7004852,
+    "ast_hash": "83b3fc9fbd3c546a3eca794a2f509de5",
+    "semantic_hash": "83b3fc9fbd3c546a3eca794a2f509de5"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-6-\u044d\u0442\u0430\u043f-\u0441\u0435\u0440\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f-\u0442\u0440-\u0435\u0430\u044d\u0441.md": {
+    "mtime": 1775122433.6628573,
+    "ast_hash": "9be416403860fab4ae9438d945db7bb6",
+    "semantic_hash": "9be416403860fab4ae9438d945db7bb6"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-6-\u044d\u0442\u0430\u043f-\u0442\u0435\u0445\u043d\u0438\u0447\u0435\u0441\u043a\u0438\u0435-\u0443\u0441\u043b\u043e\u0432\u0438\u044f.md": {
+    "mtime": 1775535372.849826,
+    "ast_hash": "accea7c89f95c8f205ca129422726a47",
+    "semantic_hash": "accea7c89f95c8f205ca129422726a47"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-6-\u044d\u0442\u0430\u043f-\u0448\u0430\u0431\u043b\u043e\u043d-\u043f\u0430\u0441\u043f\u043e\u0440\u0442\u0430-7lamp.md": {
+    "mtime": 1776673209.5397465,
+    "ast_hash": "26ffcb5ad6946f8e8a81274bed9e61e3",
+    "semantic_hash": "26ffcb5ad6946f8e8a81274bed9e61e3"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-post-mortem-\u0430\u043d\u0430\u043b\u0438\u0437.md": {
+    "mtime": 1775536343.5952222,
+    "ast_hash": "b44e6f2c732ae30062da4254042d2af6",
+    "semantic_hash": "b44e6f2c732ae30062da4254042d2af6"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u0430\u0432\u0442\u043e\u0440\u0441\u043a\u0438\u0439-\u043d\u0430\u0434\u0437\u043e\u0440.md": {
+    "mtime": 1775103178.7591472,
+    "ast_hash": "a4b2cc2524e6c38973b1a5615385a981",
+    "semantic_hash": "a4b2cc2524e6c38973b1a5615385a981"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u0432\u0435\u0434\u0435\u043d\u0438\u0435-\u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0439-ecn.md": {
+    "mtime": 1775103178.7596714,
+    "ast_hash": "efa59b1a854fa0634aadf39e4efb8020",
+    "semantic_hash": "efa59b1a854fa0634aadf39e4efb8020"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u0432\u0435\u0434\u0435\u043d\u0438\u0435-\u043f\u0440\u043e\u0435\u043a\u0442\u0430-erp.md": {
+    "mtime": 1775103178.7601871,
+    "ast_hash": "4110a52dd3f31db3cc5a2c0e12cf669b",
+    "semantic_hash": "4110a52dd3f31db3cc5a2c0e12cf669b"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u043e\u043f\u0435\u0440\u0430\u0442\u0438\u0432\u043a\u0430-\u0441-\u043f\u043e\u0434\u0440\u044f\u0434\u0447\u0438\u043a\u043e\u043c.md": {
+    "mtime": 1776673408.9621375,
+    "ast_hash": "66b1bbfc865a26099ee37cac02107434",
+    "semantic_hash": "66b1bbfc865a26099ee37cac02107434"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u043f\u043e\u0440\u0442\u0444\u0435\u043b\u044c\u043d\u043e\u0435-\u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435.md": {
+    "mtime": 1775536236.6986818,
+    "ast_hash": "b14163030484f2113f0c15a611d3bfb7",
+    "semantic_hash": "b14163030484f2113f0c15a611d3bfb7"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u0440\u0430\u0431\u043e\u0442\u0430-\u0441-\u0431\u0440\u0430\u043a\u043e\u043c-\u043e\u0442-\u043f\u043e\u0434\u0440\u044f\u0434\u0447\u0438\u043a\u0430.md": {
+    "mtime": 1776673345.6353197,
+    "ast_hash": "e5ba4350fa5d123894f2110592f8f0c9",
+    "semantic_hash": "e5ba4350fa5d123894f2110592f8f0c9"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u0440\u0430\u0441\u0447\u0451\u0442-\u0441\u0435\u0431\u0435\u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u0438.md": {
+    "mtime": 1775103178.7607048,
+    "ast_hash": "6766a4630cec601d9dacc6346b929179",
+    "semantic_hash": "6766a4630cec601d9dacc6346b929179"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u0440\u0435\u043a\u043b\u0430\u043c\u0430\u0446\u0438\u0438-\u0438-\u0433\u0430\u0440\u0430\u043d\u0442\u0438\u044f.md": {
+    "mtime": 1775535537.4034574,
+    "ast_hash": "54410b3248d7cc5a7c8e6af186dbc43b",
+    "semantic_hash": "54410b3248d7cc5a7c8e6af186dbc43b"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u0441\u0435\u0440\u0438\u0439\u043d\u043e\u0435-\u043f\u0440\u043e\u0438\u0437\u0432\u043e\u0434\u0441\u0442\u0432\u043e.md": {
+    "mtime": 1775535457.4450161,
+    "ast_hash": "526b6559db7c0ac1d9a34e0a6b1eccb3",
+    "semantic_hash": "526b6559db7c0ac1d9a34e0a6b1eccb3"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u0442\u0438\u043f\u043e\u0432\u044b\u0435-\u043f\u0440\u043e\u0435\u043a\u0442\u044b-\u0448\u0430\u0431\u043b\u043e\u043d\u044b.md": {
+    "mtime": 1775103178.7612166,
+    "ast_hash": "9a70eabe5d5cd0a5a32a0c7880dfb94e",
+    "semantic_hash": "9a70eabe5d5cd0a5a32a0c7880dfb94e"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u0446\u0435\u043d\u043e\u043e\u0431\u0440\u0430\u0437\u043e\u0432\u0430\u043d\u0438\u0435-\u043f\u0440\u0430\u0439\u0441.md": {
+    "mtime": 1775536290.7592885,
+    "ast_hash": "5c54d53e029c213e8233149d3cafb696",
+    "semantic_hash": "5c54d53e029c213e8233149d3cafb696"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-7-\u044d\u0442\u0430\u043f-\u0447\u0435\u043a-\u043b\u0438\u0441\u0442-\u043f\u0440\u0438\u0451\u043c\u043a\u0438-\u043f\u043e\u0434\u0440\u044f\u0434\u0447\u0438\u043a\u0430.md": {
+    "mtime": 1776673278.0353742,
+    "ast_hash": "e0a5727a2590d36b5eacbe96c2c5b751",
+    "semantic_hash": "e0a5727a2590d36b5eacbe96c2c5b751"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-8-\u044d\u0442\u0430\u043f-\u0433\u0430\u0440\u0430\u043d\u0442\u0438\u0439\u043d\u043e\u0435-\u043e\u0431\u0441\u043b\u0443\u0436\u0438\u0432\u0430\u043d\u0438\u0435.md": {
+    "mtime": 1775537497.2779043,
+    "ast_hash": "a088c7a62793a02bea98627171940499",
+    "semantic_hash": "a088c7a62793a02bea98627171940499"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-8-\u044d\u0442\u0430\u043f-\u0437\u0430\u043c\u0435\u0440\u044b-\u043e\u0441\u0432\u0435\u0449\u0451\u043d\u043d\u043e\u0441\u0442\u0438.md": {
+    "mtime": 1775537442.441753,
+    "ast_hash": "7d5b87f828c22afe387b02442c8bf284",
+    "semantic_hash": "7d5b87f828c22afe387b02442c8bf284"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-8-\u044d\u0442\u0430\u043f-\u0438\u043d\u0441\u0442\u0440\u0443\u043a\u0446\u0438\u0438-\u043f\u043e-\u043c\u043e\u043d\u0442\u0430\u0436\u0443.md": {
+    "mtime": 1775103178.761747,
+    "ast_hash": "ab64e198a04785e5d32110e4df85a2a9",
+    "semantic_hash": "ab64e198a04785e5d32110e4df85a2a9"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-8-\u044d\u0442\u0430\u043f-\u043f\u0443\u0441\u043a\u043e\u043d\u0430\u043b\u0430\u0434\u043a\u0430-\u0441\u0438\u0441\u0442\u0435\u043c-\u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f.md": {
+    "mtime": 1775536406.9506035,
+    "ast_hash": "d2a6fbe42150d58a049ab577463b800a",
+    "semantic_hash": "d2a6fbe42150d58a049ab577463b800a"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-8-\u044d\u0442\u0430\u043f-\u0441\u0445\u0435\u043c\u0430-\u043c\u043e\u043d\u0442\u0430\u0436\u0430-ikea-style.md": {
+    "mtime": 1776673139.840456,
+    "ast_hash": "be7663c7aaa06b276758e2f15afe86d5",
+    "semantic_hash": "be7663c7aaa06b276758e2f15afe86d5"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-8-\u044d\u0442\u0430\u043f-\u0442\u0438\u043f\u043e\u0432\u044b\u0435-\u043f\u0440\u043e\u0431\u043b\u0435\u043c\u044b-\u043d\u0430-\u043e\u0431\u044a\u0435\u043a\u0442\u0435.md": {
+    "mtime": 1775123077.2235591,
+    "ast_hash": "7f414f7008bf64c1412362dff3e36d21",
+    "semantic_hash": "7f414f7008bf64c1412362dff3e36d21"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-8-\u044d\u0442\u0430\u043f-\u0442\u0438\u043f\u043e\u0432\u044b\u0435-\u0443\u0437\u043b\u044b-\u043a\u0440\u0435\u043f\u043b\u0435\u043d\u0438\u044f.md": {
+    "mtime": 1775103178.7622638,
+    "ast_hash": "a1431d8138462f5219b99868f8a2ed82",
+    "semantic_hash": "a1431d8138462f5219b99868f8a2ed82"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-8-\u044d\u0442\u0430\u043f-\u0443\u043f\u0430\u043a\u043e\u0432\u043a\u0430-\u0438-\u0442\u0440\u0430\u043d\u0441\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u043a\u0430.md": {
+    "mtime": 1775537568.6377933,
+    "ast_hash": "e26be819b2cc92fd6837cee887606b93",
+    "semantic_hash": "e26be819b2cc92fd6837cee887606b93"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-8-\u044d\u0442\u0430\u043f-\u0444\u043e\u0442\u043e\u0444\u0438\u043a\u0441\u0430\u0446\u0438\u044f-\u0438-\u043f\u0440\u0438\u0451\u043c\u043a\u0430.md": {
+    "mtime": 1775123171.9011624,
+    "ast_hash": "a9ca35673748f686cd3d0f5ebb0affea",
+    "semantic_hash": "a9ca35673748f686cd3d0f5ebb0affea"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-8-\u044d\u0442\u0430\u043f-\u0448\u0435\u0444-\u043c\u043e\u043d\u0442\u0430\u0436.md": {
+    "mtime": 1775535515.491727,
+    "ast_hash": "24be2e9d54081841e968f6958deb666b",
+    "semantic_hash": "24be2e9d54081841e968f6958deb666b"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-\u043a\u043e\u043d\u0441\u0442\u0440\u0443\u043a\u0442\u043e\u0440\u0441\u043a\u0438\u0435-\u043e\u0441\u043d\u043e\u0432\u044b-\u0440\u0435\u0437\u044c\u0431\u043e\u0432\u044b\u0435-\u043e\u0442\u0432\u0435\u0440\u0441\u0442\u0438\u044f.md": {
+    "mtime": 1776671271.0789363,
+    "ast_hash": "e7c01002a96344778f85e024fb68eb31",
+    "semantic_hash": "e7c01002a96344778f85e024fb68eb31"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-\u043a\u043e\u043d\u0441\u0442\u0440\u0443\u043a\u0442\u043e\u0440\u0441\u043a\u0438\u0435-\u043e\u0441\u043d\u043e\u0432\u044b-\u0441\u043a\u0432\u043e\u0437\u043d\u044b\u0435-\u043e\u0442\u0432\u0435\u0440\u0441\u0442\u0438\u044f-\u0431\u043e\u043b\u0442.md": {
+    "mtime": 1776671327.6231525,
+    "ast_hash": "88dc1eef5705de107207d342cf54aaaf",
+    "semantic_hash": "88dc1eef5705de107207d342cf54aaaf"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-\u043a\u043e\u043d\u0441\u0442\u0440\u0443\u043a\u0442\u043e\u0440\u0441\u043a\u0438\u0435-\u043e\u0441\u043d\u043e\u0432\u044b-\u0441\u043a\u0432\u043e\u0437\u043d\u044b\u0435-\u043e\u0442\u0432\u0435\u0440\u0441\u0442\u0438\u044f-\u0432\u0438\u043d\u0442.md": {
+    "mtime": 1776671386.3601458,
+    "ast_hash": "266b9e24ada44549a9d2db7f95768883",
+    "semantic_hash": "266b9e24ada44549a9d2db7f95768883"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-\u043a\u043e\u043d\u0441\u0442\u0440\u0443\u043a\u0442\u043e\u0440\u0441\u043a\u0438\u0435-\u043e\u0441\u043d\u043e\u0432\u044b-\u0444\u0430\u0441\u043a\u0438.md": {
+    "mtime": 1776671457.835821,
+    "ast_hash": "5b1f40d74a40a748e4794cd4b0435c59",
+    "semantic_hash": "5b1f40d74a40a748e4794cd4b0435c59"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-\u044d\u0444\u0444\u0435\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u044c-\u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f-\u0432-moi3d.md": {
+    "mtime": 1776672613.1737475,
+    "ast_hash": "7a83edbcc6a502d470115fb4b368f065",
+    "semantic_hash": "7a83edbcc6a502d470115fb4b368f065"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-\u044d\u0444\u0444\u0435\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u044c-\u043b\u0438\u0447\u043d\u0430\u044f-\u0431\u0438\u0431\u043b\u0438\u043e\u0442\u0435\u043a\u0430-\u0438\u043d\u0436\u0435\u043d\u0435\u0440\u0430.md": {
+    "mtime": 1776672434.734805,
+    "ast_hash": "bc9d9514e8d222a320bc72f4b3223bc3",
+    "semantic_hash": "bc9d9514e8d222a320bc72f4b3223bc3"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-\u044d\u0444\u0444\u0435\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u044c-\u043e\u0431\u0449\u0430\u044f-\u0431\u0438\u0431\u043b\u0438\u043e\u0442\u0435\u043a\u0430-7lamp.md": {
+    "mtime": 1776672494.7708602,
+    "ast_hash": "6c8618416b44e76e0114112a16f7c8e9",
+    "semantic_hash": "6c8618416b44e76e0114112a16f7c8e9"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u043f\u0440\u043e\u0435\u043a\u0442\u044b-\u044d\u0444\u0444\u0435\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u044c-\u0448\u0430\u0431\u043b\u043e\u043d\u0438\u0437\u0430\u0446\u0438\u044f-\u0440\u0443\u0442\u0438\u043d\u044b.md": {
+    "mtime": 1776672557.9403155,
+    "ast_hash": "38653f8fdd0ae2f511bbc9d1cde5612c",
+    "semantic_hash": "38653f8fdd0ae2f511bbc9d1cde5612c"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u0430\u0432\u0430\u0440\u0438\u0439\u043d\u043e\u0435-\u043e\u0441\u0432\u0435\u0449\u0435\u043d\u0438\u0435.md": {
+    "mtime": 1776665476.3476863,
+    "ast_hash": "2c3f98e2cf530d18d532acc747c2c4d4",
+    "semantic_hash": "2c3f98e2cf530d18d532acc747c2c4d4"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u0434\u0440\u0430\u0439\u0432\u0435\u0440\u044b-\u0438-\u0431\u043b\u043e\u043a\u0438-\u043f\u0438\u0442\u0430\u043d\u0438\u044f.md": {
+    "mtime": 1776665476.355616,
+    "ast_hash": "a030162532046ea6b7afcc0500051e9c",
+    "semantic_hash": "a030162532046ea6b7afcc0500051e9c"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u043a\u043b\u0430\u0441\u0441\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f-\u0442\u0438\u043f\u043e\u0432\u044b\u0445-\u0441\u0432\u0435\u0442\u0438\u043b\u044c\u043d\u0438\u043a\u043e\u0432.md": {
+    "mtime": 1774933539.754722,
+    "ast_hash": "d833bbf00bbc5617e36e7816bac2fd4b",
+    "semantic_hash": "d833bbf00bbc5617e36e7816bac2fd4b"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u043e\u0432\u0435\u0434\u0435\u043d\u0438\u0435.md": {
+    "mtime": 1776665476.357175,
+    "ast_hash": "4523e9684d89ecfb67d6ce84b64d66f9",
+    "semantic_hash": "4523e9684d89ecfb67d6ce84b64d66f9"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u043d\u0430\u0440\u0443\u0436\u043d\u043e\u0435-\u0438-\u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u043d\u043e\u0435-\u043e\u0441\u0432\u0435\u0449\u0435\u043d\u0438\u0435.md": {
+    "mtime": 1776665476.3487082,
+    "ast_hash": "b2a535d977ac61d32e4e2b4bd0b6c4c8",
+    "semantic_hash": "b2a535d977ac61d32e4e2b4bd0b6c4c8"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u043d\u043e\u0440\u043c\u044b-\u0438-\u043a\u0430\u0447\u0435\u0441\u0442\u0432\u043e-\u043e\u0441\u0432\u0435\u0449\u0435\u043d\u0438\u044f.md": {
+    "mtime": 1776665476.345054,
+    "ast_hash": "4f62d97261e11fcf644a3b88876c9d2c",
+    "semantic_hash": "4f62d97261e11fcf644a3b88876c9d2c"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u043d\u043e\u0440\u043c\u044b-\u043e\u0441\u0432\u0435\u0449\u0451\u043d\u043d\u043e\u0441\u0442\u0438.md": {
+    "mtime": 1776665476.3460982,
+    "ast_hash": "c465da19db0d5e9624962e7e87315de4",
+    "semantic_hash": "c465da19db0d5e9624962e7e87315de4"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u041e\u0441\u043d\u043e\u0432\u044b \u043f\u0440\u043e\u0444\u0435\u0441\u0441\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u043e\u0433\u043e \u043e\u0441\u0432\u0435\u0449\u0435\u043d\u0438\u044f.md": {
+    "mtime": 1776665476.342965,
+    "ast_hash": "f6837bc9277d37317826a914c130939f",
+    "semantic_hash": "f6837bc9277d37317826a914c130939f"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u043e\u0441\u043d\u043e\u0432\u044b-\u0438-\u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u044b-\u043e\u0441\u0432\u0435\u0449\u0435\u043d\u0438\u044f.md": {
+    "mtime": 1776665476.3434846,
+    "ast_hash": "1e9cfe0dde76169aa91d02a547904300",
+    "semantic_hash": "1e9cfe0dde76169aa91d02a547904300"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u043e\u0441\u043d\u043e\u0432\u044b-\u044d\u043b\u0435\u043a\u0442\u0440\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0438.md": {
+    "mtime": 1776665476.3561368,
+    "ast_hash": "3ad4de986bdbfe7eaab1002aa14d3cb6",
+    "semantic_hash": "3ad4de986bdbfe7eaab1002aa14d3cb6"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b-\u0441\u0432\u0435\u0442\u0430.md": {
+    "mtime": 1776665476.344535,
+    "ast_hash": "71c73b3817e5044c22538635de46c67e",
+    "semantic_hash": "71c73b3817e5044c22538635de46c67e"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u043f\u0440\u043e\u0435\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435-\u0432-dialux-evo.md": {
+    "mtime": 1776665476.349741,
+    "ast_hash": "031b9876a6ee05661db20e5a403cdd0d",
+    "semantic_hash": "031b9876a6ee05661db20e5a403cdd0d"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u0441\u0432\u0435\u0442\u0438\u043b\u044c\u043d\u0438\u043a\u0438-line.md": {
+    "mtime": 1776665476.3492155,
+    "ast_hash": "459a12fc5a8926adeee0a10e3e654640",
+    "semantic_hash": "459a12fc5a8926adeee0a10e3e654640"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u0441\u0435\u0440\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f-\u0438-\u0438\u0441\u043f\u044b\u0442\u0430\u043d\u0438\u044f.md": {
+    "mtime": 1776665476.3587315,
+    "ast_hash": "f467fa23ddb87d7b814a50a51cbc1ef9",
+    "semantic_hash": "f467fa23ddb87d7b814a50a51cbc1ef9"
+  },
+  "C:\\Users\\Brian\\Downloads\\Edu\\lessons\\\u0441\u0432\u0435\u0442\u043e\u0442\u0435\u0445\u043d\u0438\u043a\u0430-\u0444\u043e\u0442\u043e\u043c\u0435\u0442\u0440\u0438\u044f-\u0438-ies-ldt.md": {
+    "mtime": 1776665476.3471556,
+    "ast_hash": "81297bfc96c34dad645631a164721f01",
+    "semantic_hash": "81297bfc96c34dad645631a164721f01"
+  }
+}
